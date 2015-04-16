@@ -4,12 +4,12 @@
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -20,21 +20,21 @@
 """Read Extended Position Description (EPD) notation.
 
 Syntax:
-    
+
     <EPD> ::=   <Piece Placement>
            ' ' <Side to move>
            ' ' <Castling ability>
            ' ' <En passant target square>
           {' ' <operation>}
-    
+
     <Piece Placement> ::= equal to FEN piece placement
-    
+
     <Side to move> ::= equal to FEN side to move
-    
+
     <Castling ability> ::= equal to FEN castling ability
-    
+
     <En passant target square> ::= equal to FEN en passant target square
-    
+
     <operation> ::= <opcode> {' '<operand>} ';'
     <opcode>    ::= <letter> {<letter> | <digit> | '_'} (up to 14)
     <operand>   ::= <stringOperand>
@@ -58,7 +58,7 @@ Syntax:
     <digit18>   ::= An integer in range(1, 9)
     <digit19>   ::= An integer in range(1, 10)
     <digit>     ::= '0' | <digit19>
-    
+
 Opcode mneumonics:
 
     Mneumonic      | Meaning
@@ -157,18 +157,18 @@ def load_epd(string):
     b.data.raw_operations = operations
     b.data.op_fields = op_fields
     op_data = {}
-    for operation in op_fields:
+     for operation in op_fields:
         fields = operation.strip().split()
         opcode = fields[0]
         operand = fields[1:]
         name = opcodes[opcode]
-        value = operand
+        value = ''.join([o for o in operand])  # operand will be a list, make into a single object
         op_data.update({opcode: (name, value)})
     b.data.op_data = op_data
     if 'fmvn' in op_data:
-        b.fullmove_clock = int(op_data['fvmn'])
+        b.fullmove_clock = int(op_data['fmvn'][1])
     if 'hmvc' in op_data:
-        b.halfmove_clock = int(op_data['hmvc'])
+        b.halfmove_clock = int(op_data['hmvc'][1])
     return b
 
 def load_test_string(name):

@@ -4,12 +4,12 @@
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -19,9 +19,15 @@
 
 """Exceptions used in Phantom."""
 
+from Phantom.core.chessobj import PhantomObj
+
 __all__ = []
 
-class ChessError (Exception): 
+# 671: Should the mro be (Exception, PhantomObj)?
+class ChessError (PhantomObj, Exception):
+
+    # 671: should call Exception.__init__ here? It's been working fine so I
+    #      don't see a need to, but it could prevent future issues
     def __init__(self, msg='No error message supplied', caller=None):
         self.msg = self.message = msg
         self.name = self.__class__.__name__

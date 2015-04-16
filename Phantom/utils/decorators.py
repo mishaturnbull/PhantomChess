@@ -4,12 +4,12 @@
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -19,16 +19,19 @@
 
 """Some useful decorators used in Phantom."""
 
+from Phantom.utils.debug import log_msg
+from Phantom.constants import debug, exc_catch_cutoff
+
 class named (object):
-    
+
     def __init__(self, name):
         self.fname = name
-    
+
     def __call__(self, f):
-        
+
         def wrapped(*args, **kwargs):
             return f(*args, **kwargs)
-        
+
         wrapped.__name__ = self.fname
         return wrapped
 
@@ -41,12 +44,14 @@ class exc_catch (object):
         self.name = kwargs.get('name', None)
         self.ret = kwargs.get('ret', None)
         self.log = kwargs.get('log', 0)
-    
+
     def __call__(self, f):
         retval = self.ret
-        from Phantom.utils.debug import log_msg
         name = self.name or f.__name__
-        
+
+        if debug > exc_catch_cutoff:
+            return f
+
         @named(name)
         def wrapped(*args, **kwargs):
             e = None
@@ -66,38 +71,38 @@ class exc_catch (object):
                             fmt = 'exc_catch: caught an unpassed exception - {}:\n    {}'
                             log_msg(fmt.format(e.__class__.__name__, e.message), self.log, err=True)
                         return retval
-        
+
         return wrapped
 
 class default_args (object):
-    
+
     """As it is possible to supply a default (optional) argument, one whos value can be specified at
     call time by `foo = 'bar'`, but not possible to supply a default to `*args`, this decorator allows
     that to be done."""
-    
+
     def __init__(self, *args, **kwargs):
         self.d_args = args
         self.d_kwargs = kwargs
-    
+
     def __call__(self, f):
-        
+
         @named(f.__name__)
         def wrapped(*args, **kwargs):
             fargs = args or self.d_args
             fkwargs = kwargs or self.d_kwargs
             return f(*fargs, **fkwargs)
-        
+
         return wrapped
 
 def integer_args(f):
     """Convert any float arguments given to a function to be integers.
     This decorator does NOT convert values such as 1.5.
-    The test to see if an argument will be converted is 
-    
+    The test to see if an argument will be converted is
+
     `int(arg) == arg`
-    
+
     If that is True, then the argument is converted to an integer."""
-    
+
     @named(f.__name__)
     def wrapped(*args, **kwargs):
         fixed_args = ()
@@ -118,7 +123,7 @@ def integer_args(f):
                     fixed_kwargs.update({key: kwargs[key]})
             except (ValueError, TypeError):
                 fixed_kwargs.update({key: kwargs[key]})
-            
+
         return f(*fixed_args, **fixed_kwargs)
-    
+
     return wrapped
