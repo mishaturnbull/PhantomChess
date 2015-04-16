@@ -157,7 +157,7 @@ def load_epd(string):
     b.data.raw_operations = operations
     b.data.op_fields = op_fields
     op_data = {}
-     for operation in op_fields:
+    for operation in op_fields:
         fields = operation.strip().split()
         opcode = fields[0]
         operand = fields[1:]
