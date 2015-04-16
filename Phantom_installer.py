@@ -29,7 +29,7 @@ for p in sys.path:
         copyto = os.path.join(p, module_name)
         try:
             shutil.rmtree(copyto)
-        except:
+        except OSError:
             pass
         try:
             shutil.copytree(os.path.join(master_name, module_name), copyto)
@@ -40,7 +40,7 @@ for p in sys.path:
 print('Cleanng up...')
 try:
     shutil.rmtree(module_name)
-except:
+except OSError:
     pass
 shutil.copytree(os.path.join(master_name, module_name), module_name)
 shutil.rmtree(master_name)
