@@ -74,16 +74,17 @@ class ChessPiece (PhantomObj):
         self.subvalidcache = self.update_cache()
 
     def __str__(self):
-        fmt = """    {}
-    Color: {}
-    Valid moves: {}
-    Is promotable: {}
-    This piece threatens: {}
-    This piece is threatened by: {}
-    """
-        valid = [c.as_chess() for c in self.valid()]
-        return fmt.format(repr(self), self.color.color, valid,
-                          self.promotable, self.threatens(), self.threatened_by())
+#        fmt = """    {}
+#    Color: {}
+#    Valid moves: {}
+#    Is promotable: {}
+#    This piece threatens: {}
+#    This piece is threatened by: {}
+#    """
+#        valid = [c.as_chess() for c in self.valid()]
+#        return fmt.format(repr(self), self.color.color, valid,
+#                          self.promotable, self.threatens(), self.threatened_by())
+        return 'foo bar.'
 
     def __repr__(self):
         return '<{} at {} in {}>'.format(self.ptype, self.coord, hex(id(self)))
