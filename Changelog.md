@@ -7,6 +7,7 @@ This log is **only** for major features in each update.  I will not be listing e
  - Fix mystery `int('m')` bug in `epd_read.py`
  - Code in `Phantom.core` updated according to PEP8 (mostly)
  - Update `Simple.exe` and `Phantom_installer.exe`
+ - Add automatic `exc_catch` deactivation if debug level is above a set number
 
 ### 0.7.7
  - Removed `from scene import *` in all `gui_pythonista` files, not just `scene_main`

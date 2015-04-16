@@ -73,18 +73,18 @@ class ChessPiece (PhantomObj):
         # by shortening the list it must iterate through
         self.subvalidcache = self.update_cache()
 
-    def __str__(self):
-#        fmt = """    {}
-#    Color: {}
-#    Valid moves: {}
-#    Is promotable: {}
-#    This piece threatens: {}
-#    This piece is threatened by: {}
-#    """
-#        valid = [c.as_chess() for c in self.valid()]
-#        return fmt.format(repr(self), self.color.color, valid,
-#                          self.promotable, self.threatens(), self.threatened_by())
-        return 'foo bar.'
+    # 671: @ccc you were right in commit 79e3218 - __str__ causes loops
+    def as_str(self):
+        fmt = """    {}
+    Color: {}
+    Valid moves: {}
+    Is promotable: {}
+    This piece threatens: {}
+    This piece is threatened by: {}
+    """
+        valid = [c.as_chess() for c in self.valid()]
+        return fmt.format(repr(self), self.color.color, valid,
+                          self.promotable, self.threatens(), self.threatened_by())
 
     def __repr__(self):
         return '<{} at {} in {}>'.format(self.ptype, self.coord, hex(id(self)))
@@ -114,15 +114,18 @@ class ChessPiece (PhantomObj):
     def valid(self):
         return [pos for pos in self.subvalidcache if self.owner.validatemove(self.coord, pos)]
 
+    # 671: should this be a property or a function?  Does it even matter?
     @property
     def is_promotable(self):
+        """Tests if a piece is promotable."""
         if self.ptype != 'pawn':
             return False
         return ((self.color == 'white' and self.coord.y == 7)
              or (self.color == 'black' and self.coord.y == 0))
 
     @call_trace(3)
-    def check_target(self, target):
+    def  check_target(self, target):
+        """See if a target is valid.  Does not perform full move validation."""
         piece = self.owner.board[target]
         if not piece:
             log_msg('check_target: target is None, True', 5)
@@ -137,14 +140,17 @@ class ChessPiece (PhantomObj):
 
     @call_trace(3)
     def check_path(self, path):
+        """Check to see if a given path is clear."""
         for pos in path[:-1]:
             piece = self.owner.board[pos]
             if piece:
                 return False
         return True
 
+    # TODO: make this work properly (sometimes it overshoots the target)
     @call_trace(3)
     def path_to(self, target):
+        """Generate a path to a target."""
         pdir = dirfinder(self, target)
         dist_to = int(round_down(dist(self.coord, target)))
         path = pdir[1](self)
@@ -155,6 +161,7 @@ class ChessPiece (PhantomObj):
 
     @call_trace(2)
     def is_move_valid(self, target):
+        """Test if the piece is allowed to move to a new specified position."""
         if target not in bounds:
             return False
         does_follow_rules = self.apply_ruleset(target)
@@ -166,21 +173,25 @@ class ChessPiece (PhantomObj):
 
     @staticmethod
     def type_from_chr(p_chr):
+        """Get the piece class from a SAN character."""
         piece_dict = {'p': Pawn, 'r': Rook, 'n': Knight, 'b': Bishop,
                       'q': Queen, 'k': King}
         return piece_dict.get(p_chr.lower(), None)
 
     @call_trace(3)
     def threatens(self):
+        """List the pieces that this piece could kill."""
         return [self.owner.board[move] for move in self.valid() if self.owner.board[move]]
 
     @call_trace(3)
     def threatened_by(self):
+        """List the pieces that could kill this piece."""
         return [piece for piece in self.owner.board.all_legal()
                 if piece.color != self.color and self.coord in piece.valid()]
 
     @call_trace(2)
     def move(self, target):
+        """Go somewhere."""
         self.owner.board.kill(self.owner.board[target])
         self.coord = target
         self.subvalidcache = self.update_cache()
@@ -188,6 +199,7 @@ class ChessPiece (PhantomObj):
 
     @call_trace(4)
     def update_cache(self):
+        """Return an updated subvalid cache."""
         return [tile.coord for tile in self.owner.board.tiles if self.apply_ruleset(tile.coord)]
 
 __all__.append('ChessPiece')

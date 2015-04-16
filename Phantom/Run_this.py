@@ -112,7 +112,7 @@ if __name__ == '__main__':
             if modifier.lower() in ('k', 'q'):
                 game.castle(modifier)
             else:
-                print('"castel" must be followed by "K", "Q", "k", or "q".')
+                print('"castle" must be followed by "K", "Q", "k", or "q".')
         elif cmd == 'game':
             print(game)
         elif cmd == 'gui':
@@ -164,7 +164,7 @@ if __name__ == '__main__':
                 print "\tGetting information for {}...".format(user_in)
                 pos = Coord.from_chess(user_in)
                 piece = game.board[pos]
-                print(piece if piece else '\tNo piece at {}'.format(user_in))
+                print(piece.as_str() if piece else '\tNo piece at {}'.format(user_in))
             else:
                 # assume a move, like "e2e4"
                 move_re = move_re or re.compile(r'[a-h][1-8][a-h][1-8]')  # just in time

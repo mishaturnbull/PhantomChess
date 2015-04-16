@@ -4,12 +4,12 @@
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -45,7 +45,7 @@ import core as core
 
 from Phantom.boardio.load import listgames, loadgame
 from Phantom.boardio.save import save
-from Phantom.boardio.boardcfg import Cfg, Namespace 
+from Phantom.boardio.boardcfg import Cfg, Namespace
 from Phantom.boardio.epd_read import load_epd, load_test, load_test_string
 #import boardio.load as load  # conflicts with Phantom.core.board.load
 import boardio.save as save
