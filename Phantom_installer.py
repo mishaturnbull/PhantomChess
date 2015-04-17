@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
 Run this file to download PhantomChess to the current working directory and install it in site-packages.
 """
-print('=' * 31)
 
 import os
 import platform
@@ -12,6 +12,7 @@ import sys
 import urllib
 import zipfile
 
+print('=' * 31)
 module_name = 'Phantom'
 print('Preparing to install {}...'.format(module_name))
 master_name = module_name + 'Chess-master'
@@ -37,6 +38,7 @@ for p in sys.path:
 # a homebrew installed Python on Mac OS X has a read-only /Library/Python/2.7/site-packages
         except OSError as e:
             print('Failed to copy {} to: {} ({})'.format(module_name, copyto, e))
+
 print('Cleanng up...')
 try:
     shutil.rmtree(module_name)
@@ -50,7 +52,7 @@ def unix_chmod_plus_x(filepath= 'Phantom/Run_this.py'):
     platform_sys = platform.system()
     if ((platform_sys == 'Darwin' and platform.machine().startswith('iP'))  # on iOS
       or platform_sys in ('Windows', 'Java')):                              # not on unix
-        return 
+        return
     try:
         import stat
         plus_x = os.stat(filepath).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
