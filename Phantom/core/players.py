@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -48,7 +49,7 @@ class Side (PhantomObj):
     def __eq__(self, other):
         if isinstance(other, Side):
             return self.color == other.color
-        elif isinstance(other, str):
+        elif isinstance(other, (str, unicode)):
             return self.color == other
         else:
             raise TypeError("Side can't be compared with type {}".format(type(other)))
