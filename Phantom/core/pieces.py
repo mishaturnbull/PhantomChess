@@ -259,12 +259,10 @@ class Rook (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        allowed = []
-        allowed.extend(north(self))
-        allowed.extend(south(self))
-        allowed.extend(east(self))
-        allowed.extend(west(self))
-        return target in allowed
+        return (target in north(self)
+             or target in south(self)
+             or target in east(self)
+             or target in west(self))
 __all__.append('Rook')
 
 class Bishop (ChessPiece):
@@ -274,12 +272,10 @@ class Bishop (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        allowed = []
-        allowed.extend(ne(self))
-        allowed.extend(nw(self))
-        allowed.extend(se(self))
-        allowed.extend(sw(self))
-        return target in allowed
+        return (target in ne(self)
+             or target in nw(self)
+             or target in se(self)
+             or target in sw(self))
 __all__.append('Bishop')
 
 class Queen (ChessPiece):
