@@ -1,16 +1,16 @@
 # Phantom
 Phantom is a (in development) game of Chess written in Python.  On Windows, Mac, Linux, currently the only form of Graphical User Interface (GUI) provided is pretty-printing, ex:
 ```
-  a b c d e f g h
-8 r n b q k b n r 8
-7 p p p p p p p p 7
-6                 6
-5                 5
-4                 4
-3                 3
-2 P P P P P P P P 2
-1 R N B Q K B N R 1 <
-  a b c d e f g h
+  a b c d e f g h   
+8 r n b q k b n r 8 
+7 p p p p p p p p 7 
+6   .   .   .   . 6 
+5 .   .   .   .   5 
+4   .   .   .   . 4 
+3 .   .   .   .   3 
+2 P P P P P P P P 2 
+1 R N B Q K B N R 1 < 
+  a b c d e f g h   
 ```
 and will use Unicode characters as well.  A proper GUI is *almost* working for the iOS app [Pythonista][pythonista].  It is a completely standalone package and at this time has no support for [Universal Chess Interface][UCI] (UCI), although it is something lurking at the back of my mind to implement.
 
@@ -72,27 +72,32 @@ To create and play a new game, simply do this:
 >>> import Phantom
 >>> game = Phantom.ChessGame()
 >>> game
-  a b c d e f g h
-8 r n b q k b n r 8
-7 p p p p p p p p 7
-6                 6
-5                 5
-4                 4
-3                 3
-2 P P P P P P P P 2
-1 R N B Q K B N R 1 <
-  a b c d e f g h
+     New Game
+-------------------
+  a b c d e f g h   
+8 r n b q k b n r 8 
+7 p p p p p p p p 7 
+6   .   .   .   . 6 
+5 .   .   .   .   5 
+4   .   .   .   . 4 
+3 .   .   .   .   3 
+2 P P P P P P P P 2 
+1 R N B Q K B N R 1 < 
+  a b c d e f g h   
+
 >>> game.move('e2e4')  # move the piece at e2 to e4
 >>> game
-  a b c d e f g h
-8 r n b q k b n r 8 <
-7 p p p p p p p p 7
-6                 6
-5                 5
-4         P       4
-3                 3
-2 P P P P   P P P 2
-1 R N B Q K B N R 1
+     New Game
+-------------------
+  a b c d e f g h   
+8 r n b q k b n r 8 < 
+7 p p p p p p p p 7 
+6   .   .   .   . 6 
+5 .   .   .   .   5 
+4   .   . P .   . 4 
+3 .   .   .   .   3 
+2 P P P P   P P P 2 
+1 R N B Q K B N R 1 
   a b c d e f g h
 ```
 
