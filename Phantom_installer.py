@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 """
 Run this file to download PhantomChess to the current working directory and install it in site-packages.
@@ -37,9 +38,10 @@ for p in sys.path:
             print('Successfully copied {} to: {}'.format(module_name, copyto))
 # a homebrew installed Python on Mac OS X has a read-only /Library/Python/2.7/site-packages
         except OSError as e:
-            print('Failed to copy {} to: {} ({})'.format(module_name, copyto, e))
+            fmt = 'Warning: Failed to copy {} to: {} ({})'
+            print(fmt.format(module_name, copyto, e))
 
-print('Cleanng up...')
+print('Cleaning up...')
 try:
     shutil.rmtree(module_name)
 except OSError:
