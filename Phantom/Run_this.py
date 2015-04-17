@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -27,7 +28,7 @@ from Phantom.core.coord.point import Coord
 from Phantom.boardio.epd_read import load_test
 
 game = ChessGame()
-print """PhantomChess Copyright (C) 2015 671620616
+print("""PhantomChess Copyright (C) 2015 671620616
 This program comes with ABSOLUTELY NO WARRANTY; for details enter 'license'
 This is free software, and you are welcome to redistribute it
 under certain conditions; type 'license' for details.
@@ -36,9 +37,9 @@ Your game can be displayed by typing 'game'
 To move, type 'e2e4' or similar.
 To execute a function, simply type the function as you normally would.
 To exit, type 'quit' or close the program.
-For a full list of commands, type 'help'."""
+For a full list of commands, type 'help'.""")
 
-print game
+print(game)
 
 if __name__ == '__main__':
     import re
@@ -133,7 +134,7 @@ if __name__ == '__main__':
             game.promote(cmd_parts[1], cmd_parts[2])
         elif cmd == 'reset':
             game = ChessGame()
-            print game
+            print(game)
         elif cmd == 'save':
             filename = ' '.join(cmd_parts[1:])
             if is_valid_filename(filename):
@@ -142,8 +143,8 @@ if __name__ == '__main__':
                 print(filename + ' is not a valid filename.')
         elif cmd == 'saves':
             from Phantom.boardio.load import listgames
-            print '\n'.join('{:>3} {}'.format(i+1, game_name)
-                       for i, game_name in enumerate(sorted(listgames())))
+            print('\n'.join('{:>3} {}'.format(i+1, game_name)
+                       for i, game_name in enumerate(sorted(listgames()))))
         else:
             assert False, 'This should never happen.'
         return True
@@ -161,7 +162,7 @@ if __name__ == '__main__':
         elif not is_text_command(user_in):
             coord_re = coord_re or re.compile(r'[a-h][1-8]')  # just in time
             if is_cmd(coord_re, user_in):
-                print "\tGetting information for {}...".format(user_in)
+                print("\tGetting information for {}...".format(user_in))
                 pos = Coord.from_chess(user_in)
                 piece = game.board[pos]
                 print(piece.as_str() if piece else '\tNo piece at {}'.format(user_in))
@@ -171,4 +172,4 @@ if __name__ == '__main__':
                 if is_cmd(move_re, user_in):
                     # is definitely a move
                     game.move(user_in)
-                    print game
+                    print(game)
