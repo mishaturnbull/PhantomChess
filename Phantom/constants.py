@@ -38,7 +38,8 @@ debug = 0
 # Use the unicode prettyprinter or an ASCII prettyprinter
 # By default this is set to "in_pythonista", so that in the app unicode will
 # be used but otherwise ASCII will be used.
-use_unicode = in_pythonista
+# CCC: Turning use_unicode on by default
+use_unicode = True   # in_pythonista
 
 # Adjusts the scale of the board in the GUI
 screen_height = 768  # pixels
