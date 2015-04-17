@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -210,7 +211,7 @@ class Board (PhantomObj):
         return ret
 
     def _pprnt(self):
-        spaces_center = (18 - (len(self.name))) / 2
+        spaces_center = int((18 - len(self.name)) / 2)
         dash = '–' if self.cfg.use_unicode else '-'
         s = '{}{}\n{}\n'.format(' '*spaces_center, self.name, dash*19)
         for y in range(C.grid_height, -2, -1):
@@ -250,10 +251,10 @@ class Board (PhantomObj):
         if C.in_pythonista:
             import console
             console.set_font('DejaVuSansMono', 18)
-            print self._pprnt()
+            print(self._pprnt())
             console.set_font()
         else:
-            print self._pprnt()
+            print(self._pprnt())
 
     def __str__(self):
         return self.fen_str()
