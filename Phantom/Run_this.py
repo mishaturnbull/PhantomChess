@@ -39,7 +39,7 @@ To execute a function, simply type the function as you normally would.
 To exit, type 'quit' or close the program.
 For a full list of commands, type 'help'.""")
 
-print(game)
+print(unicode(game))
 
 if __name__ == '__main__':
     import re
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             else:
                 print('"castle" must be followed by "K", "Q", "k", or "q".')
         elif cmd == 'game':
-            print(game)
+            print(unicode(game))
         elif cmd == 'gui':
             game.gui()
         elif cmd == 'help':
@@ -127,14 +127,14 @@ if __name__ == '__main__':
             if is_valid_filename(filename):
                 from Phantom.core.game_class import loadgame
                 game = loadgame(filename)
-                print(game)
+                print(unicode(game))
             else:
                 print(filename + ' is not a valid filename.')
         elif cmd == 'promote':
             game.promote(cmd_parts[1], cmd_parts[2])
         elif cmd == 'reset':
             game = ChessGame()
-            print(game)
+            print(unicode(game))
         elif cmd == 'save':
             filename = ' '.join(cmd_parts[1:])
             if is_valid_filename(filename):
@@ -172,4 +172,4 @@ if __name__ == '__main__':
                 if is_cmd(move_re, user_in):
                     # is definitely a move
                     game.move(user_in)
-                    print(game)
+                    print(unicode(game))
