@@ -1,5 +1,5 @@
 # Phantom
-Phantom is a (in development) game of Chess written in Python.  On Windows, the only form of Graphical User Interface (GUI) provided is pretty-printing, ex:
+Phantom is a (in development) game of Chess written in Python.  On Windows, Mac, Linux, currently the only form of Graphical User Interface (GUI) provided is pretty-printing, ex:
 ```
   a b c d e f g h
 8 r n b q k b n r 8
@@ -12,8 +12,7 @@ Phantom is a (in development) game of Chess written in Python.  On Windows, the 
 1 R N B Q K B N R 1 <
   a b c d e f g h
 ```
-and will use Unicode characters as well.  A proper GUI is *almost* working for the iOS app [Pythonista][pythonista].  It is a completely standalone package and at this time has no support for [Universal Chess Interface](UCI), although
-it is something lurking at the back of my mind to implement.
+and will use Unicode characters as well.  A proper GUI is *almost* working for the iOS app [Pythonista][pythonista].  It is a completely standalone package and at this time has no support for [Universal Chess Interface](UCI), although it is something lurking at the back of my mind to implement.
 
 Please note: this project is a huge learning experience for me.  This is the 3rd revision (I've restarted from scratch twice) of my ongoing chess project, each one getting better.  Hopefully there is no 4th revision.  If you find a bug, **please** don't hesitate to let me know so I can fix it.
 
@@ -105,7 +104,7 @@ Not a programmer but still interested in chess? Good, I need help there too! (I 
 If you have any ideas, ***please*** open an issue or make a pull request so I can make things better.
 
 [pythonista]: http://omz-software.com/pythonista
-[Universal Chess Interface]: http://en.wikipedia.org/wiki/Universal_Chess_Interface
+[UCI]: http://en.wikipedia.org/wiki/Universal_Chess_Interface
 [pyinstall]: https://github.com/pyinstaller/pyinstaller/wiki
 [pygame]: http://pygame.org/news.html
 [piece_tables]: https://chessprogramming.wikispaces.com/Simplified+evaluation+function
