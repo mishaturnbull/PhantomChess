@@ -25,6 +25,7 @@ except ImportError:
     in_pythonista = False
 
 from Phantom.__version__ import __version__ as version
+from Phantom.can_unicode import DO_UNICODE
 
 ###################################################################################################################
 ############################################### USER SETTINGS #####################################################
@@ -39,7 +40,8 @@ debug = 0
 # By default this is set to "in_pythonista", so that in the app unicode will
 # be used but otherwise ASCII will be used.
 # CCC: Turning use_unicode on by default
-use_unicode = True   # in_pythonista
+# 671: decide whether to use_unicode in `Phantom.can_unicode`
+use_unicode = DO_UNICODE
 
 # Adjusts the scale of the board in the GUI
 screen_height = 768  # pixels
