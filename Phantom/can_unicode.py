@@ -24,7 +24,7 @@ import platform
 
 # The default terminal on Windows currently has two problems:
 # 1) It does not support Unicode!
-# 2) It does not default to a monospaced and can not be configured to do so
+# 2) It can not be configured to default to a monospaced font
 
 unicode_systems_dict = {
     'Darwin'  : True,    # Mac OSX and Pythonista for iOS
