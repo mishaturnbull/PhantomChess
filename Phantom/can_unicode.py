@@ -18,27 +18,22 @@
 #########################################################################
 
 """Deterime which platform you are using, and decide whether it supports
-(successful) use of unicode characters."""
+(successful) use of unicode characters and defaults to a monospaced font."""
 
 import platform
 
+# The default terminal on Windows currently has two problems:
+# 1) It does not support Unicode!
+# 2) It does not default to a monospaced and can not be configured to do so
 
-UNICODE_PLATFORMS = ('pythonista', 'osx')
-KNOWN_OS = {'windows': lambda s: 'Windows' in s,
-            'pythonista': lambda s: ('iPhone' in s) or ('iPad' in s),
-            'osx': lambda s: 'Darwin' in s and not ('iPhone' in s) or
-                   ('iPad' in s)
-           }
-DO_UNICODE = False  # assume false, enable if known to be allowed
+unicode_systems_dict = {
+    'Darwin'  : True,    # Mac OSX and Pythonista for iOS
+    'Java'    : True,    # Jython
+    'Linux'   : True,    # Works like Darwin
+    'Windows' : False }  # Lacks Unicode support
 
-USER_PLATFORM = platform.platform().lower()
+def can_unicode():
+    return unicode_systems_dict.get(platform.system(), False)
 
-def get_os(user_os):
-    for os in KNOWN_OS:
-        if KNOWN_OS[os](user_os):
-            return os
-
-def can_unicode(user_os):
-    return user_os in UNICODE_PLATFORMS
-
-DO_UNICODE = can_unicode(get_os(platform.platform()))
+if __name__ == '__main__':
+    print('can_unicode(): {}'.format(can_unicode()))
