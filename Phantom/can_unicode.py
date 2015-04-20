@@ -20,7 +20,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """Deterime your platform supports printing of unicode characters."""
 
-def use_unicode(s='Welcome to PhantomChess...'):
+def can_print_unicode(s='Welcome to PhantomChess...'):
     try:
         print('♜ ♞ ♝ {} ♗ ♘ ♖ '.format(s))
         return True
