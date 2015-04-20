@@ -41,7 +41,7 @@ debug = 0
 # be used but otherwise ASCII will be used.
 # CCC: Turning use_unicode on by default
 # 671: decide whether to use_unicode in `Phantom.can_unicode`
-use_unicode = can_unicode()
+use_unicode = can_print_unicode()
 
 # Adjusts the scale of the board in the GUI
 screen_height = 768  # pixels
