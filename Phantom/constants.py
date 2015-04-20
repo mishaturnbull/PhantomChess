@@ -25,7 +25,7 @@ except ImportError:
     in_pythonista = False
 
 from Phantom.__version__ import __version__ as version
-from Phantom.can_unicode import can_unicode
+from Phantom.can_unicode import can_print_unicode
 
 ###################################################################################################################
 ############################################### USER SETTINGS #####################################################
