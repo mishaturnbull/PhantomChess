@@ -39,7 +39,7 @@ To execute a function, simply type the function as you normally would.
 To exit, type 'quit' or close the program.
 For a full list of commands, type 'help'.""")
 
-print(repr(game).encode('utf-8'))
+print(unicode(repr(game).encode('utf-8')))
 
 if __name__ == '__main__':
     import re
