@@ -22,7 +22,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 def can_print_unicode(s='Welcome to PhantomChess...'):
     try:
-        print('♜ ♞ ♝  {} ♗ ♘ ♖'.format(s))
+        print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
         return True
     except UnicodeEncodeError:
         print(str(s))
