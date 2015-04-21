@@ -45,6 +45,8 @@ if __name__ == '__main__':
     import re
     move_re = coord_re = valid_filename_re = None  # will be created just in time
     help_str = """
+    quit                  Exit the program
+    exit                  Exit the program
     e2e4                  Move a piece from e2 to e4
     e2                    Get information about the piece at e2
     game                  Show the current layout of the game
