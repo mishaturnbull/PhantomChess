@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -145,11 +147,9 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
                 self.draw_toggle(b[1], self.data[b[0]], b[3])
             elif b[2] in (False, 'NA'):
                 self.draw_button(b[1], b[3])
-                
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
     g = ChessGame()
     s = ChessOptionsScreen(g)
     scene.run(s)
-
