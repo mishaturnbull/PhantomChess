@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -67,4 +68,3 @@ def alpha_beta_value(node, depth, alpha, beta, maximizing):
 
 # Initial call would be 
 # `alpha_beta_value(root, Chess.ai.settings.maxdepth, float('-inf'), float('inf'), True)`
-
