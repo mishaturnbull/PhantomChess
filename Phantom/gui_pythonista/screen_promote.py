@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -115,4 +117,3 @@ if __name__ == '__main__':
     # add a piece to test the promotion mechanism
     g.board.pieces.add(P.Pawn(P.Coord(0, 1), 'black', g.board.player2))
     g.gui()
-
