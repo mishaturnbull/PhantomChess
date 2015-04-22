@@ -26,7 +26,7 @@ def can_print_unicode(s='Welcome to PhantomChess...'):
         os.environ['PYTHONIOENCODING'] = 'utf_8'
     try:
         #print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
-        print('♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s))
+        print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s))
         return True
     except UnicodeEncodeError:
         print(str(s))
