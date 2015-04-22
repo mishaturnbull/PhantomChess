@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -36,12 +37,12 @@ class MultiScene (scene.Scene, PhantomObj):
     def switch_scene(self, new_scene):
         new_scene.setup()
         self.active_scene = new_scene
-        
+
     def setup(self):
         self.active_scene = self.load_scene
         self.tmp_t = self.t
         self.active_scene.setup()
-        
+
     def draw(self):
         self.invocations += 1
         scene.background(0, 0, 0)
@@ -49,7 +50,7 @@ class MultiScene (scene.Scene, PhantomObj):
         self.active_scene.touches = self.touches
         self.active_scene.t = self.t - self.tmp_t
         self.active_scene.draw()
-        
+
     def touch_began(self, touch):
         self.active_scene.touch_began(touch)
         
@@ -81,4 +82,3 @@ if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
     game = ChessGame()
     game.gui()
-
