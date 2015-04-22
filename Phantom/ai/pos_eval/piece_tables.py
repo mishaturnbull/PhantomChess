@@ -103,4 +103,3 @@ white_kings_endgame = [
 [-30, -30, 0,   0,   0,   0,   -30, -30],
 [-50, -30, -30, -30, -30, -30, -30, -50]]
 black_kings_endgame = [[-k for k in row] for row in white_kings_endgame[::-1]]
-
