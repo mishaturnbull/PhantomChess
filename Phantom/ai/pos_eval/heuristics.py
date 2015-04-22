@@ -34,13 +34,13 @@ from Phantom.core.board import Board
 
 test = Board()
 score = pos_eval_basic(test)  # should be 0
-print "Basic evaluation:", score
+print("Basic evaluation:", score)
 
 for rule in all_rules:
     score += rule(test)
-    print "Applied {} rule, score:".format(rule.__name__), score
+    print("Applied {} rule, score:".format(rule.__name__), score)
 
-print "Final score:", score
+print("Final score:", score)
 ```
 
 I'm not going to document the reasoning for each of these rules -- they should be easily
