@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -84,7 +85,5 @@ class Node (object):
     def children_gen(self):
         for k in window:
             b = self.boardcopy()
-            
-            
-__all__.append('Node')
 
+__all__.append('Node')
