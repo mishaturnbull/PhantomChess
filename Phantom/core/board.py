@@ -33,6 +33,7 @@ from Phantom.boardio.boardcfg import Cfg, Namespace
 from Phantom.utils.debug import call_trace, log_msg
 from Phantom.utils.decorators import exc_catch
 from Phantom.functions import round_down, dist
+import contextlib
 import uuid
 
 __all__ = []
@@ -284,6 +285,12 @@ class Board (PhantomObj):
         self.player1.unfreeze()
         self.player2.unfreeze()
 
+    @contextlib.contextmanager
+    def frozen(self):
+        self.freeze()
+        yield
+        self.unfreeze()
+    
     def premove(self):
         """Freeze everything and send a signal to players that a move will be
         made."""
