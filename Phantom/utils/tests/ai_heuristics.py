@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -38,9 +40,7 @@ def main(clear=True):
         except Exception as e:
             log_msg('{} failed:\n{}'.format(f.__name__, e), 0, err=True)
     log_msg('Test complete', 0)
-    
     return score
 
 if __name__ == '__main__':
     score = main()
-
