@@ -25,6 +25,7 @@ from Phantom.core.chessobj import PhantomObj
 from Phantom.core.exceptions import LogicError
 from Phantom.utils.debug import call_trace, log_msg
 from Phantom.utils.timer import Timer
+import contextlib
 import uuid
 
 __all__ = []
@@ -122,6 +123,12 @@ class Player (PhantomObj):
         self.isFrozen = False
         self.owned_pieces = set(self.owned_pieces)
 
+    @contextlib.contextmanager
+    def frozen(self):
+        self.freeze()
+        yield
+        self.unfreeze()
+
     def premove(self):
         if not self.is_turn():
             return
@@ -139,21 +146,20 @@ class Player (PhantomObj):
         self.board = board
 
     def lose_piece(self, piece):
-        self.freeze()
-        if piece.ptype == 'pawn':
-            self.pawns -= 1
-        elif piece.ptype == 'knight':
-            self.knights -= 1
-        elif piece.ptype == 'rook':
-            self.rooks -= 1
-        elif piece.ptype == 'bishop':
-            self.bishops -= 1
-        elif piece.ptype == 'king':
-            self.kings -= 1
-        elif piece.ptype == 'queen':
-            self.queens -= 1
-        self._update()
-        self.unfreeze()
+        with self.frozen():
+            if piece.ptype == 'pawn':
+                self.pawns -= 1
+            elif piece.ptype == 'knight':
+                self.knights -= 1
+            elif piece.ptype == 'rook':
+                self.rooks -= 1
+            elif piece.ptype == 'bishop':
+                self.bishops -= 1
+            elif piece.ptype == 'king':
+                self.kings -= 1
+            elif piece.ptype == 'queen':
+                self.queens -= 1
+            self._update()
 
     @call_trace(3)
     def validatemove(self, p1, p2):
@@ -169,9 +175,8 @@ class Player (PhantomObj):
 
     @call_trace(2)
     def make_move(self, p1, p2):
-        self.board.freeze()
-        piece = self.board[p1]
-        piece.move(p2)
-        self.board.unfreeze()
+        with self.board.frozen():
+            piece = self.board[p1]
+            piece.move(p2)
 __all__.append('Player')
 
