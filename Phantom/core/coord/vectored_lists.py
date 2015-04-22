@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -93,4 +94,3 @@ def unknown(piece):
     return [c for c in all if not c in known]
 
 __all__ = [func.__name__ for func in (north, south, east, west, ne, se, nw, sw, unknown)]
-    
