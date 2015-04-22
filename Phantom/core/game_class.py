@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -172,4 +173,3 @@ __all__.append('ChessGame')
 if __name__ == '__main__':
     g = ChessGame('Long Endgame 1')
     g.board.cfg.disp_sqrs = False
-
