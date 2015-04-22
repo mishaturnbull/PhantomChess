@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -183,4 +184,3 @@ __all__.append('Grid')
 
 bounds = Grid(Coord(0, 0), Coord(0, 7), Coord(7, 0), Coord(7, 7))
 __all__.append('bounds')
-
