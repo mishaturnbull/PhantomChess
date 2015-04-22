@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -261,4 +262,3 @@ def program_use(): return """
 """
     
 def bottom(): pass
-
