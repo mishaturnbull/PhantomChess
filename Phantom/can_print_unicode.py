@@ -25,8 +25,7 @@ def can_print_unicode(s='Welcome to PhantomChess...'):
     if not os.getenv('PYTHONIOENCODING', None):  # PyInstaller workaround
         os.environ['PYTHONIOENCODING'] = 'utf_8'
     try:
-        #print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
-        print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s))
+        print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
         return True
     except UnicodeEncodeError:
         print(str(s))
