@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 #########################################################################
 # This file is part of PhantomChess.                                    #
@@ -38,7 +39,6 @@ class PhantomObj (object):
             class_record.update({cls: 1})
         else:
             class_record[cls] += 1
-
         return inst
 
     def __repr__(self):
@@ -59,4 +59,3 @@ class PhantomObj (object):
 
         contentmatch = self.__dict__.items() == other.__dict__.items()
         return contentmatch
-
