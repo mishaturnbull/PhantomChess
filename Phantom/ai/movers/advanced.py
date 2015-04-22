@@ -36,11 +36,11 @@ def make_smart_move(board):
         cmp = lambda a, b: a > b
     
     bestnode = None
-    print "turn: {}, func: {}, best: {}".format(turn, func, best)
+    print("turn: {}, func: {}, best: {}".format(turn, func, best))
     for child in tree.children:
-        print child, child.score
+        print(child, child.score)
         if cmp(child.score, best):
-            print "New best node: {}".format(child)
+            print("New best node: {}".format(child)_
             bestnode = child
     
     move = bestnode.board.lastmove
