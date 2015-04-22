@@ -21,9 +21,11 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 """Deterime your platform supports printing of unicode characters."""
 
 def can_print_unicode(s='Welcome to PhantomChess...'):
+    if not os.getenv('PYTHONIOENCODING', None):  # PyInstaller workaround
+        os.environ['PYTHONIOENCODING'] = 'utf_8'
     try:
         print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
-        return False # True ## FIXME
+        return True
     except UnicodeEncodeError:
         print(str(s))
         return False
