@@ -215,8 +215,9 @@ class Board (PhantomObj):
         dash   = '–' if self.cfg.use_unicode else '-'
         prefix = 'd' if self.cfg.use_unicode else 'c'
         turn_indicator = ' ' + C.piece_chars['{}_turn_indicator'.format(prefix)]
-        s = '{:^19}\n{}\n'.format(self.name, dash * 19)
+        lines = [self.name.center(19), dash * 19]
         for y in range(C.grid_height, -2, -1):
+            line = []
             for x in range(-1, C.grid_width+1):
                 if y in (-1, 8) and not (x in (-1, 8)):
                     char = Coord.tochesskeys[x+1]
@@ -234,9 +235,9 @@ class Board (PhantomObj):
                         char = piece.disp_char
                     else:
                         char = self.tile_at(Coord(x, y)).char if self.cfg.disp_sqrs else ' '
-                s += '{} '.format(char)
-            s += '\n'
-        return s
+                line.append(char)
+            lines.append(' '.join(line))
+        return '\n'.join(lines).encode('utf-8')
 
     def pprint(self):
         """Print a pretty version of the board."""
