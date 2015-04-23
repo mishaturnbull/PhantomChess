@@ -143,7 +143,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         
         for b in self.buttons:
             # use '== True' here to avoid catching values like "NA"
-            if b[2]:
+            if b[2] == True:
                 self.draw_toggle(b[1], self.data[b[0]], b[3])
             elif b[2] in (False, 'NA'):
                 self.draw_button(b[1], b[3])
