@@ -28,18 +28,18 @@ with zipfile.ZipFile(zip_filename, 'r') as zipped:
 print('Adding {} to importable location...'.format(module_name))
 for p in sys.path:
     if os.path.split(p)[1] == 'site-packages':
-        copyto = os.path.join(p, module_name)
+        copy_to = os.path.join(p, module_name)
         try:
-            shutil.rmtree(copyto)
+            shutil.rmtree(copy_to)
         except OSError:
             pass
         try:
-            shutil.copytree(os.path.join(master_name, module_name), copyto)
-            print('Successfully copied {} to: {}'.format(module_name, copyto))
+            shutil.copytree(os.path.join(master_name, module_name), copy_to)
+            print('Successfully copied {} to: {}'.format(module_name, copy_to))
 # a homebrew installed Python on Mac OS X has a read-only /Library/Python/2.7/site-packages
         except OSError as e:
             fmt = 'Warning: Failed to copy {} to: {} ({})'
-            print(fmt.format(module_name, copyto, e))
+            print(fmt.format(module_name, copy_to, e))
 
 print('Cleaning up...')
 try:
@@ -50,17 +50,17 @@ shutil.copytree(os.path.join(master_name, module_name), module_name)
 shutil.rmtree(master_name)
 os.remove(zip_filename)
 
-def unix_chmod_plus_x(filepath= 'Phantom/Run_this.py'):
+def unix_chmod_plus_x(file_path = 'Phantom/Run_this.py'):
     platform_sys = platform.system()
     if ((platform_sys == 'Darwin' and platform.machine().startswith('iP'))  # on iOS
       or platform_sys in ('Windows', 'Java')):                              # not on unix
         return
     try:
         import stat
-        plus_x = os.stat(filepath).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-        os.chmod(filepath, plus_x)
+        plus_x = os.stat(file_path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        os.chmod(file_path, plus_x)
         fmt = 'To run {} from the command line, type: {}'
-        print(fmt.format(module_name, filepath))
+        print(fmt.format(module_name, file_path))
     except ImportError:
         pass
 unix_chmod_plus_x(module_name + '/Run_this.py')

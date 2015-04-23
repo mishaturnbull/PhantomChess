@@ -92,12 +92,9 @@ Opcode mneumonics:
     v0             | variation (primary, also v1 - v9)
 """
 
-from Phantom.core.coord.point import Coord
-from Phantom.core.pieces import ChessPiece
 from Phantom.core.board import Board
-from Phantom.core.players import Side
 from Phantom.constants import default_halfmove, default_fullmove, save_epd, phantom_dir
-#import re
+import os
 
 opcodes = {
 'acn'         : 'analysis count nodes',
@@ -123,7 +120,7 @@ opcodes = {
 'sm'          : 'supplied move',
 'tcgs'        : 'telecommunication game selector',
 'tcri'        : 'telecommunication reciever identification',
-'tcsi'        : 'telecommunication sender identification',}
+'tcsi'        : 'telecommunication sender identification'}
 
 def valid_lines_from_file(file_path):
     with open(file_path) as in_file:
@@ -131,7 +128,6 @@ def valid_lines_from_file(file_path):
                 if line.strip() and line.strip()[0] != '#']
 
 def _load_name(name):
-    import os
     ret = None
     file_path = os.path.join(phantom_dir, 'boardio', save_epd)
     for line in valid_lines_from_file(file_path):
@@ -140,8 +136,7 @@ def _load_name(name):
                     ret = val.strip()
     return ret
 
-def listgames():
-    import os
+def list_games():
     file_path = os.path.join(phantom_dir, 'boardio', save_epd)
     return [line.partition(':')[0].strip() for line in valid_lines_from_file(file_path)]
 
@@ -174,7 +169,6 @@ def load_epd(string):
 
 def load_test_string(name):
     from Phantom.constants import test_suite
-    import os
     file_path = os.path.join(phantom_dir, 'boardio', test_suite)
     for line in valid_lines_from_file(file_path):
         lname, _, val = line.partition(':')
@@ -187,6 +181,5 @@ def load_test(name):
 
 def list_tests():
     from Phantom.constants import test_suite
-    import os
     file_path = os.path.join(phantom_dir, 'boardio', test_suite)
     return [line.partition(':')[0].strip() for line in valid_lines_from_file(file_path)]

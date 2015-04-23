@@ -58,6 +58,8 @@ screen_width = 1024  # pixels
 exc_catch_cutoff = 3
 
 # 671: is this actually used anywhere? I can't think of any uses..
+# ccc: I hope not because nw is present twice and ne is not present at all
+'''
 dirs = {'north': (0, 1),
         'south': (0, -1),
         'east': (1, 0),
@@ -68,9 +70,9 @@ dirs = {'north': (0, 1),
         'sw': (-1, -1),
         'unknown': (None, None),
         }
+'''
 
-
-# These dont affect gameplay, here for my own reference
+# These don't affect gameplay, here for my own reference
 pieces = ['king', 'rook', 'bishop', 'queen', 'knight', 'pawn']
 pieces_per_player = {'rook': 2,
                      'king': 1,

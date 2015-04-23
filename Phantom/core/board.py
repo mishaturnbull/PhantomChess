@@ -28,7 +28,7 @@ from Phantom.core.pieces import ChessPiece
 # from Phantom.core.coord.vectored_lists import north, south, east, west, ne, se, nw, sw
 from Phantom.core.coord.point import Coord
 from Phantom.boardio.save import save
-from Phantom.boardio.load import loadgame
+from Phantom.boardio.load import load_game
 from Phantom.boardio.boardcfg import Cfg, Namespace
 from Phantom.utils.debug import call_trace, log_msg
 from Phantom.utils.decorators import exc_catch
@@ -40,7 +40,7 @@ __all__ = []
 
 
 def load(name):
-    fen = loadgame(name)
+    fen = load_game(name)
     game = Board(Player('white'), Player('black'), fen)
     game.set_name(name)
     return game
@@ -377,7 +377,7 @@ class Board (PhantomObj):
             if piece.ptype == 'pawn':
                 if piece.firstmove:
                     if round_down(dist(p1, p2)) == 2:
-                        file = piece.coord.as_chess()[0]
+                        file = piece.coord.as_chess[0]
                         if piece.color == 'black':
                             self.en_passant_rights = '{}6'.format(file)
                         elif piece.color == 'white':

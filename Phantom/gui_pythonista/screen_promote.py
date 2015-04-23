@@ -58,17 +58,17 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         self.pieces = [self.queen, self.rook, self.bishop, self.knight]
         self.selected = None
         
-        self.qrect = scene.Rect(self.queen.coord.as_screen().x,
-                                self.queen.coord.as_screen().y,
+        self.qrect = scene.Rect(self.queen.coord.as_screen.x,
+                                self.queen.coord.as_screen.y,
                                 scale_factor, scale_factor)
-        self.rrect = scene.Rect(self.rook.coord.as_screen().x,
-                                self.rook.coord.as_screen().y,
+        self.rrect = scene.Rect(self.rook.coord.as_screen.x,
+                                self.rook.coord.as_screen.y,
                                 scale_factor, scale_factor)
-        self.brect = scene.Rect(self.bishop.coord.as_screen().x,
-                                self.bishop.coord.as_screen().y,
+        self.brect = scene.Rect(self.bishop.coord.as_screen.x,
+                                self.bishop.coord.as_screen.y,
                                 scale_factor, scale_factor)
-        self.krect = scene.Rect(self.knight.coord.as_screen().x,
-                                self.knight.coord.as_screen().y,
+        self.krect = scene.Rect(self.knight.coord.as_screen.x,
+                                self.knight.coord.as_screen.y,
                                 scale_factor, scale_factor)
         
         files = [p.pythonista_gui_imgname for p in self.pieces]
@@ -106,7 +106,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         scene.background(0, 0, 0)
         for i, piece in enumerate(self.pieces):
             img = self.img_names[piece.pythonista_gui_imgname]
-            pos = piece.coord.as_screen()
+            pos = piece.coord.as_screen
             scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
         tpos = Coord(screen_width/2, screen_height/2 + 2*scale_factor)
         scene.text('Select a piece to promote to', x=tpos.x, y=tpos.y)

@@ -26,18 +26,17 @@ maxdepth = 2
 window = 5
 
 # Points-per-piece simple
-scores = dict(
-pawn = 100
-,knight = 320
-,bishop = 330
-,rook = 500
-,queen = 900
-,king = 20000)  # use 20000 to signal the capture of a king is better than all other options
+scores = {'pawn'  : 100,
+          'knight': 320,
+          'bishop': 330,
+          'rook'  : 500,
+          'queen' : 900,
+          'king'  : 20000}  # use 20000 to signal the capture of a king is better than all other options
 
 king_material = 400  # use the endgame score for material worth totalling
 
-max_material = 16*scores['pawn'] + 4*scores['knight'] + 4*scores['bishop'] \
-               + 4*scores['rook'] + 2*scores['queen'] + 2*king_material
+max_material = (16*scores['pawn'] + 4*scores['knight'] + 4*scores['bishop']
+               + 4*scores['rook'] + 2*scores['queen']  + 2*king_material)
 min_material = 2*king_material
 
 opening_range = [max_material,]
@@ -45,9 +44,7 @@ midgame_range = xrange(round_down(max_material / 4), int(max_material))
 endgame_range = xrange(0, midgame_range[0])
 opening_moves = 6
 
-colors = dict(
-white = 1
-,black = -1)
+colors = {'white': 1, 'black': -1}
 
 # Advanced heuristic scores
 
@@ -55,13 +52,12 @@ white = 1
 knight_on_edge_score = -50
 
 # use a different set of scores for farther developed pieces
-developed_scores = dict(
-pawn = 70
-,knight = 350
-,bishop = 400
-,rook = 600
-,queen = 1000
-,king = 0)  # king development will be tested in a different heuristic
+developed_scores = {'pawn'  : 70,
+                    'knight': 350,
+                    'bishop': 400,
+                    'rook'  : 600,
+                    'queen' : 1000,
+                    'king'  : 0}  # king development will be tested in a different heuristic
 
 # pawns closer to promotion are much better
 advanced_pawn_mul = 40

@@ -83,7 +83,7 @@ class ChessPiece (PhantomObj):
     This piece threatens: {}
     This piece is threatened by: {}
     """
-        valid = [c.as_chess() for c in self.valid()]
+        valid = [c.as_chess for c in self.valid()]
         return fmt.format(repr(self), self.color.color, valid,
                           self.promotable, self.threatens(), self.threatened_by())
 

@@ -184,7 +184,7 @@ def pawn_structure(board):
     
     log_msg('pawn_structure: analyzing doubled pawns...', 5)
     for pawn in white_pawns:
-        xf = files[pawn.coord.as_chess()[0]]
+        xf = files[pawn.coord.as_chess[0]]
         for c in xf:
             p = pawn.owner.board[c]
             if (p
@@ -194,7 +194,7 @@ def pawn_structure(board):
             and p.coord.y == (pawn.coord.y - 1)):
                 score += doubled_pawn
     for pawn in black_pawns:
-        xf = files[pawn.coord.as_chess()[0]]
+        xf = files[pawn.coord.as_chess[0]]
         for c in xf:
             p = pawn.owner.board[c]
             if (p

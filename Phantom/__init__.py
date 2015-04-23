@@ -44,7 +44,7 @@ from Phantom.core.players import Side, Player
 #import core.players as players
 #import core as core
 
-from Phantom.boardio.load import listgames, loadgame
+from Phantom.boardio.load import list_games, load_game
 from Phantom.boardio.save import save
 from Phantom.boardio.boardcfg import Cfg, Namespace
 from Phantom.boardio.epd_read import load_epd, load_test, load_test_string

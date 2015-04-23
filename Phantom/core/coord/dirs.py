@@ -32,6 +32,6 @@ def dirfinder(piece, target):
          the function that gives it)"""
     for func in (north, south, east, west, ne, nw, se, sw):
         if target in func(piece):
-            return (func.__name__, func)
+            return func.__name__, func
     return ('unknown', lambda p: [0])
 __all__.append('dirfinder')

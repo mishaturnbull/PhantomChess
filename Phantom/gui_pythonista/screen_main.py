@@ -72,8 +72,8 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         self.turn_indicator_img = 'White_Square'
         self.pos_score = None
         self.disp_score = False
-        min = Coord(0, 0).as_screen()
-        max = Coord(8, 8).as_screen()
+        min = Coord(0, 0).as_screen
+        max = Coord(8, 8).as_screen
         self.bounds = scene.Rect(min.x, min.y, max.x-min.x, max.y-min.y)
         self.size = screen_size
         self.won = self.game.is_won()
@@ -165,7 +165,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         if self.render_mode['pieces']:
             for piece in self.game.board.pieces:
                 scene.tint(1, 1, 1, 0.5)
-                pos = piece.coord.as_screen()
+                pos = piece.coord.as_screen
                 img = self.img_names[piece.pythonista_gui_imgname]
                 scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
                 scene.tint(1, 1, 1, 1)
@@ -186,7 +186,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
             for tile in self.game.board.tiles:
                 color = tile.color.tilecolor
                 color += (0.57,)  # alpha value
-                pos = tile.coord.as_screen()
+                pos = tile.coord.as_screen
                 scene.fill(*color)
                 scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                 scene.fill(1, 1, 1, 1)
@@ -194,12 +194,12 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                     center = Coord(pos.x + (scale_factor / 2), pos.y + (scale_factor / 2))
                     chess_pos = center + Coord(0, 10)
                     coord_pos = center - Coord(0, 10)
-                    chess = tile.coord.as_chess()
-                    coord = str(tile.coord.as_tup())
+                    chess = tile.coord.as_chess
+                    coord = str(tile.coord.as_tup)
                     scene.text(chess, x=chess_pos.x, y=chess_pos.y)
                     scene.text(coord, x=coord_pos.x, y=coord_pos.y)
             if self.err_pos.x is not None:
-                sc = self.err_pos.as_screen()
+                sc = self.err_pos.as_screen
                 scene.fill(1, 0, 0, 0.3)
                 scene.rect(sc.x, sc.y, scale_factor, scale_factor)
                 scene.fill(1, 1, 1, 1)
@@ -209,7 +209,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         if self.render_mode['valid']:
             for tile in self.game.board.tiles:
                 if tile.coord in self.valid_cache:
-                    pos = tile.coord.as_screen()
+                    pos = tile.coord.as_screen
                     scene.fill(0.47934,0.81198,0.41839, 0.3)
                     scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                     scene.fill(1, 1, 1, 1) 

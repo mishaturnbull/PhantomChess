@@ -49,8 +49,7 @@ class Coord (PhantomObj):
             self.x = c.x
             self.y = c.y
         elif len(args) == 2:
-            self.x = args[0]
-            self.y = args[1]
+            self.x, self.y = args
 
     def __repr__(self):
         return 'Coord({}, {})'.format(self.x, self.y)
@@ -122,9 +121,11 @@ class Coord (PhantomObj):
     def __hash__(self):
         return (self.x + 2) ** (self.y + 2)
 
+    @property
     def as_tup(self):
         return self.__tuple__()
 
+    @property
     def as_chess(self):
         if not ((0 <= self.x < grid_width) or (0 <= self.y < grid_height)):
             raise ValueError('{} is outside of grid and cannot be converted to chess notation'.format(repr(self)))
@@ -132,28 +133,30 @@ class Coord (PhantomObj):
         y = self.y + 1
         return x + str(y)
 
+    @property
     def as_coord(self):
         # return a coordinate that starts counting at 1 instead
         # of the default 0
         return Coord(self.x + 1, self.y + 1)
 
+    @property
     def as_screen(self):
         y = self.y * scale_factor
-        excess_x = (screen_width) - (grid_width * scale_factor)
+        excess_x = screen_width - (grid_width * scale_factor)
         offset_x = excess_x / 2
         x = offset_x + (self.x * scale_factor)
         return Coord(x, y)
 
     @classmethod
-    def from_chess(klass, chess):
+    def from_chess(cls, chess):
         if chess == '-':
             return Coord(None, None)
-        x = klass.fromchesskeys[chess[0]]
+        x = cls.fromchesskeys[chess[0]]
         y = int(chess[1])
         return Coord(x, y - 1)
 
     @classmethod
-    def from_screen(klass, scr):
+    def from_screen(cls, scr):
         y = round_down(scr.y / float(scale_factor))
         x = round_down((scr.x - 128) / float(scale_factor))
         return Coord(x, y)

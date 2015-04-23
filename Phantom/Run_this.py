@@ -103,7 +103,7 @@ if __name__ == '__main__':
     def is_text_command(user_in):
         global game, valid_filename_re
         cmd_parts = user_in.split()
-        if (not cmd_parts):
+        if not cmd_parts:
             return False
         cmd = cmd_parts[0].lower()
         if not cmd in 'ai castle game gui help license load promote reset save saves'.split():
@@ -144,9 +144,9 @@ if __name__ == '__main__':
             else:
                 print(filename + ' is not a valid filename.')
         elif cmd == 'saves':
-            from Phantom.boardio.load import listgames
+            from Phantom.boardio.load import list_games
             print('\n'.join('{:>3} {}'.format(i+1, game_name)
-                       for i, game_name in enumerate(sorted(listgames()))))
+                       for i, game_name in enumerate(sorted(list_games()))))
         else:
             assert False, 'This should never happen.'
         return True

@@ -30,13 +30,13 @@ def valid_lines_from_file(file_path):
         return [line.strip() for line in in_file.readlines()
                 if line.strip() and line.strip()[0] != '#']
 
-def loadgame(name):
+def load_game(name):
     file_path = os.path.join(phantom_dir, 'boardio', save_fen)
     for line in valid_lines_from_file(file_path):
         bname, _, fen = line.partition(':')
         if bname.strip() == name:
             return fen.strip() 
 
-def listgames():
+def list_games():
     file_path = os.path.join(phantom_dir, 'boardio', save_fen)
     return [line.partition(':')[0].strip() for line in valid_lines_from_file(file_path)]
