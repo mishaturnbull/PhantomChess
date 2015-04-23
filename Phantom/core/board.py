@@ -212,36 +212,28 @@ class Board (PhantomObj):
         return ret
 
     def _pprnt(self):
-        dash = '–' if self.cfg.use_unicode else '-'
-        s = '{}\n{}\n'.format(self.name.center(19), dash * 19)
+        dash   = '–' if self.cfg.use_unicode else '-'
+        prefix = 'd' if self.cfg.use_unicode else 'c'
+        turn_indicator = ' ' + C.piece_chars['{}_turn_indicator'.format(prefix)]
+        s = '{:^19}\n{}\n'.format(self.name, dash * 19)
         for y in range(C.grid_height, -2, -1):
             for x in range(-1, C.grid_width+1):
                 if y in (-1, 8) and not (x in (-1, 8)):
                     char = Coord.tochesskeys[x+1]
                 elif y in range(0, 8) and x in (-1, 8):
                     char = str(y+1)
-                    if self.cfg.disp_turn:
-
-                        if self.cfg.use_unicode:
-                            prefix = 'd'
-                        else:
-                            prefix = 'c'
-                        if (y == 0 and self.turn == 'white' and x == 8) or \
-                           (y == 7 and self.turn == 'black' and x == 8):
-                            char += (' ' +
-                                     C.piece_chars['{}_turn_indicator'.format(
-                                     prefix)])
+                    if x == 8 and self.cfg.disp_turn:
+                        if ((y == 0 and self.turn == 'white')
+                         or (y == 7 and self.turn == 'black')):
+                            char += turn_indicator
                 elif x in (-1, 8):
                     char = ' '
                 else:
                     piece = self[Coord(x, y)]
-                    if (piece == []) or (piece is None):
-                        if self.cfg.disp_sqrs:
-                            char = self.tile_at(Coord(x, y)).char
-                        else:
-                            char = ' '
-                    else:
+                    if piece:
                         char = piece.disp_char
+                    else:
+                        char = self.tile_at(Coord(x, y)).char if self.cfg.disp_sqrs else ' '
                 s += '{} '.format(char)
             s += '\n'
         return s
