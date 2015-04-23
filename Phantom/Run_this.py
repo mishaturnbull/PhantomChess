@@ -76,7 +76,7 @@ if __name__ == '__main__':
         easy              Make a random move
         hard              Make a smart move
         rate              Get an integer representing the positional score of the board
-    """
+    """.encode('utf-8')
 
     def is_cmd(pattern, user):
         finds = pattern.findall(user)
