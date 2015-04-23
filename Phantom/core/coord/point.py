@@ -20,7 +20,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """Coordinate handling."""
 
-from Phantom.constants import (screen_height, screen_width, scale_factor,
+from Phantom.constants import (screen_width, scale_factor,
                                grid_height, grid_width)
 from Phantom.functions import round_down
 from Phantom.core.chessobj import PhantomObj

@@ -84,8 +84,7 @@ class call_trace (object):
         self.name = name
     
     def __call__(self, f, *args, **kwargs):
-        from Phantom.utils.debug import log_msg
-        
+
         def wrapped(*args, **kwargs):
             log_msg('{} called with args ({}, {})'.format(f.__name__, args, kwargs), self.level, p='{')
             returned = f(*args, **kwargs)

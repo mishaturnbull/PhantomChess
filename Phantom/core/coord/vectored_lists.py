@@ -20,7 +20,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """Squares in a given direction."""
 
-from Phantom.core.coord.point import Coord, Grid
+from Phantom.core.coord.point import Coord
 from Phantom.constants import grid_height, grid_width
 from Phantom.utils.decorators import integer_args
 from Phantom.utils.debug import call_trace
