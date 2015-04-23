@@ -44,7 +44,8 @@ class PhantomObj (object):
     def __del__(self):
         if log_msg:  # ccc: it is unclear to me why log_msg == None
             log_msg('object of type {} deleted'.format(self.__class__.__name__), 10)
-        class_record[self.__class__] -= 1
+        if class_record:  # ccc: it is unclear to me why class_record == None
+            class_record[self.__class__] -= 1
 
     def __eq__(self, other):
         idmatch = id(self) == id(other)
