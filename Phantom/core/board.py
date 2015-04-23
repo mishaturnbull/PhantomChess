@@ -212,9 +212,8 @@ class Board (PhantomObj):
         return ret
 
     def _pprnt(self):
-        spaces_center = int((18 - len(self.name)) / 2)
         dash = '–' if self.cfg.use_unicode else '-'
-        s = '{}{}\n{}\n'.format(' '*spaces_center, self.name, dash*19)
+        s = '{}\n{}\n'.format(self.name.center(19), dash * 19)
         for y in range(C.grid_height, -2, -1):
             for x in range(-1, C.grid_width+1):
                 if y in (-1, 8) and not (x in (-1, 8)):
