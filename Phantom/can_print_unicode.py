@@ -26,7 +26,7 @@ def can_print_unicode(s='Welcome to PhantomChess...'):
         os.environ['PYTHONIOENCODING'] = 'utf_8'
     try:
         print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
-        return False  # True  # FIXME
+        return (sys.stdout.encoding == 'UTF-8' and sys.platform == 'darwin')  # True  # FIXME
     except UnicodeEncodeError:
         print(str(s))
         return False
