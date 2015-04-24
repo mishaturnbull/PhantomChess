@@ -36,7 +36,7 @@ for p in sys.path:
         try:
             shutil.copytree(os.path.join(master_name, module_name), copy_to)
             print('Successfully copied {} to: {}'.format(module_name, copy_to))
-# a homebrew installed Python on Mac OS X has a read-only /Library/Python/2.7/site-packages
+        # a homebrew installed Python on Mac OS X has a read-only /Library/Python/2.7/site-packages
         except OSError as e:
             fmt = 'Warning: Failed to copy {} to: {} ({})'
             print(fmt.format(module_name, copy_to, e))
@@ -50,18 +50,22 @@ shutil.copytree(os.path.join(master_name, module_name), module_name)
 shutil.rmtree(master_name)
 os.remove(zip_filename)
 
-def unix_chmod_plus_x(file_path = 'Phantom/Run_this.py'):
+
+def unix_chmod_plus_x(file_path='Phantom/Run_this.py'):
     platform_sys = platform.system()
     if ((platform_sys == 'Darwin' and platform.machine().startswith('iP'))  # on iOS
-      or platform_sys in ('Windows', 'Java')):                              # not on unix
+      or platform_sys in ('Windows', 'Java')):  # not on unix
         return
     try:
         import stat
+
         plus_x = os.stat(file_path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
         os.chmod(file_path, plus_x)
         fmt = 'To run {} from the command line, type: {}'
         print(fmt.format(module_name, file_path))
     except ImportError:
         pass
+
+
 unix_chmod_plus_x(module_name + '/Run_this.py')
 print('Done! {}'.format('=' * 25))
