@@ -246,5 +246,4 @@ if __name__ == '__main__':
     game = ChessGame() #loadgame('Long Endgame 1')
     game.board.cfg.disp_sqrs = True
     s = ChessMainScreen(game)
-    scene.run(s)
-
+    scene.run(s, 
