@@ -61,5 +61,4 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
             scene.text(line, x=x, y=l_y - (i*20))
 
 if __name__ == '__main__':
-    scene.run(ChessLoadingScreen())
-
+    scene.run(ChessLoadingScreen(), orientation=scene.LANDSCAPE)
