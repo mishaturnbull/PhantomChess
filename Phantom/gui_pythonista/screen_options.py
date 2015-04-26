@@ -152,4 +152,4 @@ if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
     g = ChessGame()
     s = ChessOptionsScreen(g)
-    scene.run(s)
+    scene.run(s, orientation=scene.LANDSCAPE)

@@ -141,7 +141,7 @@ class ChessGame (PhantomObj):
             self.data['screen_promote'].set_parent(self.data['main_scene'])
             self.data['main_scene'].switch_scene(self.data['screen_load'])
             import scene
-            scene.run(self.data['main_scene'])
+            scene.run(self.data['main_scene'], orientation=scene.LANDSCAPE)
 
     @call_trace(3)
     def is_won(self):
