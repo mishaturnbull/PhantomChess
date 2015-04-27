@@ -44,7 +44,8 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
             self.parent.set_load_scene(self)
     
     def touch_began(self, touch):
-        self.parent.did_begin()
+        if self.parent:
+            self.parent.did_begin()
     
     def draw(self):
         scene.background(0, 0, 0)
