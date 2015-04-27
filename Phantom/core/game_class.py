@@ -153,7 +153,7 @@ class ChessGame (PhantomObj):
         else:
             ret = False
 
-        kings = self.board.get_piece_list(self, ptype='king')
+        kings = self.board.get_piece_list(ptype='king')
         if len(kings) == 1:
             # at this point we don't need to do checkmate/stalemate tests, because
             # one side has already lost a king so the game is over
