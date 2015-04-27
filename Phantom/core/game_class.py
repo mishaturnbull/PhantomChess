@@ -131,12 +131,13 @@ class ChessGame (PhantomObj):
             from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
             from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
             self.data['screen_main'] = ChessMainScreen(self)
-            self.data['screen_load'] = ChessLoadingScreen()
+            #self.data['screen_load'] = ChessLoadingScreen()
             self.data['screen_options'] = ChessOptionsScreen(self)
             self.data['screen_promote'] = ChessPromoteScreen(self)
             self.data['main_scene'] = MultiScene(self.data['screen_load'])
+            self.data['screen_load'] = ChessLoadingScreen(self.data['main_scene'])
             self.data['screen_main'].set_parent(self.data['main_scene'])
-            self.data['screen_load'].set_parent(self.data['main_scene'])
+            #self.data['screen_load'].parent = self.data['main_scene']
             self.data['screen_options'].set_parent(self.data['main_scene'])
             self.data['screen_promote'].set_parent(self.data['main_scene'])
             self.data['main_scene'].switch_scene(self.data['screen_load'])
