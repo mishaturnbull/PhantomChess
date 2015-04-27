@@ -54,7 +54,7 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
         d_y = s_y - 30
         l_y = s_y - 75
         scene.tint(0.32645, 0.28306, 0.93492)
-        scene.text('PhantomChess version {}'.format(version), x=x, y=y, font_size=20.0)
+        scene.text('PhantomChess version {}'.format(version), x=x, y=s_y, font_size=20.0)
         scene.tint(1, 1, 1)
         if debug:
             scene.text('Debugger set to level {}'.format(debug), x=x, y=d_y)
