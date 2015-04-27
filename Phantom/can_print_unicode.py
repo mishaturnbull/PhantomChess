@@ -21,12 +21,30 @@ import os, sys
 
 """Deterime your platform supports printing of unicode characters."""
 
+fmt = '''
+    PYTHONIOENCODING:    {}
+    sys.stdout.encoding: {}
+    sys.stderr.encoding: {}'''
+
 def can_print_unicode(s='Welcome to PhantomChess...'):
+    # python -c "import sys ; print(sys.stderr.encoding)"
+    # 6716's Windows box defaults to cp437 but a buddy in Germany's box defaults to cp850
+    print('Before: ' + fmt.format(os.getenv('PYTHONIOENCODING', None),
+                                 sys.stdout.encoding,
+                                 sys.stderr.encoding))
+    default_encoding = (sys.stdout.encoding
+                        or ('cp437' if sys.platform.startswith('win') else 'utf-8'))
     if not os.getenv('PYTHONIOENCODING', None):  # PyInstaller workaround
-        os.environ['PYTHONIOENCODING'] = 'utf_8'
+        os.environ['PYTHONIOENCODING'] = default_encoding
     try:
-        print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode('utf-8'))
-        return (sys.stdout.encoding == 'UTF-8' and sys.platform == 'darwin')  # True  # FIXME
+        print(u'♜ ♞ ♝  {} ♗ ♘ ♖ '.format(s).encode(default_encoding))
+        print('After: ' + fmt.format(os.getenv('PYTHONIOENCODING', None),
+                                     sys.stdout.encoding,
+                                     sys.stderr.encoding))
+        return (sys.stdout.encoding == default_encoding.upper())  # True  # FIXME
     except UnicodeEncodeError:
         print(str(s))
         return False
+
+if __name__ == '__main__':
+    print(can_print_unicode())
