@@ -35,7 +35,7 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
 
     @property
     def parent(self):
-        return _parent
+        return self._parent
 
     @parent.setter
     def parent(self, parent):
