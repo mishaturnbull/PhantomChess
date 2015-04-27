@@ -31,16 +31,17 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
     
     def __init__(self, main=None):
         self.parent = main
-        if self.parent is not None:
-            self.parent.set_load_scene(self)
         self.tmp_t = 0
-    
-    def setup(self):
-        pass
-    
-    def set_parent(self, p):
-        self.parent = p
-        self.parent.set_load_scene(self)
+
+    @property
+    def parent(self):
+        return _parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+        if self.parent:
+            self.parent.set_load_scene(self)
     
     def touch_began(self, touch):
         self.parent.did_begin()
@@ -48,12 +49,12 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
     def draw(self):
         scene.background(0, 0, 0)
         scene.fill(1, 1, 1)
-        x = screen_width / 2
-        s_y = screen_height / 2 + 100
+        x, y = self.bounds.center()
+        s_y = y + 100
         d_y = s_y - 30
-        l_y = d_y - 75
-        scene.tint(0.32645,0.28306,0.93492)
-        scene.text('PhantomChess version {}'.format(version), x=x, y=s_y, font_size=20.0)
+        l_y = s_y - 75
+        scene.tint(0.32645, 0.28306, 0.93492)
+        scene.text('PhantomChess version {}'.format(version), x=x, y=y, font_size=20.0)
         scene.tint(1, 1, 1)
         if debug:
             scene.text('Debugger set to level {}'.format(debug), x=x, y=d_y)
