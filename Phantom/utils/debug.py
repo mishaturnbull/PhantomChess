@@ -22,7 +22,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 This is a base file and therefore needs to be import-clean, or at least 1-level import clean
 """
 
-from Phantom.constants import dbgname, phantom_dir, debug
+from Phantom.constants import dbg_name, phantom_dir, debug
 import os
 import sys
 
@@ -31,7 +31,7 @@ def exception_str(exception):
 
 def clear_log():
     try:
-        writeto = os.path.join(phantom_dir, 'utils', dbgname)
+        writeto = os.path.join(phantom_dir, 'utils', dbg_name)
         with open(writeto, 'w') as f:
             f.write('')
     except Exception as e:
@@ -62,7 +62,7 @@ def log_msg(msg, level, **kwargs):
     if len(msg) >= 88:
         msg = msg[:88] + '\n -' + msg[88:]
     
-    writeto = os.path.join(phantom_dir, 'utils', dbgname)
+    writeto = os.path.join(phantom_dir, 'utils', dbg_name)
     
     try:
         if write:

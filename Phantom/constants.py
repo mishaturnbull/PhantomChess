@@ -41,14 +41,16 @@ debug = 0
 # By default this is set to "in_pythonista", so that in the app unicode will
 # be used but otherwise ASCII will be used.
 # CCC: Turning use_unicode on by default
-# 671: decide whether to use_unicode in `Phantom.can_unicode`
+# 671: decide whether to use_unicode in `Phantom.can_print_unicode`
 use_unicode = can_print_unicode()
 
+# We should not allow the user to adjust the screen size
+# Instead we should allow gui routines to detect these values at runtime
 # Adjusts the scale of the board in the GUI
-screen_height = 768  # pixels
+#screen_height = 768  # pixels
 
 # Adjusts the scale of the board in the GUI
-screen_width = 1024  # pixels
+#screen_width = 1024  # pixels
 
 ###################################################################################################################
 ############################################# END USER SETTINGS ###################################################
@@ -73,22 +75,21 @@ dirs = {'north': (0, 1),
 '''
 
 # These don't affect gameplay, here for my own reference
-pieces = ['king', 'rook', 'bishop', 'queen', 'knight', 'pawn']
-pieces_per_player = {'rook': 2,
-                     'king': 1,
-                     'bishop': 2,
-                     'queen': 1,
-                     'knight': 2,
-                     'pawn': 8,
-                     }
+#pieces = ['king', 'rook', 'bishop', 'queen', 'knight', 'pawn']
+#pieces_per_player = {'rook': 2,
+#                     'king': 1,
+#                     'bishop': 2,
+#                     'queen': 1,
+#                     'knight': 2,
+#                     'pawn': 8,
+#                     }
 
 # these do affect gameplay and will raise errors if edited
 grid_width = 8
 grid_height = 8
-grid_colors = {'black': (0.27462, 0.26326, 0.27367),
-               'white': (0.86674, 0.86674, 0.88017),
-               }
-scale_factor = screen_height//grid_height  # Get the height, in pixels, of each square
+grid_colors = { 'black': (0.27462, 0.26326, 0.27367),
+                'white': (0.86674, 0.86674, 0.88017) }
+#scale_factor = screen_height//grid_height  # Get the height, in pixels, of each square
 
 holder_point = (-10, -10)
 
@@ -98,11 +99,11 @@ counter = 1
 ncounter = 0
 
 filename = 'move_record.py'
-rawname  = 'raw_record'
+raw_name  = 'raw_record'
 save_fen = 'savegames_fen.txt'
 save_epd = 'savegames_epd.txt'
 test_suite = 'Phantom_test_suite.txt'  # don't add your own games to this!
-dbgname  = 'debug.txt'
+dbg_name  = 'debug.txt'
 
 
 piece_chars = dict(
@@ -179,18 +180,18 @@ import os as _os
 phantom_dir = _os.path.dirname(_os.path.realpath(__file__))
 del _os
 
-if in_pythonista:
-    import scene
-    screen_size = scene.Rect(0, 0, screen_width, screen_height)
-    del scene
-else:
-    # if no Rect class is available, make a (much) simpler version with the
-    # nessecary attributes
-    class Rect (object):
-        def __init__(self, x, y, w, h):
-            self.x = x
-            self.y = x
-            self.w = w
-            self.h = h
-    screen_size = Rect(0, 0, screen_width, screen_height)
+#if in_pythonista:
+#    import scene
+#    screen_size = scene.Rect(0, 0, screen_width, screen_height)
+#    del scene
+#else:
+#    # if no Rect class is available, make a (much) simpler version with the
+#    # necessary attributes
+#    class Rect (object):
+#        def __init__(self, x, y, w, h):
+#            self.x = x
+#            self.y = x
+#            self.w = w
+#            self.h = h
+#    screen_size = Rect(0, 0, screen_width, screen_height)
 

@@ -28,7 +28,7 @@ fmt = '''
 
 def can_print_unicode(s='Welcome to PhantomChess...'):
     # python -c "import sys ; print(sys.stderr.encoding)"
-    # 6716's Windows box defaults to cp437 but a buddy in Germany's box defaults to cp850
+    # 671's Windows box defaults to cp437 but a buddy in Germany's box defaults to cp850
     print('Before: ' + fmt.format(os.getenv('PYTHONIOENCODING', None),
                                  sys.stdout.encoding,
                                  sys.stderr.encoding))
