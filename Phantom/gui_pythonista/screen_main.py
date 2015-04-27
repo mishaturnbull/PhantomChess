@@ -34,13 +34,22 @@ from Phantom.core.exceptions import InvalidMove
 
 class ChessMainScreen (scene.Scene, PhantomObj):
     
-    def __init__(self, game, main=None):
+    def __init__(self, game, parent=None):
         self.game = game
+        self.parent = parent  # Phantom.gui_pythonista.main_scene.Multiscene.Scene object
         self.tmp_t = 0
-        self.parent = main  # Phantom.gui_pythonista.main_scene.Multiscene.Scene object
-        if self.parent is not None:
+
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+        if self.parent:
             self.parent.set_main_scene(self)
-    
+
     def setup(self):
         self.coord_disp_mode = {'onoff': self.game.board.cfg.disp_coords,
                                 'mode': self.game.board.cfg.coord_mode}
@@ -77,10 +86,6 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         self.bounds = scene.Rect(min.x, min.y, max.x-min.x, max.y-min.y)
         self.size = screen_size
         self.won = self.game.is_won()
-    
-    def set_parent(self, p):
-        self.parent = p
-        self.parent.set_main_scene(self)
     
     def did_err(self, e):
         self.err = sys.exc_info()

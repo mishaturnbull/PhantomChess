@@ -31,15 +31,22 @@ from Phantom.core.game_class import ChessGame
 
 class ChessOptionsScreen (scene.Scene, PhantomObj):
     
-    def __init__(self, game, main=None):
-        self.tmp_t = 0
-        
+    def __init__(self, game, parent=None):
         self.game = game
-        self.parent = main
-        if self.parent is not None:
-            self.parent.set_options_scene(self)
+        self.parent = parent
+        self.tmp_t = 0
         self.data = Cfg()
     
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+        if self.parent:
+            self.parent.set_options_scene(self)
+
     def setup(self):
         self.game.data['has_gui'] = True
         self.data['game'] = self.game
@@ -100,10 +107,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         # nessecary to have a GUI (missing g.data.main_scene etc)
         # This makes the options class' `self.return_to_game()` raise AttributeError
     # ------------------ End button actions ------------------
-    
-    def set_parent(self, p):
-        self.parent = p
-    
+
     def sync_data(self):
         # update game data first to push any changes
         self.game.board.cfg.copy_data_from(self.data)

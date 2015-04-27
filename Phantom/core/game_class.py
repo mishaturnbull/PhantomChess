@@ -44,10 +44,9 @@ class ChessGame (PhantomObj):
         self.player1 = self.board.player1
         self.player2 = self.board.player2
 
-        if len(args) > 0:
-            if isinstance(args[0], str):
-                # assume name of a game and load it
-                self.board = _loadboard(args[0])
+        if len(args) and isinstance(args[0], str):
+            # assume name of a game and load it
+            self.board = _loadboard(args[0])
 
         for arg in args:
             if isinstance(arg, Board):
@@ -126,23 +125,25 @@ class ChessGame (PhantomObj):
         from Phantom.constants import in_pythonista
         if in_pythonista:
             from Phantom.gui_pythonista.main_scene import MultiScene
-            from Phantom.gui_pythonista.screen_main import ChessMainScreen
-            from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
-            from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
-            from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
-            self.data['screen_main'] = ChessMainScreen(self)
-            #self.data['screen_load'] = ChessLoadingScreen()
-            self.data['screen_options'] = ChessOptionsScreen(self)
-            self.data['screen_promote'] = ChessPromoteScreen(self)
-            self.data['main_scene'] = MultiScene(self.data['screen_load'])
-            self.data['screen_load'] = ChessLoadingScreen(self.data['main_scene'])
-            self.data['screen_main'].set_parent(self.data['main_scene'])
-            #self.data['screen_load'].parent = self.data['main_scene']
-            self.data['screen_options'].set_parent(self.data['main_scene'])
-            self.data['screen_promote'].set_parent(self.data['main_scene'])
-            self.data['main_scene'].switch_scene(self.data['screen_load'])
-            import scene
-            scene.run(self.data['main_scene'], orientation=scene.LANDSCAPE)
+            self.gui = MultiScene(ChessLoadingScreen())
+            self.gui.run_gui(self)
+
+            #from Phantom.gui_pythonista.screen_main import ChessMainScreen
+            #from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
+            #from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
+            #from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
+            #self.data['screen_main'] = ChessMainScreen(self)
+            # #self.data['screen_load'] = ChessLoadingScreen()
+            #self.data['screen_options'] = ChessOptionsScreen(self)
+            #self.data['screen_promote'] = ChessPromoteScreen(self)
+            #self.data['main_scene'] = MultiScene(ChessLoadingScreen())
+            #self.data['screen_main'].set_parent(self.data['main_scene'])
+            # #self.data['screen_load'].parent = self.data['main_scene']
+            #self.data['screen_options'].set_parent(self.data['main_scene'])
+            #self.data['screen_promote'].set_parent(self.data['main_scene'])
+            #self.data['main_scene'].switch_scene(self.data['screen_load'])
+            #import scene
+            #scene.run(self.data['main_scene'], orientation=scene.LANDSCAPE)
 
     @call_trace(3)
     def is_won(self):

@@ -19,12 +19,22 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # along with PhantomChess.  If not, see <http://www.gnu.org/licenses/>. #
 #########################################################################
 
-"""The main scene object for the GUI.  Allowes use of multiple scene classes with one GUI."""
+"""The main scene object for the GUI.  Allows use of multiple scene classes with one GUI."""
 
-import scene
-
-from Phantom.core.chessobj import PhantomObj
-from Phantom.boardio.boardcfg import Namespace
+try:
+    import scene
+    try:
+        from Phantom.core.chessobj import PhantomObj
+        from Phantom.boardio.boardcfg import Namespace
+        from Phantom.gui_pythonista.screen_main import ChessMainScreen
+        from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
+        from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
+        from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
+    except ImportError as e:
+        print(e)
+        raise e
+except ImportError:
+    pass
 
 class MultiScene (scene.Scene, PhantomObj):
     
@@ -77,6 +87,21 @@ class MultiScene (scene.Scene, PhantomObj):
     
     def did_begin(self):
         self.switch_scene(self.main_scene)
+
+    def run_gui(self, game):
+        #from Phantom.gui_pythonista.main_scene import MultiScene
+        self.data['screen_main'] = ChessMainScreen(game, self)
+        #self.data['screen_load'] = ChessLoadingScreen()
+        self.data['screen_options'] = ChessOptionsScreen(game, self)
+        self.data['screen_promote'] = ChessPromoteScreen(game, self)
+        #self.data['main_scene'] = MultiScene(ChessLoadingScreen())
+        ##self.data['screen_main'].set_parent(self.data['main_scene'])
+        #self.data['screen_load'].parent = self.data['main_scene']
+        ##self.data['screen_options'].set_parent(self.data['main_scene'])
+        ##self.data['screen_promote'].set_parent(self.data['main_scene'])
+        #self.data['main_scene'].switch_scene(self.data['screen_load'])
+        import scene
+        scene.run(self.data['main_scene'], orientation=scene.LANDSCAPE)
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame

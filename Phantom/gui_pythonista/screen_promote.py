@@ -35,9 +35,17 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
     def __init__(self, game, parent=None):
         self.game = game
         self.parent = parent
-        if self.parent is not None:
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        self._parent = parent
+        if self.parent:
             self.parent.set_promote_scene(self)
-    
+
     def setup(self):
         # Determine which pawn is being promoted and set up the options
         self.turn = self.game.board.turn
@@ -80,11 +88,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
             img = scene.load_image_file(file)
             img_names.update({name: img})
         self.img_names = img_names
-    
-    def set_parent(self, s):
-        self.parent = s
-        self.parent.set_promote_scene(self)
-    
+
     def touch_began(self, touch):
         if touch.location in self.qrect:
             self.selected = self.queen

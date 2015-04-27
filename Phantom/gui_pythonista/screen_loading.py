@@ -29,8 +29,8 @@ from Phantom.core.chessobj import PhantomObj
 
 class ChessLoadingScreen (scene.Scene, PhantomObj):
     
-    def __init__(self, main=None):
-        self.parent = main
+    def __init__(self, parent=None):
+        self.parent = parent
         self.tmp_t = 0
 
     @property
