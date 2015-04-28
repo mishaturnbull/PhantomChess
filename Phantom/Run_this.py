@@ -127,8 +127,8 @@ if __name__ == '__main__':
         elif cmd == 'load':
             filename = ' '.join(cmd_parts[1:])
             if is_valid_filename(filename):
-                from Phantom.core.game_class import loadgame
-                game = loadgame(filename)
+                from Phantom.core.game_class import load_game
+                game = load_game(filename)
                 print(game)
             else:
                 print(filename + ' is not a valid filename.')

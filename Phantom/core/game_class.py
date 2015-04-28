@@ -25,16 +25,16 @@ Generally, use this class rather than Phantom.core.board.Board, because this cla
 keeps track of history, which Board doesn't."""
 
 from Phantom.core.chessobj import PhantomObj
-from Phantom.core.board import Board, load as _loadboard
+from Phantom.core.board import Board, load as _load_board
 from Phantom.core.players import Player
-from Phantom.core.coord import *
+#from Phantom.core.coord import *
 from Phantom.boardio.boardcfg import Namespace
-from Phantom.utils.debug import log_msg, call_trace
+from Phantom.utils.debug import call_trace  # , log_msg
 
 __all__ = []
 
-def loadgame(name):
-    board = _loadboard(name)
+def load_game(name):
+    board = _load_board(name)
     return ChessGame(board)
 
 class ChessGame (PhantomObj):
@@ -44,9 +44,9 @@ class ChessGame (PhantomObj):
         self.player1 = self.board.player1
         self.player2 = self.board.player2
 
-        if len(args) and isinstance(args[0], str):
+        if args and isinstance(args[0], str):
             # assume name of a game and load it
-            self.board = _loadboard(args[0])
+            self.board = _load_board(args[0])
 
         for arg in args:
             if isinstance(arg, Board):
@@ -54,7 +54,7 @@ class ChessGame (PhantomObj):
             if isinstance(arg, Player):
                 self.player1 = arg
                 self.player2 = args[args.index(arg)+1]
-                del args[args.index(arg)+1]
+                del args[args.index(arg)+1]  # args is a tuple! del will not work
 
         self.board.player1 = self.player1
         self.board.player2 = self.player2
@@ -125,6 +125,7 @@ class ChessGame (PhantomObj):
         from Phantom.constants import in_pythonista
         if in_pythonista:
             from Phantom.gui_pythonista.main_scene import MultiScene
+            from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
             self.gui = MultiScene(ChessLoadingScreen())
             self.gui.run_gui(self)
 

@@ -31,7 +31,7 @@ from Phantom.core.coord.vectored_lists import north, south, east, west, ne, se, 
 #import core.coord as coord
 
 from Phantom.core.board import load, Tile, Board
-from Phantom.core.game_class import loadgame, ChessGame
+from Phantom.core.game_class import load_game, ChessGame
 from Phantom.core.pieces import ChessPiece, Pawn, Bishop, Knight, Rook, Queen, King
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.exceptions import ChessError, LogicError, InvalidMove, InvalidDimension
