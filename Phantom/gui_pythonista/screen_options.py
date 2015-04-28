@@ -21,7 +21,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """Options screen."""
 
-import scene
+import scene, sys
 
 from Phantom.boardio.boardcfg import Namespace, Cfg
 from Phantom.core.chessobj import PhantomObj
@@ -36,7 +36,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         self.parent = parent
         self.tmp_t = 0
         self.data = Cfg()
-    
+
     @property
     def parent(self):
         return self._parent
@@ -52,59 +52,45 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         self.data['game'] = self.game
         self.data.copy_data_from(self.game.board.cfg)
         
-                      # (name,           display name,     show value,     position,               action)
-        self.buttons = [('disp_coords',  'Show coords',       True,     Coord(0, 672),       self.tog_disp_coords),
-                        ('',             'Save & exit',       'NA',     Coord(930, 576),     self.return_to_game),
-                        ('force_moves',  'Force moves',       True,     Coord(0, 576),       self.tog_force_moves),
-                        ('disp_turn',    'Show turn',         True,     Coord(0, 480),       self.tog_disp_turn),
-                        ('highlight',    'Show valid',        True,     Coord(0, 384),       self.tog_highlight),
-                        ('disp_pieces',  'Show pieces',       True,     Coord(0, 288),       self.tog_disp_pieces),
-                        ('disp_sqrs',    'Show grid',         True,     Coord(0, 192),       self.tog_disp_sqrs),
-                        ('',             'Copy FEN',          'NA',     Coord(0, 96),        self.copy_fen),
-                        ('disp_timers',  'Show timers',       True,     Coord(0, 0),         self.tog_show_timers),]
+                        # ( name,           title,           value,   position,           action)
+                        # toggles have action == None
+        self.buttons = [('disp_coords',    'Show coords',    True,    Coord(0, 672),      None),
+                        ('',               'Save & exit',    'NA',    Coord(930, 576),    self.return_to_game),
+                        ('force_moves',    'Force moves',    True,    Coord(0, 576),      None),
+                        ('disp_turn',      'Show turn',      True,    Coord(0, 480),      None),
+                        ('highlight',      'Show valid',     True,    Coord(0, 384),      None),
+                        ('disp_pieces',    'Show pieces',    True,    Coord(0, 288),      None),
+                        ('disp_sqrs',      'Show grid',      True,    Coord(0, 192),      None),
+                        ('',               'Copy FEN',       'NA',    Coord(0, 96),       self.copy_fen),
+                        ('disp_timers',    'Show timers',    True,    Coord(0, 0),        None) ]
                         # commented out until I can figure out how to make self.rst_game() work properly
-                        #('',             'Reset game',        'NA',     Coord(96, 672),      self.rst_game),]
+                        #('',              'Reset game',     'NA',    Coord(96, 672),     self.rst_game),]
         self.button_size = Coord(scale_factor, scale_factor)
         self.size = screen_size
     
     # ------------------- Button actions ---------------------
-    def tog_disp_coords(self):
-        self.data['disp_coords'] = not self.data['disp_coords']
-    
+    def toggle(self, key):
+        self.data[key] = not self.data[key]
+
     def return_to_game(self):
-        self.parent.switch_scene(self.game.data['screen_main'])
-    
-    def tog_force_moves(self):
-        self.data['force_moves'] = not self.data['force_moves']
-    
-    def tog_disp_turn(self):
-        self.data['disp_turn'] = not self.data['disp_turn']
-    
-    def tog_highlight(self):
-        self.data['highlight'] = not self.data['highlight']
-    
-    def tog_disp_pieces(self):
-        self.data['disp_pieces'] = not self.data['disp_pieces']
-    
-    def tog_disp_sqrs(self):
-        self.data['disp_sqrs'] = not self.data['disp_sqrs']
-    
+        if self.parent:
+            self.parent.switch_scene(self.game.data['screen_main'])
+        else:  # when running this file standalone
+            sys.exit('return_to_game() with no parent!')
+
     def copy_fen(self):
         import clipboard
         fen = self.game.board.fen_str()
         clipboard.set(fen)
     
-    def tog_show_timers(self):
-        self.data['disp_timers'] = not self.data['disp_timers']
-    
     def rst_game(self):
-        scdata = self.data
-        newgame = ChessGame()
-        newgame.board.cfg = scdata
-        self.game = newgame
+        sc_data = self.data
+        new_game = ChessGame()
+        new_game.board.cfg = sc_data
+        self.game = new_game
         # The reason this doesnt work is that after setting
         # self.game, the (new) game does NOT have the attributes
-        # nessecary to have a GUI (missing g.data.main_scene etc)
+        # necessary to have a GUI (missing g.data.main_scene etc)
         # This makes the options class' `self.return_to_game()` raise AttributeError
     # ------------------ End button actions ------------------
 
@@ -116,7 +102,8 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         # been set
         self.data.copy_data_from(self.game.board.cfg)
 
-    def draw_toggle(self, name, curval, pos):
+    @staticmethod
+    def draw_toggle(name, curval, pos):
         name = str(name)
         val = str(curval)
         x, y = pos.x, pos.y
@@ -127,7 +114,8 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         scene.text(name, x=label.x, y=label.y)
         scene.text(val, x=state.x, y=state.y)
     
-    def draw_button(self, name, pos):
+    @staticmethod
+    def draw_button(name, pos):
         name = str(name)
         x, y = pos.x, pos.y
         w = h = scale_factor
@@ -135,22 +123,28 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         scene.text(name, x=mid.x, y=mid.y)
     
     def touch_began(self, touch):
+        w, h = self.button_size.x, self.button_size.y
         for button in self.buttons:
-            hit_test = scene.Rect(button[3].x, button[3].y, self.button_size.x, self.button_size.y)
+            name, title, value, position, action = button
+            hit_test = scene.Rect(position.x, position.y, w, h)
             if touch.location in hit_test:
-                button[4]()
+                if action:  # toggles have action == None
+                    action()
+                else:
+                    self.toggle(name)
                 self.sync_data()
                 break
     
     def draw(self):
         scene.background(0, 0, 0)
         
-        for b in self.buttons:
-            # use '== True' here to avoid catching values like "NA"
-            if b[2] == True:
-                self.draw_toggle(b[1], self.data[b[0]], b[3])
-            elif b[2] in (False, 'NA'):
-                self.draw_button(b[1], b[3])
+        for button in self.buttons:
+            name, title, value, position, action = button
+            if action:  # toggles have action == None
+                self.draw_button(title, position)
+            else:
+                self.draw_toggle(title, self.data[name], position)
+
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
