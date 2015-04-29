@@ -124,27 +124,8 @@ class ChessGame (PhantomObj):
         """Spawn a GUI for the game.  **Only works in Pythonista, on other platforms does nothing."""
         from Phantom.constants import in_pythonista
         if in_pythonista:
-            from Phantom.gui_pythonista.main_scene import MultiScene
-            from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
-            self.gui = MultiScene(ChessLoadingScreen())
-            self.gui.run_gui(self)
-
-            #from Phantom.gui_pythonista.screen_main import ChessMainScreen
-            #from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
-            #from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
-            #from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
-            #self.data['screen_main'] = ChessMainScreen(self)
-            # #self.data['screen_load'] = ChessLoadingScreen()
-            #self.data['screen_options'] = ChessOptionsScreen(self)
-            #self.data['screen_promote'] = ChessPromoteScreen(self)
-            #self.data['main_scene'] = MultiScene(ChessLoadingScreen())
-            #self.data['screen_main'].set_parent(self.data['main_scene'])
-            # #self.data['screen_load'].parent = self.data['main_scene']
-            #self.data['screen_options'].set_parent(self.data['main_scene'])
-            #self.data['screen_promote'].set_parent(self.data['main_scene'])
-            #self.data['main_scene'].switch_scene(self.data['screen_load'])
-            #import scene # done up top.
-            #scene.run(self.data['main_scene'], orientation=scene.LANDSCAPE)
+            from Phantom.gui_pythonista.game_view import GameView
+            self.gui = GameView(self)
 
     @call_trace(3)
     def is_won(self):
