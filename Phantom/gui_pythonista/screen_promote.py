@@ -6,12 +6,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -31,30 +31,21 @@ from Phantom.core.chessobj import PhantomObj
 from Phantom.constants import phantom_dir, scale_factor, screen_width, screen_height
 
 class ChessPromoteScreen (scene.Scene, PhantomObj):
-    
-    def __init__(self, game, parent=None):
-        self.game = game
-        self.parent = parent
 
-    @property
-    def parent(self):
-        return self._parent
-
-    @parent.setter
-    def parent(self, parent):
-        self._parent = parent
-        if self.parent:
-            self.parent.set_promote_scene(self)
+    def __init__(self, game_view):
+        self.game_view = game_view
 
     def setup(self):
         # Determine which pawn is being promoted and set up the options
-        self.turn = self.game.board.turn
-        for p in self.game.board.pieces:
+        board = self.game_view.game.board
+        self.turn = board.turn
+        for p in board.pieces:
             if p.is_promotable:
                 self.promoter = p
                 self.color = p.color
         if not hasattr(self, 'promoter'):
-            self.parent.switch_scene(self.game.data['screen_main'])
+            del self  # ???
+            #self.parent.switch_scene(self.game.data['screen_main'])
         self.owner = self.promoter.owner
         y = 7 if p.color == 'white' else 0
         self.spawncoord = Coord(self.promoter.coord.x, y)
@@ -65,7 +56,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         self.knight = Knight(kpos, self.color, self.promoter.owner)
         self.pieces = [self.queen, self.rook, self.bishop, self.knight]
         self.selected = None
-        
+
         self.qrect = scene.Rect(self.queen.coord.as_screen.x,
                                 self.queen.coord.as_screen.y,
                                 scale_factor, scale_factor)
@@ -78,7 +69,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         self.krect = scene.Rect(self.knight.coord.as_screen.x,
                                 self.knight.coord.as_screen.y,
                                 scale_factor, scale_factor)
-        
+
         files = [p.pythonista_gui_imgname for p in self.pieces]
         readfiles = [os.path.join(phantom_dir, 'gui_pythonista', 'imgs', f) for f in files]
 
@@ -98,13 +89,15 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
             self.selected = self.bishop
         elif touch.location in self.krect:
             self.selected = self.knight
-        
+
         if self.selected:
             self.promote()
-            self.parent.switch_scene(self.game.data['screen_main'])
-        
+            del self # ???
+            #self.parent.switch_scene(self.game.data['screen_main'])
+
     def promote(self):
-        self.game.board.promote(self.promoter.coord, self.selected.fen_char.upper())
+        self.game_view.game.board.promote(self.promoter.coord,
+                                          self.selected.fen_char.upper())
 
     def draw(self):
         scene.background(0, 0, 0)
