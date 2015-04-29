@@ -31,9 +31,8 @@ from Phantom.core.game_class import ChessGame
 
 class ChessOptionsScreen (scene.Scene, PhantomObj):
     
-    def __init__(self, game, parent=None):
-        self.game = game
-        self.parent = parent
+    def __init__(self, game_view):
+        self.game_view = game_view
         self.tmp_t = 0
         self.data = Cfg()
 
