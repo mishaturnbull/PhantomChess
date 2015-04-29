@@ -6,12 +6,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -28,10 +28,11 @@ from Phantom.utils.lic import short
 from Phantom.core.chessobj import PhantomObj
 
 class ChessLoadingScreen (scene.Scene, PhantomObj):
-    
+
     def __init__(self, parent=None):
         self.parent = parent
         self.tmp_t = 0
+        #print(self.bounds)
 
     @property
     def parent(self):
@@ -41,16 +42,20 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
     def parent(self, parent):
         self._parent = parent
         if self.parent:
-            self.parent.set_load_scene(self)
-    
+            self.parent.set_scene('load', self)
+
+    def setup(self):
+        pass
+
     def touch_began(self, touch):
         if self.parent:
             self.parent.did_begin()
-    
+
     def draw(self):
         scene.background(0, 0, 0)
         scene.fill(1, 1, 1)
         x, y = self.bounds.center()
+        #print(self.bounds)
         s_y = y + 100
         d_y = s_y - 30
         l_y = s_y - 75
