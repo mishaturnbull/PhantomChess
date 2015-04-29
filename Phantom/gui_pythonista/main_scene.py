@@ -28,8 +28,8 @@ try:
         from Phantom.boardio.boardcfg import Namespace
         from Phantom.gui_pythonista.screen_main import ChessMainScreen
         from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
-        from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
-        from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
+        #from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
+        #from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
     except ImportError as e:
         print(e)
         raise e
@@ -42,15 +42,22 @@ class MultiScene (scene.Scene, PhantomObj):
         self.active_scene = start_scene
         self.tmp_t = 0
         self.invocations = 0
-        self.data = Namespace()
-        
+        #self.data = Namespace()
+        self.scenes = {key : None for key in
+                        'debug load main options promote'.split()}
+        #self.scenes['load'] = start_scene
+        self.set_load_scene(start_scene)
+
     def switch_scene(self, new_scene):
+        assert new_scene
+        new_scene.bounds = self.bounds
         new_scene.setup()
         self.active_scene = new_scene
 
     def setup(self):
-        self.active_scene = self.load_scene
+        self.active_scene = self.scenes['load']
         self.tmp_t = self.t
+        self.active_scene.bounds = self.bounds
         self.active_scene.setup()
 
     def draw(self):
@@ -71,37 +78,46 @@ class MultiScene (scene.Scene, PhantomObj):
         self.active_scene.touch_ended(touch)
     
     def set_main_scene(self, s):
-        self.main_scene = s
+        self.scenes['main'] = s
+        #self.main_scene = s
     
     def set_load_scene(self, s):
-        self.load_scene = s
+        self.scenes['load'] = s
+        #self.load_scene = s
     
     def set_dbg_scene(self, s):
-        self.dbg_scene = s
+        self.scenes['debug'] = s
+        #self.dbg_scene = s
     
     def set_options_scene(self, s):
-        self.options_scene = s
+        self.scenes['options'] = s
+        #self.options_scene = s
     
     def set_promote_scene(self, s):
-        self.promote_scene = s
+        self.scenes['promote'] = s
+        #self.promote_scene = s
     
     def did_begin(self):
-        self.switch_scene(self.main_scene)
+        #self.switch_scene(self.main_scene)
+        self.switch_scene(self)  #self.scenes['main'])
 
     def run_gui(self, game):
         #from Phantom.gui_pythonista.main_scene import MultiScene
-        self.data['screen_main'] = ChessMainScreen(game, self)
+        #multi_scene = MultiScene(ChessLoadingScreen())
+        #self.data['screen_main'] = ChessMainScreen(game, self)
         #self.data['screen_load'] = ChessLoadingScreen()
-        self.data['screen_options'] = ChessOptionsScreen(game, self)
-        self.data['screen_promote'] = ChessPromoteScreen(game, self)
-        #self.data['main_scene'] = MultiScene(ChessLoadingScreen())
+        #zself.data['screen_options'] = ChessOptionsScreen(game, self)
+        #zself.data['screen_promote'] = ChessPromoteScreen(game, self)
+        #zself.data['main_scene'] = MultiScene(ChessLoadingScreen())
         ##self.data['screen_main'].set_parent(self.data['main_scene'])
         #self.data['screen_load'].parent = self.data['main_scene']
         ##self.data['screen_options'].set_parent(self.data['main_scene'])
         ##self.data['screen_promote'].set_parent(self.data['main_scene'])
         #self.data['main_scene'].switch_scene(self.data['screen_load'])
-        import scene
-        scene.run(self.data['main_scene'], orientation=scene.LANDSCAPE)
+        self.scenes['main'] = ChessMainScreen(game, self)
+        self.scenes['options'] = ChessOptionsScreen(game, self)
+        self.scenes['promote'] = ChessPromoteScreen(game, self)
+        scene.run(self, orientation=scene.LANDSCAPE)
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
