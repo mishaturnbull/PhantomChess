@@ -40,7 +40,7 @@ class GameView(ui.View):
         property(9)
         self.game = game
         in_scene = in_scene or ChessLoadingScreen
-        self.present('full_screen', hide_title_bar = True)
+        self.present('full_screen', orientations=['landscape'], hide_title_bar=True)
         self.scene_view = scene.SceneView(frame=self.frame)
         self.scene_view.scene = in_scene()
         self.add_subview(self.scene_view)
