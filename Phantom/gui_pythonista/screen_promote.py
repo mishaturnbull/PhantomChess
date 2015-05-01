@@ -84,7 +84,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         else:
             selected = None
 
-        if self.selected:
+        if selected:
             self.promote(selected.fen_char.upper())
             del self # ???
             #self.parent.switch_scene(self.game.data['screen_main'])
