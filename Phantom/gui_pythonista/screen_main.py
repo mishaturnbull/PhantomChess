@@ -34,17 +34,6 @@ from Phantom.core.exceptions import InvalidMove
 from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
 from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
 
-'''
-def load_images(piece_types=None):
-    # returns a dict of {piece_name : piece_image} entries
-    piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
-    folder = 'imgs'
-    fmt = 'Chess set images {} {}.jpg'
-    filenames = [os.path.join(phantom_dir, 'gui_pythonista', folder, fmt.format(color, type))
-                 for type in piece_types for color in ('black', 'white')]
-    return {os.path.split(filename)[1]:scene.load_image_file(filename)
-                 for filename in filenames}
-'''
 
 class ChessMainScreen (scene.Scene, PhantomObj):
 
@@ -68,7 +57,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         self.err = None
         self.err_pos = Coord(None, None)
         self.valid_cache = []
-        self.img_names = self.load_images()
+        self.img_names = self.game_view.load_images()
         self.turn_indicator_img = 'White_Square'
         self.pos_score = None
         self.disp_score = False
@@ -79,17 +68,6 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         self.size = screen_size
         print(self.bounds) # --> Rect(x=128, y=0, w=768, h=768)
         self.won = self.game_view.game.is_won()
-
-    @classmethod
-    def load_images(cls, piece_types=None):
-        # returns a dict of {piece_name : piece_image} entries
-        piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
-        folder = 'imgs'
-        fmt = 'Chess set images {} {}.jpg'
-        filenames = [os.path.join(phantom_dir, 'gui_pythonista', folder, fmt.format(color, type))
-                     for type in piece_types for color in ('black', 'white')]
-        return {os.path.split(filename)[1]:scene.load_image_file(filename)
-                     for filename in filenames}
 
     def did_err(self, e):
         self.err = sys.exc_info()
