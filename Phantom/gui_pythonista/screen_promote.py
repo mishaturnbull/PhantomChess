@@ -55,7 +55,6 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         self.bishop = Bishop(bpos, self.color, self.promoter.owner)
         self.knight = Knight(kpos, self.color, self.promoter.owner)
         self.pieces = [self.queen, self.rook, self.bishop, self.knight]
-        self.selected = None
 
         self.qrect = scene.Rect(self.queen.coord.as_screen.x,
                                 self.queen.coord.as_screen.y,
@@ -82,22 +81,24 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
 
     def touch_began(self, touch):
         if touch.location in self.qrect:
-            self.selected = self.queen
+            selected = self.queen
         elif touch.location in self.rrect:
-            self.selected = self.rook
+            selected = self.rook
         elif touch.location in self.brect:
-            self.selected = self.bishop
+            selected = self.bishop
         elif touch.location in self.krect:
-            self.selected = self.knight
+            selected = self.knight
+        else:
+            selected = None
 
         if self.selected:
-            self.promote()
+            self.promote(selected)
             del self # ???
             #self.parent.switch_scene(self.game.data['screen_main'])
 
-    def promote(self):
+    def promote(self, selected):
         self.game_view.game.board.promote(self.promoter.coord,
-                                          self.selected.fen_char.upper())
+                                          selected.fen_char.upper())
 
     def draw(self):
         scene.background(0, 0, 0)
