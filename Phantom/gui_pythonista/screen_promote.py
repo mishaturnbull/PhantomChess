@@ -69,15 +69,8 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
                                 self.knight.coord.as_screen.y,
                                 scale_factor, scale_factor)
 
-        files = [p.pythonista_gui_imgname for p in self.pieces]
-        readfiles = [os.path.join(phantom_dir, 'gui_pythonista', 'imgs', f) for f in files]
-
-        img_names = {}
-        for file in readfiles:
-            name = os.path.split(file)[1]
-            img = scene.load_image_file(file)
-            img_names.update({name: img})
-        self.img_names = img_names
+        piece_types = [p.pythonista_gui_imgname for p in self.pieces]
+        self.img_names = self.game_view.load_images(piece_types)
 
     def touch_began(self, touch):
         if touch.location in self.qrect:
@@ -92,13 +85,12 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
             selected = None
 
         if self.selected:
-            self.promote(selected)
+            self.promote(selected.fen_char.upper())
             del self # ???
             #self.parent.switch_scene(self.game.data['screen_main'])
 
-    def promote(self, selected):
-        self.game_view.game.board.promote(self.promoter.coord,
-                                          selected.fen_char.upper())
+    def promote(self, fen_char):
+        self.game_view.game.board.promote(self.promoter.coord, fen_char)
 
     def draw(self):
         scene.background(0, 0, 0)
