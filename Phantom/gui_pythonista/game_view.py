@@ -22,8 +22,9 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 """The main scene object for the GUI.  Allows use of multiple scene classes with one GUI."""
 
 try:
-    import scene, ui
+    import os, scene, ui
     try:
+        from Phantom.constants import phantom_dir
         from Phantom.core.chessobj import PhantomObj
         from Phantom.boardio.boardcfg import Namespace
         from Phantom.gui_pythonista.screen_main import ChessMainScreen
@@ -62,6 +63,17 @@ class GameView(ui.View):
     def switch_scene(self, new_scene=None):
         new_scene = new_scene or ChessMainScreen
         self.scene_view.scene = new_scene(self)
+        
+    @classmethod
+    def load_images(cls, piece_types=None):
+        # returns a dict of {piece_name : piece_image} entries
+        piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
+        folder = 'imgs'
+        fmt = 'Chess set images {} {}.jpg'
+        filenames = [os.path.join(phantom_dir, 'gui_pythonista', folder, fmt.format(color, type))
+                     for type in piece_types for color in ('black', 'white')]
+        return {os.path.split(filename)[1]:scene.load_image_file(filename)
+                     for filename in filenames}
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
