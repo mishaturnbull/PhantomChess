@@ -54,6 +54,7 @@ if __name__ == '__main__':
     load xxxxxxx          Load the game named xxxxxxx
     saves                 Get a list of all saved games
     gui                   Activate a GUI (Pythonista)
+    sk                    Activate a sk GUI (Pythonista)
     quit                  Exit the game
     help                  Show this help text
     reset                 Reset the game to the opening position
@@ -106,7 +107,7 @@ if __name__ == '__main__':
         if not cmd_parts:
             return False
         cmd = cmd_parts[0].lower()
-        if not cmd in 'ai castle game gui help license load promote reset save saves'.split():
+        if not cmd in 'ai castle game gui help license load promote reset save saves sk'.split():
             return False  # fast fail
         modifier = cmd_parts[1] if len(cmd_parts) > 1 else ''  # some commands require a modifier
         if cmd == 'ai':
@@ -147,6 +148,8 @@ if __name__ == '__main__':
             from Phantom.boardio.load import list_games
             print('\n'.join('{:>3} {}'.format(i+1, game_name)
                        for i, game_name in enumerate(sorted(list_games()))))
+        elif cmd == 'sk':
+            game.sk_gui()
         else:
             assert False, 'This should never happen.'
         return True
