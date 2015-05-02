@@ -49,7 +49,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         self.owner = self.promoter.owner
         y = 7 if p.color == 'white' else 0
         self.spawncoord = Coord(self.promoter.coord.x, y)
-        qpos, rpos, bpos, kpos = [Coord(x, 4) for x in [2, 3, 4, 5]]
+        qpos, rpos, bpos, kpos = [Coord(x, 4) for x in (2, 3, 4, 5)]
         self.queen = Queen(qpos, self.color, self.promoter.owner)
         self.rook = Rook(rpos, self.color, self.promoter.owner)
         self.bishop = Bishop(bpos, self.color, self.promoter.owner)
@@ -69,7 +69,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
                                 self.knight.coord.as_screen.y,
                                 scale_factor, scale_factor)
 
-        piece_types = [p.pythonista_gui_imgname for p in self.pieces]
+        piece_types = [p.__class__.__name__.lower() for p in self.pieces]
         self.img_names = self.game_view.load_images(piece_types)
 
     def touch_began(self, touch):
@@ -86,15 +86,18 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
 
         if selected:
             self.promote(selected.fen_char.upper())
+            print('b del')
             del self # ???
+            print('a del')
             #self.parent.switch_scene(self.game.data['screen_main'])
 
     def promote(self, fen_char):
+        print('promoting', fen_char)
         self.game_view.game.board.promote(self.promoter.coord, fen_char)
 
     def draw(self):
         scene.background(0, 0, 0)
-        for i, piece in enumerate(self.pieces):
+        for piece in self.pieces:
             img = self.img_names[piece.pythonista_gui_imgname]
             pos = piece.coord.as_screen
             scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
