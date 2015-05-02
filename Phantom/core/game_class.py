@@ -127,6 +127,17 @@ class ChessGame (PhantomObj):
             from Phantom.gui_pythonista.game_view import GameView
             self.gui = GameView(self)
 
+    def sk_gui(self):
+        """Spawn a GUI for the game.  **Only works in Pythonista, on other platforms does nothing."""
+        from Phantom.constants import in_pythonista
+        if in_pythonista:
+            try:
+                 import sk
+                 from Phantom.gui_pythonista.sk_game_view import GameView
+                 self.gui = GameView(self)
+            except ImportError:
+                 sys.exit('Pythonista sk module no found!')
+
     @call_trace(3)
     def is_won(self):
         """Tell if the game is won.  Returns one of [False, 'white', 'black']."""
