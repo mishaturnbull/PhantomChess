@@ -5,12 +5,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -44,11 +44,11 @@ def log_msg(msg, level, **kwargs):
     p = kwargs.get('p', '')
     if err and mark:
         mark = False
-    
+
     if (level > debug) and (not err):
         return False
     ret = True
-    
+
     if err:
          pm = '!'
     elif mark:
@@ -58,12 +58,12 @@ def log_msg(msg, level, **kwargs):
     else:
         pm = ' '
     msg = pm + msg
-    
+
     if len(msg) >= 88:
         msg = msg[:88] + '\n -' + msg[88:]
-    
+
     writeto = os.path.join(phantom_dir, 'utils', dbg_name)
-    
+
     try:
         if write:
             with open(writeto, 'a') as f:
@@ -71,29 +71,29 @@ def log_msg(msg, level, **kwargs):
     except Exception as e:
         log_msg("Exception {} in log_msg, couldn't write to file", level, write=False)
         ret = False
-    
+
     sys.stdout.write("### {}\n".format(msg))
-    
+
     return ret
 
 
 class call_trace (object):
-    
+
     def __init__(self, level, name=None):
         self.level = level
         self.name = name
-    
+
     def __call__(self, f, *args, **kwargs):
 
-        def wrapped(*args, **kwargs):
+        def call_trace_wrapped(*args, **kwargs):
             log_msg('{} called with args ({}, {})'.format(f.__name__, args, kwargs), self.level, p='{')
             returned = f(*args, **kwargs)
             log_msg('{} returned {}'.format(f.__name__, returned), self.level, p='}')
             return returned
-        
+
         # keep the same function name to make life easier
         # *Should* use the Phantom.utils.decorators.named() decorator - but this file
         # has to be import clean, so we can't import it
         wrapped.__name__ = self.name or f.__name__
-        
-        return wrapped
+
+        return call_trace_wrapped

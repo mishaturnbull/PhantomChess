@@ -55,6 +55,7 @@ exc_catch_cutoff = 3
 
 # 671: is this actually used anywhere? I can't think of any uses..
 # ccc: I hope not because nw is present twice and ne is not present at all
+# 671: no it isnt.  Changed the second nw to ne as it should have been
 '''
 dirs = {'north': (0, 1),
         'south': (0, -1),
@@ -62,7 +63,7 @@ dirs = {'north': (0, 1),
         'west': (-1, 0),
         'nw': (1, 1),
         'se': (1, -1),
-        'nw': (-1, 1),
+        'ne': (-1, 1),
         'sw': (-1, -1),
         'unknown': (None, None),
         }

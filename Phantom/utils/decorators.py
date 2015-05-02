@@ -55,7 +55,7 @@ class exc_catch (object):
             return f
 
         @named(name)
-        def wrapped(*args, **kwargs):
+        def exc_catch_wrapped(*args, **kwargs):
             e = None
             try:
                 f(*args, **kwargs)
@@ -76,7 +76,7 @@ class exc_catch (object):
                             log_msg(fmt.format(e.__class__.__name__, e.message), self.log, err=True)
                         return retval
 
-        return wrapped
+        return exc_catch_wrapped
 
 class default_args (object):
 
@@ -91,12 +91,12 @@ class default_args (object):
     def __call__(self, f):
 
         @named(f.__name__)
-        def wrapped(*args, **kwargs):
+        def default_args_wrapped(*args, **kwargs):
             fargs = args or self.d_args
             fkwargs = kwargs or self.d_kwargs
             return f(*fargs, **fkwargs)
 
-        return wrapped
+        return default_args_wrapped
 
 def integer_args(f):
     """Convert any float arguments given to a function to be integers.
@@ -108,7 +108,7 @@ def integer_args(f):
     If that is True, then the argument is converted to an integer."""
 
     @named(f.__name__)
-    def wrapped(*args, **kwargs):
+    def int_args_wrapped(*args, **kwargs):
         fixed_args = ()
         for arg in args:
             try:
@@ -130,4 +130,4 @@ def integer_args(f):
 
         return f(*fixed_args, **fixed_kwargs)
 
-    return wrapped
+    return int_args_wrapped
