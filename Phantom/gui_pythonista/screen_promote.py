@@ -94,6 +94,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
     def promote(self, fen_char):
         print('promoting', fen_char)
         self.game_view.game.board.promote(self.promoter.coord, fen_char)
+        print('promoted ', fen_char)
 
     def draw(self):
         scene.background(0, 0, 0)
