@@ -5,4 +5,5 @@ echo Done, cleaning up...
 move /Y Phantom\Simple.exe Simple.exe
 rd /S /Q dist
 rd /S /Q build
+DEL /Q Simple.spec
 echo Complete!
