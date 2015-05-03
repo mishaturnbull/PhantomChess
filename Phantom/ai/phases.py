@@ -51,7 +51,7 @@ class Phase (object):
         for piece in board.pieces:
             if piece.ptype == 'queen':
                 queens.append(piece)
-        if all([not q.firstmove for q in queens]):
+        if all([not q.first_move for q in queens]):
             if ret == Phase.opening:
                 ret = Phase.midgame
                 

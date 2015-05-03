@@ -84,7 +84,7 @@ grid_width = 8
 grid_height = 8
 grid_colors = { 'black': (0.27462, 0.26326, 0.27367),
                 'white': (0.86674, 0.86674, 0.88017) }
-scale_factor = screen_height//grid_height  # Get the height, in pixels, of each square
+scale_factor = screen_height // grid_height  # Get the height, in pixels, of each square
 
 holder_point = (-10, -10)
 
@@ -118,18 +118,18 @@ c_white_space    = ' ',
 c_black_space    = '.',
 c_turn_indicator = '<',
 
-d_white_pawn     = u'\u2659',
-d_black_pawn     = u'\u265f',
-d_white_rook     = u'\u2656',
-d_black_rook     = u'\u265c',
-d_white_bishop   = u'\u2657',
-d_black_bishop   = u'\u265d',
-d_white_knight   = u'\u2658',
-d_black_knight   = u'\u265e',
-d_white_queen    = u'\u2655',
-d_black_queen    = u'\u265b',
-d_white_king     = u'\u2654',
-d_black_king     = u'\u265a',
+#d_white_pawn     = u'\u2659',
+#d_black_pawn     = u'\u265f',
+#d_white_rook     = u'\u2656',
+#d_black_rook     = u'\u265c',
+#d_white_bishop   = u'\u2657',
+#d_black_bishop   = u'\u265d',
+#d_white_knight   = u'\u2658',
+#d_black_knight   = u'\u265e',
+#d_white_queen    = u'\u2655',
+#d_black_queen    = u'\u265b',
+#d_white_king     = u'\u2654',
+#d_black_king     = u'\u265a',
 d_white_space    = u'\u25e6',  # hollow bullet
 d_black_space    = u'\u2022',  # solid bullet
 d_turn_indicator = u'\u25c0')
@@ -169,7 +169,6 @@ opening_fen = ('{r}{n}{b}{q}{k}{b}{n}{r}{S}'
                                            t=start_turn,
                                            c=default_castle,
                                            e=default_ep)
-
 
 import os as _os
 phantom_dir = _os.path.dirname(_os.path.realpath(__file__))

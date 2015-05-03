@@ -137,7 +137,7 @@ class Board (PhantomObj):
                     color = owner.color.color
                     newpiece = klass(pos, color, owner)
                     if newpiece.coord not in klass.default_origins:
-                        newpiece.firstmove = False
+                        newpiece.first_move = False
                     self.pieces.add(newpiece)
                 elif is_file_split(char):
                     fileind += int(char)
@@ -375,7 +375,7 @@ class Board (PhantomObj):
             # update en_passant rights
             self.en_passant_rights = '-'
             if piece.ptype == 'pawn':
-                if piece.firstmove:
+                if piece.first_move:
                     if round_down(dist(p1, p2)) == 2:
                         file = piece.coord.as_chess[0]
                         if piece.color == 'black':

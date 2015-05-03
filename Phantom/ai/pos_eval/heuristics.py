@@ -90,7 +90,7 @@ def knight_on_edge(board):
 def developed_pieces(board):
     from Phantom.ai.settings import developed_scores
     return sum(developed_scores[p.ptype] * (1 if p.color == 'white' else -1)
-               for p in board.pieces if not p.firstmove)
+               for p in board.pieces if not p.first_move)
 all_rules.append(developed_pieces)
 
 @call_trace(3)

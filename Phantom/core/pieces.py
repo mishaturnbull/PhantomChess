@@ -35,6 +35,20 @@ import uuid
 
 __all__ = []
 
+piece_chars = {    # (as_ascii, as_unicode)
+    'white king'   : ('K', u'\u2654'),
+    'white queen'  : ('Q', u'\u2655'),
+    'white rook'   : ('R', u'\u2656'),
+    'white bishop' : ('B', u'\u2657'),
+    'white knight' : ('N', u'\u2658'),
+    'white pawn'   : ('P', u'\u2659'),
+    'black king'   : ('k', u'\u265a'),
+    'black queen'  : ('q', u'\u265b'),
+    'black rook'   : ('r', u'\u265c'),
+    'black bishop' : ('b', u'\u265d'),
+    'black knight' : ('n', u'\u265e'),
+    'black pawn'   : ('p', u'\u265f')}
+
 class ChessPiece (PhantomObj):
 
     allIsFrozen = False  # all piece level freeze
@@ -45,25 +59,20 @@ class ChessPiece (PhantomObj):
     default_origins = []
 
     def __init__(self, pos, color, owner=None):
-        self.color = Side(color)
         if pos not in self.bounds:
             raise InvalidDimension('Piece spawned out of bounds: {}'.format(pos),
                                    'Phantom.core.pieces.ChessPiece.__init__()')
         self.coord = pos
+        self.color = Side(color)
+        self.name = '{} {}'.format(color, self.ptype).lower()
+        as_ascii, as_unicode = piece_chars[self.name]
+        self.fen_char = as_ascii
+        self.disp_char = as_unicode if C.use_unicode else as_ascii
+        self.pythonista_gui_img_name = 'Chess set images {}.jpg'.format(self.name)
         self.isFrozen = False  # piece level freeze
         self.promotable = False
-        self.firstmove = True
+        self.first_move = True
         self._uuid = uuid.uuid4()
-
-        self.fen_char = C.piece_chars['c_{}_{}'.format(self.color.color,
-                                                       self.ptype)]
-        if C.use_unicode:
-            self.disp_char = C.piece_chars['d_{}_{}'.format(self.color.color,
-                                                            self.ptype)]
-        else:
-            self.disp_char = self.fen_char
-
-        self.pythonista_gui_imgname = 'Chess set images {} {}.jpg'.format(self.color.color, self.ptype)
         self.owner = None  # Set the attribute before it can be checked in set_owner()
         if owner:
             self.set_owner(owner)
@@ -72,23 +81,22 @@ class ChessPiece (PhantomObj):
         # this cache holds moves that are allowed by the .apply_ruleset() method
         # it will be updated after a move and is used to speed up the .valid() method
         # by shortening the list it must iterate through
-        self.subvalidcache = self.update_cache()
+        self.subvalid_cache = self.update_cache()
 
     # 671: @ccc you were right in commit 79e3218 - __str__ causes loops
     def as_str(self):
         fmt = """    {}
-    Color: {}
     Valid moves: {}
     Is promotable: {}
     This piece threatens: {}
     This piece is threatened by: {}
     """
         valid = [c.as_chess for c in self.valid()]
-        return fmt.format(repr(self), self.color.color, valid,
-                          self.promotable, self.threatens(), self.threatened_by())
+        return fmt.format(repr(self), valid, self.promotable, self.threatens(),
+                                                              self.threatened_by())
 
     def __repr__(self):
-        return '<{} at {} in {}>'.format(self.ptype, self.coord, hex(id(self)))
+        return '<{} at {} in {}>'.format(self.name, self.coord, hex(id(self)))
 
     def __hash__(self):
         return int(self._uuid) % (self.owner.moves + 1)
@@ -113,7 +121,7 @@ class ChessPiece (PhantomObj):
     # implementation detail 5
     @call_trace(3)
     def valid(self):
-        return [pos for pos in self.subvalidcache if self.owner.validatemove(self.coord, pos)]
+        return [pos for pos in self.subvalid_cache if self.owner.validatemove(self.coord, pos)]
 
     # 671: should this be a property or a function?  Does it even matter?
     @property
@@ -195,8 +203,8 @@ class ChessPiece (PhantomObj):
         """Go somewhere."""
         self.owner.board.kill(self.owner.board[target])
         self.coord = target
-        self.subvalidcache = self.update_cache()
-        self.firstmove = False
+        self.subvalid_cache = self.update_cache()
+        self.first_move = False
 
     @call_trace(4)
     def update_cache(self):
@@ -221,7 +229,7 @@ class Pawn (ChessPiece):
             op = lambda a, b: a - b
 
         allowed = [Coord(self.coord.x, op(self.coord.y, 1))]
-        if self.firstmove:
+        if self.first_move:
             allowed.append(Coord(self.coord.x, op(self.coord.y, 2)))
         for move in allowed:
             if self.owner.board[move]:
@@ -248,8 +256,8 @@ class Pawn (ChessPiece):
     # These would not be included in the .subvalidcache list and therefore not
     # displayed on the GUI as valid moves
     def valid(self):
-        self.subvalidcache = self.update_cache()
-        return [p for p in self.subvalidcache if self.owner.validatemove(self.coord, p)]
+        self.subvalid_cache = self.update_cache()
+        return [p for p in self.subvalid_cache if self.owner.validatemove(self.coord, p)]
 
 __all__.append('Pawn')
 
