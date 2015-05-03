@@ -94,6 +94,6 @@ class call_trace (object):
         # keep the same function name to make life easier
         # *Should* use the Phantom.utils.decorators.named() decorator - but this file
         # has to be import clean, so we can't import it
-        wrapped.__name__ = self.name or f.__name__
+        call_trace_wrapped.__name__ = self.name or f.__name__
 
         return call_trace_wrapped

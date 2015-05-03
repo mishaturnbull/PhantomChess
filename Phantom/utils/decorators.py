@@ -30,11 +30,11 @@ class named (object):
 
     def __call__(self, f):
 
-        def wrapped(*args, **kwargs):
+        def named_wrapped(*args, **kwargs):
             return f(*args, **kwargs)
 
-        wrapped.__name__ = self.fname
-        return wrapped
+        named_wrapped.__name__ = self.fname
+        return named_wrapped
 
 class exc_catch (object):
     """Catch exceptions.  Basically, if something goes wrong in a function and it's not one of the
