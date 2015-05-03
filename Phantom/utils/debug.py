@@ -59,8 +59,8 @@ def log_msg(msg, level, **kwargs):
         pm = ' '
     msg = pm + msg
 
-    if len(msg) >= 88:
-        msg = msg[:88] + '\n -' + msg[88:]
+    #if len(msg) >= 88:
+    #    msg = msg[:88] + '\n -' + msg[88:]
 
     writeto = os.path.join(phantom_dir, 'utils', dbg_name)
 
