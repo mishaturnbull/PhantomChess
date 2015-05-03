@@ -42,12 +42,12 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         for p in board.pieces:
             if p.is_promotable:
                 self.promoter = p
-                self.color = p.color
+                self.color = p.color.color  # this syntax is a bit mind numbing
         if not hasattr(self, 'promoter'):
             del self  # ???
             #self.parent.switch_scene(self.game.data['screen_main'])
         self.owner = self.promoter.owner
-        y = 7 if p.color == 'white' else 0
+        y = 7 if self.color == 'white' else 0
         self.spawncoord = Coord(self.promoter.coord.x, y)
         qpos, rpos, bpos, kpos = [Coord(x, 4) for x in (2, 3, 4, 5)]
         self.queen = Queen(qpos, self.color, self.promoter.owner)
@@ -69,7 +69,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
                                 self.knight.coord.as_screen.y,
                                 scale_factor, scale_factor)
 
-        piece_types = [p.__class__.__name__.lower() for p in self.pieces]
+        piece_types = [p.ptype for p in self.pieces]
         self.img_names = self.game_view.load_images(piece_types)
 
     def touch_began(self, touch):
