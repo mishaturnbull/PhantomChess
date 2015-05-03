@@ -54,12 +54,13 @@ class Tile (PhantomObj):
     def __init__(self, pos, color):
         self.x = pos.x
         self.y = pos.y
-        self.color = Side(color)
+        self.color = color
         self.coord = pos
         if color == 'black':
             self.char = C.black_space_char[int(C.use_unicode)]  # zero or one
         else:
             self.char = C.white_space_char[int(C.use_unicode)]  # zero or one
+        self.tilecolor = C.grid_colors[self.color]
 
 __all__.append('Tile')
 
