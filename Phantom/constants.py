@@ -20,6 +20,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 from Phantom.__version__ import __version__ as version
 from Phantom.can_print_unicode import can_print_unicode
+import sys
 
 try:
     import ui
@@ -44,6 +45,8 @@ debug = 0
 # be used but otherwise ASCII will be used.
 # CCC: Turning use_unicode on by default
 # 671: decide whether to use_unicode in `Phantom.can_print_unicode`
+default_encoding = (sys.stdout.encoding or
+                    ('cp437' if sys.platform.startswith('win') else 'utf-8'))
 use_unicode = can_print_unicode()
 
 ###################################################################################################################

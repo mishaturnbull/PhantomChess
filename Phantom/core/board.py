@@ -237,7 +237,7 @@ class Board (PhantomObj):
                         char = self.tile_at(Coord(x, y)).char if self.cfg.disp_sqrs else ' '
                 line.append(char)
             lines.append(' '.join(line))
-        return '\n'.join(lines).encode('utf-8')
+        return '\n'.join(lines).encode(C.default_encoding)
 
     def pprint(self):
         """Print a pretty version of the board."""
