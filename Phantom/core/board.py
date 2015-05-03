@@ -543,3 +543,4 @@ if __name__ == '__main__':
     b = Board()
     b.set_name('Chess')
     b.pprint()
+
