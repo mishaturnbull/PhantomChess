@@ -204,7 +204,7 @@ else:
     class Rect (object):
         def __init__(self, x, y, w, h):
             self.x = x
-            self.y = x
+            self.y = y
             self.w = w
             self.h = h
     screen_size = Rect(0, 0, screen_width, screen_height)

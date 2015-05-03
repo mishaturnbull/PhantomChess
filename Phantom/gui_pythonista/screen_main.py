@@ -234,7 +234,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame, loadgame
-    game = ChessGame() #loadgame('Long Endgame 1')
+    game = ChessGame()  #loadgame('Long Endgame 1')
     game.board.cfg.disp_sqrs = True
     s = ChessMainScreen(game)
     scene.run(s, orientation=scene.LANDSCAPE)

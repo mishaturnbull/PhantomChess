@@ -64,11 +64,12 @@ def log_msg(msg, level, **kwargs):
 
     writeto = os.path.join(phantom_dir, 'utils', dbg_name)
 
+    # noinspection PyBroadException
     try:
         if write:
             with open(writeto, 'a') as f:
                 f.write(msg + '\n')
-    except Exception as e:
+    except Exception:
         log_msg("Exception {} in log_msg, couldn't write to file", level, write=False)
         ret = False
 

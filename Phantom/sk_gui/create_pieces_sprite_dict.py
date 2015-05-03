@@ -18,7 +18,7 @@ class Game (sk.Scene):
             print(piece.name, piece.frame)
 
     @classmethod
-    def create_pieces_sprite_dict(self, piece_types=None):
+    def create_pieces_sprite_dict(cls, piece_types=None):
         # returns a dict of {piece_short_name : piece_as_sk.SpriteNode} entries
         piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
         short_names = ('{} {}'.format(color, type) for type in piece_types

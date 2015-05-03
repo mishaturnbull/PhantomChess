@@ -49,8 +49,8 @@ class Namespace (PhantomObj):
         if not isinstance(other, self.__class__):
             fmt = 'Argument to copy_data_from must be {} instance, got {}'
             raise TypeError(fmt.format(self.__class__.__name__, type(other)))
-        for key, value in other.__dict__.iteritems():
-            self[key] = value
+        for key in other:
+            self[key] = other[key]
 
 class Cfg (Namespace, PhantomObj):
     

@@ -19,7 +19,8 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 #########################################################################
 
 # R0 20150215T2048
-def top(): pass
+def top():
+    pass
 #                                                   CHESS
 ###################################################################################################################
 
@@ -261,4 +262,5 @@ def program_use(): return """
      ```
 """
     
-def bottom(): pass
+def bottom():
+    pass

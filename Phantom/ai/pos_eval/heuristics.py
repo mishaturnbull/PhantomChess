@@ -253,7 +253,7 @@ def bad_bishops(board):
     return score
 all_rules.append(bad_bishops)
 
-# --------------------assess piece layout according to Phantom.ai.pos_eval.piece_tables-------------------------------------
+# --------------------assess piece layout according to Phantom.ai.pos_eval.piece_tables---------------------------------
 @call_trace(3)
 def pawn_assess(board):
     from Phantom.ai.pos_eval.piece_tables import white_pawns, black_pawns
