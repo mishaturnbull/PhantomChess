@@ -156,7 +156,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
             for piece in board.pieces:
                 scene.tint(1, 1, 1, 0.5)
                 pos = piece.coord.as_screen
-                img = self.img_names[piece.pythonista_gui_imgname]
+                img = self.img_names[piece.pythonista_gui_img_name]
                 scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
                 scene.tint(1, 1, 1, 1)
                 if piece.coord == self.selected:
