@@ -57,6 +57,9 @@ target/
 .spyderproject
 .spyderworkspace
 
+# PyCharm
+.idea/
+
 # Phantom
 debug.txt
 *.dev.*
