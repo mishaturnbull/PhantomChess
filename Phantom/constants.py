@@ -103,23 +103,40 @@ save_epd = 'savegames_epd.txt'
 test_suite = 'Phantom_test_suite.txt'  # don't add your own games to this!
 dbg_name  = 'debug.txt'
 
+piece_chars = {    # (as_ascii, as_unicode) or [int(use_unicode)]
+    'white king'   : ('K', u'\u2654'),
+    'white queen'  : ('Q', u'\u2655'),
+    'white rook'   : ('R', u'\u2656'),
+    'white bishop' : ('B', u'\u2657'),
+    'white knight' : ('N', u'\u2658'),
+    'white pawn'   : ('P', u'\u2659'),
+    'black king'   : ('k', u'\u265a'),
+    'black queen'  : ('q', u'\u265b'),
+    'black rook'   : ('r', u'\u265c'),
+    'black bishop' : ('b', u'\u265d'),
+    'black knight' : ('n', u'\u265e'),
+    'black pawn'   : ('p', u'\u265f')}
 
-piece_chars = dict(
-c_white_pawn     = 'P',
-c_black_pawn     = 'p',
-c_white_rook     = 'R',
-c_black_rook     = 'r',
-c_white_bishop   = 'B',
-c_black_bishop   = 'b',
-c_white_knight   = 'N',
-c_black_knight   = 'n',
-c_white_queen    = 'Q',
-c_black_queen    = 'q',
-c_white_king     = 'K',
-c_black_king     = 'k',
-c_white_space    = ' ',
-c_black_space    = '.',
-c_turn_indicator = '<',
+turn_indicator   = ('<', u'\u25c0')
+black_space_char = ('.', u'\u2022')  # solid bullet
+white_space_char = (' ', u'\u25e6')  # hollow bullet
+
+#piece_chars = dict(
+#c_white_pawn     = 'P',
+#c_black_pawn     = 'p',
+#c_white_rook     = 'R',
+#c_black_rook     = 'r',
+#c_white_bishop   = 'B',
+#c_black_bishop   = 'b',
+#c_white_knight   = 'N',
+#c_black_knight   = 'n',
+#c_white_queen    = 'Q',
+#c_black_queen    = 'q',
+#c_white_king     = 'K',
+#c_black_king     = 'k',
+#c_white_space    = ' ',
+#c_black_space    = '.',
+#c_turn_indicator = '<',
 
 #d_white_pawn     = u'\u2659',
 #d_black_pawn     = u'\u265f',
@@ -133,9 +150,9 @@ c_turn_indicator = '<',
 #d_black_queen    = u'\u265b',
 #d_white_king     = u'\u2654',
 #d_black_king     = u'\u265a',
-d_white_space    = u'\u25e6',  # hollow bullet
-d_black_space    = u'\u2022',  # solid bullet
-d_turn_indicator = u'\u25c0')
+#d_white_space    = u'\u25e6',  # hollow bullet
+#d_black_space    = u'\u2022',  # solid bullet
+#d_turn_indicator = u'\u25c0')
 
 fen_rank_split = '/'
 default_halfmove = 0
@@ -154,24 +171,24 @@ opening_fen = ('{r}{n}{b}{q}{k}{b}{n}{r}{S}'
                '8{S}'
                '{P}{P}{P}{P}{P}{P}{P}{P}{S}'
                '{R}{N}{B}{Q}{K}{B}{N}{R}'
-               ' {t} {c} {e} {h} {f}').format(r=piece_chars['c_black_rook'],
-                                           n=piece_chars['c_black_knight'],
-                                           b=piece_chars['c_black_bishop'],
-                                           q=piece_chars['c_black_queen'],
-                                           k=piece_chars['c_black_king'],
-                                           p=piece_chars['c_black_pawn'],
-                                           S=fen_rank_split,
-                                           R=piece_chars['c_white_rook'],
-                                           N=piece_chars['c_white_knight'],
-                                           B=piece_chars['c_white_bishop'],
-                                           Q=piece_chars['c_white_queen'],
-                                           K=piece_chars['c_white_king'],
-                                           P=piece_chars['c_white_pawn'],
-                                           h=str(default_halfmove),
-                                           f=str(default_fullmove),
-                                           t=start_turn,
-                                           c=default_castle,
-                                           e=default_ep)
+               ' {t} {c} {e} {h} {f}').format(r=piece_chars['black rook'][0],
+                                              n=piece_chars['black knight'][0],
+                                              b=piece_chars['black bishop'][0],
+                                              q=piece_chars['black queen'][0],
+                                              k=piece_chars['black king'][0],
+                                              p=piece_chars['black pawn'][0],
+                                              S=fen_rank_split,
+                                              R=piece_chars['white rook'][0],
+                                              N=piece_chars['white knight'][0],
+                                              B=piece_chars['white bishop'][0],
+                                              Q=piece_chars['white queen'][0],
+                                              K=piece_chars['white king'][0],
+                                              P=piece_chars['white pawn'][0],
+                                              h=str(default_halfmove),
+                                              f=str(default_fullmove),
+                                              t=start_turn,
+                                              c=default_castle,
+                                              e=default_ep)
 
 import os as _os
 phantom_dir = _os.path.dirname(_os.path.realpath(__file__))

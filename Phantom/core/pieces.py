@@ -35,20 +35,6 @@ import uuid
 
 __all__ = []
 
-piece_chars = {    # (as_ascii, as_unicode)
-    'white king'   : ('K', u'\u2654'),
-    'white queen'  : ('Q', u'\u2655'),
-    'white rook'   : ('R', u'\u2656'),
-    'white bishop' : ('B', u'\u2657'),
-    'white knight' : ('N', u'\u2658'),
-    'white pawn'   : ('P', u'\u2659'),
-    'black king'   : ('k', u'\u265a'),
-    'black queen'  : ('q', u'\u265b'),
-    'black rook'   : ('r', u'\u265c'),
-    'black bishop' : ('b', u'\u265d'),
-    'black knight' : ('n', u'\u265e'),
-    'black pawn'   : ('p', u'\u265f')}
-
 class ChessPiece (PhantomObj):
 
     allIsFrozen = False  # all piece level freeze
@@ -65,7 +51,7 @@ class ChessPiece (PhantomObj):
         self.coord = pos
         self.color = Side(color)
         self.name = '{} {}'.format(color, self.ptype).lower()
-        as_ascii, as_unicode = piece_chars[self.name]
+        as_ascii, as_unicode = C.piece_chars[self.name]
         self.fen_char = as_ascii
         self.disp_char = as_unicode if C.use_unicode else as_ascii
         self.pythonista_gui_img_name = 'Chess set images {}.jpg'.format(self.name)

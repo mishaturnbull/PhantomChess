@@ -56,9 +56,10 @@ class Tile (PhantomObj):
         self.y = pos.y
         self.color = Side(color)
         self.coord = pos
-        prefix = 'd' if C.use_unicode else 'c'
-        color = self.color.color
-        self.char = C.piece_chars['{}_{}_space'.format(prefix, color)]
+        if color == 'black':
+            self.char = C.black_space_char[int(C.use_unicode)]  # zero or one
+        else:
+            self.char = C.white_space_char[int(C.use_unicode)]  # zero or one
 
 __all__.append('Tile')
 
@@ -213,8 +214,7 @@ class Board (PhantomObj):
 
     def _pprnt(self):
         dash   = '–' if self.cfg.use_unicode else '-'
-        prefix = 'd' if self.cfg.use_unicode else 'c'
-        turn_indicator = ' ' + C.piece_chars['{}_turn_indicator'.format(prefix)]
+        turn_indicator = ' ' + C.turn_indicator[int(C.use_unicode)]  # zero or one
         lines = [self.name.center(19), dash * 19]
         for y in range(C.grid_height, -2, -1):
             line = []
