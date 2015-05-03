@@ -5,12 +5,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -21,7 +21,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 """A lot of rules that analyze a board.
 
 All functions in this file take one argument, a board, and analyze it
-for a specific characteristic. 
+for a specific characteristic.
 They all return a number which should be added to the board variation's score.
 
 The file defines an all_rules list that contains all the functions.  It can be iterated through
@@ -45,7 +45,7 @@ print("Final score:", score)
 
 I'm not going to document the reasoning for each of these rules -- they should be easily
 locatable on the internet.
-""" 
+"""
 
 import string
 from Phantom.ai.phases import Phase
@@ -75,7 +75,7 @@ h = [Coord(7, y) for y in xrange(grid_height)],
 #assert files == filez, '{}\n{}'.format(files, filez)
 
 all_rules = []
-    
+
 @call_trace(3)
 def knight_on_edge(board):
     from Phantom.ai.settings import knight_on_edge_score
@@ -169,19 +169,19 @@ def pawn_structure(board):
     pawns       = board.get_piece_list(ptype='pawn')
     white_pawns = [p for p in pawns if p.color == 'white']
     black_pawns = [p for p in pawns if p.color == 'black']
-    
+
     log_msg('pawn_structure: counting pawns...', 5)
     if len(white_pawns) == 8:
         score += eight_pawns
     if len(black_pawns) == 8:
         score -= eight_pawns
     log_msg('pawn_structure: finished pawn count score={}'.format(score), 5)
-    
+
     log_msg('pawn_structure: analyzing passed pawns...', 5)
     score += passed_pawn * len([pawn for pawn in white_pawns if pawn.coord.y >= 5])
     score -= passed_pawn * len([pawn for pawn in black_pawns if pawn.coord.y <= 2])
     log_msg('pawn_structure: finished passed pawns score={}'.format(score), 5)
-    
+
     log_msg('pawn_structure: analyzing doubled pawns...', 5)
     for pawn in white_pawns:
         xf = files[pawn.coord.as_chess[0]]
@@ -224,14 +224,14 @@ def pawn_structure(board):
     score += isolated_pawn * len(iso_white)
     score -= isolated_pawn * len(iso_black)
     log_msg('pawn_structure: finished isolated pawns score={}'.format(score), 5)
-    
+
     return score
 all_rules.append(pawn_structure)
 
 @call_trace(3)
 def mobility(board):
     from Phantom.ai.settings import mobility_mul, colors
-    return sum(mobility_mul * len(p.valid()) * colors[p.color.color] for p in board.pieces)
+    return sum(mobility_mul * len(p.valid()) * colors[p.color] for p in board.pieces)
 # too slow, can take up to 5 minutes in some situations
 #all_rules.append(mobility)
 

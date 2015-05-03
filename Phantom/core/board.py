@@ -135,7 +135,7 @@ class Board (PhantomObj):
                     klass = ChessPiece.type_from_chr(char)
                     pos = Coord(fileind, y_c)
                     owner = self.player1 if is_white_chr(char) else self.player2
-                    color = owner.color.color
+                    color = owner.color
                     newpiece = klass(pos, color, owner)
                     if newpiece.coord not in klass.default_origins:
                         newpiece.first_move = False
@@ -282,7 +282,7 @@ class Board (PhantomObj):
         self.freeze()
         yield
         self.unfreeze()
-    
+
     def premove(self):
         """Freeze everything and send a signal to players that a move will be
         made."""

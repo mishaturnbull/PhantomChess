@@ -42,7 +42,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
         for p in board.pieces:
             if p.is_promotable:
                 self.promoter = p
-                self.color = p.color.color  # this syntax is a bit mind numbing
+                self.color = p.color  # this syntax is a bit mind numbing
         if not hasattr(self, 'promoter'):
             del self  # ???
             #self.parent.switch_scene(self.game.data['screen_main'])

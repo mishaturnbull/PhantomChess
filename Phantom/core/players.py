@@ -30,7 +30,7 @@ import uuid
 
 __all__ = []
 
-
+# 671: This shouldn't be needed anymore
 class Side (PhantomObj):
 
     def __init__(self, color):
@@ -75,7 +75,7 @@ class Player (PhantomObj):
 
     def __init__(self, color):
 
-        self.color = Side(color)
+        self.color = color  #Side(color)
         self.score = 0
         self.remaining_pieces = 16
         self.pawns = 8
@@ -91,7 +91,7 @@ class Player (PhantomObj):
         self._uuid = uuid.uuid4()
 
     def __repr__(self):
-        return "Player('{}')".format(self.color.color)
+        return "Player('{}')".format(self.color)
 
     def _update(self):
         self.remaining_pieces = (self.pawns +
