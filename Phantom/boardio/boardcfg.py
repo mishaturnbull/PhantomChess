@@ -5,12 +5,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -34,17 +34,17 @@ import sys
 # self.data.x = 5; print self.data.x
 # 99% of use for this class is a dictionary that doesnt
 # raise errors when it doesn't contain an object, but returns None instead
-class Namespace (PhantomObj): 
-    
+class Namespace (PhantomObj):
+
     def __getitem__(self, i):
         return getattr(self, i, None)
 
     def __setitem__(self, i, val):
         setattr(self, i, val)
-    
+
     def __repr__(self):
         return self.__dict__.__repr__()
-    
+
     def copy_data_from(self, other):
         if not isinstance(other, self.__class__):
             fmt = 'Argument to copy_data_from must be {} instance, got {}'
@@ -52,8 +52,8 @@ class Namespace (PhantomObj):
         for key in other:
             self[key] = other[key]
 
-class Cfg (Namespace, PhantomObj):
-    
+class Cfg (PhantomObj):
+
     def __init__(self, **kwargs):
         self.highlight = kwargs.get('highlight', True)
         self.force_moves = kwargs.get('force_moves', False)
@@ -69,7 +69,7 @@ class Cfg (Namespace, PhantomObj):
         self.disp_timers = kwargs.get('disp_timers', False)
         self.board = None
         self.game = None
-    
+
     def set_board(self, b):
         self.board = b
         if hasattr(self.board, 'game'):

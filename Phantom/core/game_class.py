@@ -27,8 +27,6 @@ keeps track of history, which Board doesn't."""
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.board import Board, load as _load_board
 from Phantom.core.players import Player
-#from Phantom.core.coord import *
-from Phantom.boardio.boardcfg import Namespace
 from Phantom.utils.debug import call_trace  # , log_msg
 
 __all__ = []
@@ -65,7 +63,7 @@ class ChessGame (PhantomObj):
         self.history = []
         self.moves = []
         self._uuid = self.board._uuid
-        self.data = Namespace()
+        self.data = dict()
 
     def __repr__(self):
         return self.board._pprnt()

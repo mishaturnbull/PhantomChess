@@ -6,12 +6,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -23,14 +23,14 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 import scene, sys
 
-from Phantom.boardio.boardcfg import Namespace, Cfg
+from Phantom.boardio.boardcfg import Cfg
 from Phantom.core.chessobj import PhantomObj
 from Phantom.constants import scale_factor, screen_size
 from Phantom.core.coord.point import Coord
 from Phantom.core.game_class import ChessGame
 
 class ChessOptionsScreen (scene.Scene, PhantomObj):
-    
+
     def __init__(self, game_view):
         self.game_view = game_view
         self.tmp_t = 0
@@ -50,7 +50,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         self.game.data['has_gui'] = True
         self.data['game'] = self.game
         self.data.copy_data_from(self.game.board.cfg)
-        
+
                         # ( name,           title,           value,   position,           action)
                         # toggles have action == None
         self.buttons = [('disp_coords',    'Show coords',    True,    Coord(0, 672),      None),
@@ -66,7 +66,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
                         #('',              'Reset game',     'NA',    Coord(96, 672),     self.rst_game),]
         self.button_size = Coord(scale_factor, scale_factor)
         self.size = screen_size
-    
+
     # ------------------- Button actions ---------------------
     def toggle(self, key):
         self.data[key] = not self.data[key]
@@ -81,7 +81,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         import clipboard
         fen = self.game.board.fen_str()
         clipboard.set(fen)
-    
+
     def rst_game(self):
         sc_data = self.data
         new_game = ChessGame()
@@ -96,7 +96,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
     def sync_data(self):
         # update game data first to push any changes
         self.game.board.cfg.copy_data_from(self.data)
-        
+
         # update our data as well in case any new variables have
         # been set
         self.data.copy_data_from(self.game.board.cfg)
@@ -112,7 +112,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         state = Coord(mid.x, mid.y - 10)
         scene.text(name, x=label.x, y=label.y)
         scene.text(val, x=state.x, y=state.y)
-    
+
     @staticmethod
     def draw_button(name, pos):
         name = str(name)
@@ -120,7 +120,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         w = h = scale_factor
         mid = Coord(x + (w / 2), y + (h / 2))
         scene.text(name, x=mid.x, y=mid.y)
-    
+
     def touch_began(self, touch):
         w, h = self.button_size.x, self.button_size.y
         for button in self.buttons:
@@ -133,10 +133,10 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
                     self.toggle(name)
                 self.sync_data()
                 break
-    
+
     def draw(self):
         scene.background(0, 0, 0)
-        
+
         for button in self.buttons:
             name, title, value, position, action = button
             if action:  # toggles have action == None

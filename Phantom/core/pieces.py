@@ -28,7 +28,6 @@ from Phantom.core.coord.vectored_lists import (north, south, east, west,
                                                ne, se, nw, sw)
 from Phantom.core.coord.dirs import dirfinder
 from Phantom.core.players import Side
-from Phantom.boardio.boardcfg import Namespace
 from Phantom.functions import dist, round_down
 from Phantom.utils.debug import call_trace, log_msg
 import uuid
@@ -62,7 +61,7 @@ class ChessPiece (PhantomObj):
         self.owner = None  # Set the attribute before it can be checked in set_owner()
         if owner:
             self.set_owner(owner)
-        self.data = Namespace()
+        self.data = dict()
 
         # this cache holds moves that are allowed by the .apply_ruleset() method
         # it will be updated after a move and is used to speed up the .valid() method
