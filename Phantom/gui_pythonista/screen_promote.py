@@ -99,7 +99,7 @@ class ChessPromoteScreen (scene.Scene, PhantomObj):
     def draw(self):
         scene.background(0, 0, 0)
         for piece in self.pieces:
-            img = self.img_names[piece.pythonista_gui_imgname]
+            img = self.img_names[piece.pythonista_gui_img_name]
             pos = piece.coord.as_screen
             scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
         tpos = Coord(screen_width/2, screen_height/2 + 2*scale_factor)
