@@ -13,7 +13,7 @@ class GameScene(sk.Scene):
     def __init__(self, game):
         sk.Scene.__init__(self)
         self.game = game
-        self.name = 'GameNode'
+        self.name = 'GameScene'
         chess_pieces_dict = self.create_pieces_sprite_dict()
         for i, piece_name in enumerate(sorted(chess_pieces_dict)):
             node = chess_pieces_dict[piece_name]
@@ -22,23 +22,30 @@ class GameScene(sk.Scene):
             node.alpha = 0.5
             self.add_child(node)
         board_tiles_dict = self.create_board_tiles_dict()
-        for pos in self.create_board_tiles_dict():
-            self.add_child(board_tiles_dict[pos])
-        for piece in self.get_children_with_name('*'):
+        for board_square in board_tiles_dict.itervalues():
+            self.add_child(board_square)
+        for piece in sorted(self.get_children_with_name('*')):
             print(piece.name, piece.frame)
         self.selected = None
         self.target_pos = None
         self.selected_pos = None
 
-
     @classmethod
     def create_pieces_sprite_dict(cls, piece_types=None):
+        # returns a dict of {piece_name : piece_as_sk.SpriteNode} entries
+        fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
+        def make_piece_sprite(piece_name):
+            piece_sprite = sk.SpriteNode(sk.Texture(fmt.format(piece_name)))
+            piece_sprite.name = piece_name
+            piece_sprite.alpha = 0.5
+            return piece_sprite
         # returns a dict of {piece_short_name : piece_as_sk.SpriteNode} entries
         piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
-        short_names = ('{} {}'.format(color, type) for type in piece_types
-                                                   for color in ('black', 'white'))
+        piece_names = ('{} {}'.format(color, ptype) for ptype in piece_types
+                                                    for color in ('black', 'white'))
         fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
-        return {name:sk.SpriteNode(sk.Texture(fmt.format(name))) for name in short_names}
+        return {piece_name : make_piece_sprite(piece_name)
+                             for piece_name in piece_names}
 
     def create_board_tiles_dict(self):
         # return a dictionary of {Phantom.core.coord.point.Coord :
@@ -72,13 +79,23 @@ class GameScene(sk.Scene):
     def touch_ended(self, node, touch):
         pass
 
+
+class GameView(sk.View):
+    def __init__(self, game=None):
+        self.game = game or ChessGame()
+        sk.View.__init__(self, GameScene(self.game))
+        self.shows_fps = True
+        self.present()
+
+
 def main():
     print('=' * 30)
-    game = ChessGame()
-    game_scene = GameScene(game)
-    scene_view = sk.View(game_scene)
-    scene_view.shows_fps = True
-    scene_view.present()
+    GameView()
+    #game = ChessGame()
+    #game_scene = GameScene(game)
+    #scene_view = sk.View(game_scene)
+    #scene_view.shows_fps = True
+    #scene_view.present()
 
 if __name__ == '__main__':
     main()
