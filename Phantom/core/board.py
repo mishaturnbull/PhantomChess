@@ -62,6 +62,14 @@ class Tile (PhantomObj):
             self.char = C.white_space_char[int(C.use_unicode)]  # zero or one
         self.tilecolor = C.grid_colors[self.color]
 
+    @property
+    def as_chess(self):
+        return self.coord.as_chess
+
+    @property
+    def as_screen(self):
+        return self.coord.as_screen
+
 __all__.append('Tile')
 
 
