@@ -17,9 +17,7 @@ class GameScene(sk.Scene):
         chess_pieces_dict = self.create_pieces_sprite_dict()
         for i, piece_name in enumerate(sorted(chess_pieces_dict)):
             node = chess_pieces_dict[piece_name]
-            node.name = piece_name
             node.position += ((i+1) * 80, 20 + (i+1) * 50)
-            node.alpha = 0.5
             self.add_child(node)
         board_tiles_dict = self.create_board_tiles_dict()
         for board_square in board_tiles_dict.itervalues():
