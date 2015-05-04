@@ -79,23 +79,22 @@ class GameScene(sk.Scene):
     def touch_ended(self, node, touch):
         pass
 
-
-class GameView(sk.View):
-    def __init__(self, game=None):
-        self.game = game or ChessGame()
-        sk.View.__init__(self, GameScene(self.game))
-        self.shows_fps = True
+'''
+class GameView(sk.View):  # throws TypeError
+    def __init__(self, initial_scene):
+        #self.scene = initial_scene or GameScene(ChessGame())
+        #sk.View.__init__(self, self.scene)
+        #self.shows_fps = True
         self.present()
+'''
 
-
-def main():
-    print('=' * 30)
-    GameView()
-    #game = ChessGame()
-    #game_scene = GameScene(game)
-    #scene_view = sk.View(game_scene)
-    #scene_view.shows_fps = True
-    #scene_view.present()
+def gui_sk(game=None):
+    game = game or ChessGame()
+    #GameView(GameScene(game))  # throws TypeError
+    scene_view = sk.View(GameScene(game))
+    scene_view.shows_fps = True
+    scene_view.present()
 
 if __name__ == '__main__':
-    main()
+    print('=' * 30)
+    gui_sk()
