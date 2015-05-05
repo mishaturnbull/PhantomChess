@@ -99,6 +99,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
 
         # update our data as well in case any new variables have
         # been set
+        # TODO: this will raise an AttributeError but i don't know how to fix it -671
         self.data.copy_data_from(self.game.board.cfg)
 
     @staticmethod

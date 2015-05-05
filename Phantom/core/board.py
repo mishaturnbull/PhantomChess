@@ -147,6 +147,7 @@ class Board (PhantomObj):
                     color = owner.color
                     newpiece = klass(pos, color, owner)
                     if newpiece.coord not in klass.default_origins:
+                        # 671: this test isnt color-sensitive, could cause problems
                         newpiece.first_move = False
                     self.pieces.add(newpiece)
                 elif is_file_split(char):
@@ -405,7 +406,7 @@ class Board (PhantomObj):
                 self.fullmove_clock += 1
 
             target = self[p2]
-            if self.data['move_en_passant']:
+            if self.data.get('move_en_passant', None):
                 if self[p1].color == 'white':
                     target = self[p1 - Coord(0, 1)]
                 elif self[p1].color == 'black':

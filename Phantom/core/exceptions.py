@@ -24,7 +24,6 @@ from Phantom.core.chessobj import PhantomObj
 
 __all__ = []
 
-# 671: Should the mro be (Exception, PhantomObj)?
 class ChessError (Exception, PhantomObj):
 
     # 671: should call Exception.__init__ here? It's been working fine so I
