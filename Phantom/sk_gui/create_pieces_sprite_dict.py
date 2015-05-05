@@ -97,7 +97,11 @@ class GameScene(sk.Scene):
         #pass
 
     def touch_ended(self, node, touch):
-        pass
+        for square in self.get_children_with_name('*'):
+            if not isinstance(square, ChessPiece):
+                if square.frame.contains_point(touch.location):
+                    #print(square.name)
+                    node.position = square.position
 
 '''
 class GameView(sk.View):  # throws TypeError
