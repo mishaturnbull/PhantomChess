@@ -9,6 +9,20 @@ import Phantom.constants as C
 
 img_dir = '../gui_pythonista/imgs'
 
+class ChessPiece(sk.SpriteNode):
+    def __init__(self, piece_name=None):
+        piece_name = piece_name or 'white queen'
+        fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
+        sk.SpriteNode.__init__(self, sk.Texture(fmt.format(piece_name)))
+        self.name = piece_name
+        self.alpha = 0.5
+        self.touch_enabled = True
+
+    def touch_began(self, node, touch):
+        if node:
+            print('Never happens!', self.name, node.name)
+    
+
 class GameScene(sk.Scene):
     def __init__(self, game):
         sk.Scene.__init__(self)
@@ -28,6 +42,7 @@ class GameScene(sk.Scene):
         self.target_pos = None
         self.selected_pos = None
 
+
     @classmethod
     def create_pieces_sprite_dict(cls, piece_types=None):
         # returns a dict of {piece_name : piece_as_sk.SpriteNode} entries
@@ -42,7 +57,9 @@ class GameScene(sk.Scene):
         piece_names = ('{} {}'.format(color, ptype) for ptype in piece_types
                                                     for color in ('black', 'white'))
         fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
-        return {piece_name : make_piece_sprite(piece_name)
+        #return {piece_name : make_piece_sprite(piece_name)
+        #                     for piece_name in piece_names}
+        return {piece_name : ChessPiece(piece_name)
                              for piece_name in piece_names}
 
     def create_board_tiles_dict(self):
@@ -70,9 +87,14 @@ class GameScene(sk.Scene):
 
     def touch_began(self, node, touch):
         pass
+        #if node:
+        #    print(node.__class__, node.name)
+        #    node.position = touch.location
 
     def touch_moved(self, node, touch):
-        pass
+        if node:
+            node.position = touch.location
+        #pass
 
     def touch_ended(self, node, touch):
         pass
