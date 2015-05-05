@@ -60,15 +60,15 @@ if __name__ == '__main__':
     reset                 Reset the game to the opening position
     license               Show license information (it's a long read)
     castle x              Castle on the side 'x' - x can be:
-                            K – white kingside
-                            Q – white queenside
-                            k – black kingside
-                            q – black queenside
+                            K - white kingside
+                            Q - white queenside
+                            k - black kingside
+                            q - black queenside
     promote aa b          Promote the pawn at aa to type b - b can be:
-                            Q – queen
-                            R – rook
-                            N – knight
-                            B – bishop
+                            Q - queen
+                            R - rook
+                            N - knight
+                            B - bishop
 
     ===== AI commands =====
         Prefix all commands listed below with "ai "
