@@ -9,6 +9,18 @@ import Phantom.constants as C
 
 img_dir = '../gui_pythonista/imgs'
 
+'''
+    def squareAtCenterOfScreen(self):
+        theMin = min(self.size.w, self.size.h)
+        theRect = scene.Rect(0, 0, theMin, theMin)
+        theOffset = abs(self.size.w - self.size.h) / 2
+        if self.size.w > self.size.h:
+            theRect.x = theOffset # landscape
+        else:
+            theRect.y = theOffset # portrait
+        return theRect
+'''
+
 class sk_BoardSquare(sk.SpriteNode):
     tile_size = sk.Size(C.scale_factor, C.scale_factor)
     
@@ -108,6 +120,7 @@ class GameView(sk.View):  # throws TypeError
         self.present()
 '''
 
+'Options AI_Easy AI_Hard Get_score Undo Deselect'
 def gui_sk(game=None):
     game = game or ChessGame()
     #GameView(GameScene(game))  # throws TypeError
