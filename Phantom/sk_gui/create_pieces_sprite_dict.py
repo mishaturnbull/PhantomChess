@@ -9,19 +9,37 @@ import Phantom.constants as C
 
 img_dir = '../gui_pythonista/imgs'
 
-class ChessPiece(sk.SpriteNode):
+class sk_BoardSquare(sk.SpriteNode):
+    tile_size = sk.Size(C.scale_factor, C.scale_factor)
+    
+    def __init__(self, tile):
+        sk.SpriteNode.__init__(self) #, sk.Texture(tile.tilecolor))
+        self.alpha = 0.3
+        self.color = tile.color
+        self.name = tile.coord.as_chess
+        pos = tile.coord.as_screen
+        self.position = (pos.x, pos.y)
+        self.size = self.tile_size
+
+    def __contains__(self, touch_or_point):  # if touch in sk_BoardSquare
+        try:
+            return self.frame.contains_point(touch_or_point.location)
+        except AttributeError:
+            return self.frame.contains_point(touch_or_point)
+
+
+class sk_ChessPiece(sk.SpriteNode):
+    fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
+    tile_size = sk.Size(C.scale_factor-2, C.scale_factor-2)
+
     def __init__(self, piece_name=None):
         piece_name = piece_name or 'white queen'
-        fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
-        sk.SpriteNode.__init__(self, sk.Texture(fmt.format(piece_name)))
-        self.name = piece_name
+        sk.SpriteNode.__init__(self, sk.Texture(self.fmt.format(piece_name)))
         self.alpha = 0.5
+        self.name = piece_name
+        self.size = self.tile_size
         self.touch_enabled = True
 
-    def touch_began(self, node, touch):
-        if node:
-            print('Never happens!', self.name, node.name)
-    
 
 class GameScene(sk.Scene):
     def __init__(self, game):
@@ -36,47 +54,25 @@ class GameScene(sk.Scene):
         board_tiles_dict = self.create_board_tiles_dict()
         for board_square in board_tiles_dict.itervalues():
             self.add_child(board_square)
-        for piece in sorted(self.get_children_with_name('*')):
-            print(piece.name, piece.frame)
+        #for piece in sorted(self.get_children_with_name('*')):
+        #    print(piece.name, piece.frame)
         self.selected = None
         self.target_pos = None
         self.selected_pos = None
 
-
     @classmethod
     def create_pieces_sprite_dict(cls, piece_types=None):
-        # returns a dict of {piece_name : piece_as_sk.SpriteNode} entries
-        fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
-        def make_piece_sprite(piece_name):
-            piece_sprite = sk.SpriteNode(sk.Texture(fmt.format(piece_name)))
-            piece_sprite.name = piece_name
-            piece_sprite.alpha = 0.5
-            return piece_sprite
-        # returns a dict of {piece_short_name : piece_as_sk.SpriteNode} entries
+        # return a dictionary of {piece_name : sk_BoardPiece}
         piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
         piece_names = ('{} {}'.format(color, ptype) for ptype in piece_types
                                                     for color in ('black', 'white'))
-        fmt = os.path.join(img_dir, 'Chess set images {}.jpg')
-        #return {piece_name : make_piece_sprite(piece_name)
-        #                     for piece_name in piece_names}
-        return {piece_name : ChessPiece(piece_name)
-                             for piece_name in piece_names}
+        return {name : sk_ChessPiece(name) for name in piece_names}
 
     def create_board_tiles_dict(self):
         # return a dictionary of {Phantom.core.coord.point.Coord :
-        #                          colored_square_as_sk.SpriteNode}
-        # useful for node hit-testing,much simplifies touch_began
-        tile_size = sk.Size(C.scale_factor, C.scale_factor)
-        def make_board_tile(tile):
-            node = sk.SpriteNode()
-            node.name = str(tile.coord.as_chess)
-            node.size = tile_size
-            node.alpha = 0.3
-            pos = tile.coord.as_screen
-            node.position = (pos.x, pos.y)
-            node.color = tile.tilecolor
-            return node
-        return {tile.coord : make_board_tile(tile)
+        #                          sk_BoardSquare}
+        # useful for node hit-testing, greatly simplifies touch_began
+        return {tile.coord : sk_BoardSquare(tile)
                 for tile in self.game.board.tiles}
 
     def did_change_size(self, old_size):
@@ -94,14 +90,14 @@ class GameScene(sk.Scene):
     def touch_moved(self, node, touch):
         if node:
             node.position = touch.location
-        #pass
 
     def touch_ended(self, node, touch):
+        if node == self:
+            return
         for square in self.get_children_with_name('*'):
-            if not isinstance(square, ChessPiece):
-                if square.frame.contains_point(touch.location):
-                    #print(square.name)
-                    node.position = square.position
+            if isinstance(square, sk_BoardSquare) and touch in square:
+                node.position = square.position
+                print('{} was moved to square {}'.format(node.name, square.name))
 
 '''
 class GameView(sk.View):  # throws TypeError
