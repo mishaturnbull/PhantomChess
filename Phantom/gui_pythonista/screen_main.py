@@ -174,8 +174,8 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                 scene.tint(1, 1, 1, 1)
         if self.render_mode['sqrs']:
             for tile in board.tiles:
-                color = tile.color.tilecolor
-                color += (0.57,)  # alpha value
+                color = tile.color  # .tilecolor
+                #color += (0.57,)    # alpha value
                 pos = tile.coord.as_screen
                 scene.fill(*color)
                 scene.rect(pos.x, pos.y, scale_factor, scale_factor)
@@ -233,8 +233,8 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         scene.text('Options', x=x, y=scale_factor*7 - x)
 
 if __name__ == '__main__':
-    from Phantom.core.game_class import ChessGame, loadgame
-    game = ChessGame()  #loadgame('Long Endgame 1')
+    from Phantom.core.game_class import ChessGame, load_game
+    game = ChessGame()  #load_game('Long Endgame 1')
     game.board.cfg.disp_sqrs = True
     s = ChessMainScreen(game)
     scene.run(s, orientation=scene.LANDSCAPE)
