@@ -174,10 +174,10 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                 scene.tint(1, 1, 1, 1)
         if self.render_mode['sqrs']:
             for tile in board.tiles:
-                color = tile.color  # .tilecolor
-                #color += (0.57,)    # alpha value
-                pos = tile.coord.as_screen
+                x = int(tile.color == 'white')  # zero or one
+                color = (x, x, x, 0.57)  # alpha value
                 scene.fill(*color)
+                pos = tile.as_screen
                 scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                 scene.fill(1, 1, 1, 1)
                 if self.render_mode['coords']:
