@@ -13,11 +13,11 @@ class sk_BoardSquare(sk.SpriteNode):
     tile_size = sk.Size(C.scale_factor, C.scale_factor)
     
     def __init__(self, tile):
-        sk.SpriteNode.__init__(self) #, sk.Texture(tile.tilecolor))
+        sk.SpriteNode.__init__(self) # , sk.Texture(tile.color))
         self.alpha = 0.3
         self.color = tile.color
-        self.name = tile.coord.as_chess
-        pos = tile.coord.as_screen
+        self.name = tile.as_chess
+        pos = tile.as_screen
         self.position = (pos.x, pos.y)
         self.size = self.tile_size
 
@@ -62,7 +62,7 @@ class GameScene(sk.Scene):
 
     @classmethod
     def create_pieces_sprite_dict(cls, piece_types=None):
-        # return a dictionary of {piece_name : sk_BoardPiece}
+        # return a dictionary of {piece_name : sk_BoardPiece} entries
         piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
         piece_names = ('{} {}'.format(color, ptype) for ptype in piece_types
                                                     for color in ('black', 'white'))
@@ -70,7 +70,7 @@ class GameScene(sk.Scene):
 
     def create_board_tiles_dict(self):
         # return a dictionary of {Phantom.core.coord.point.Coord :
-        #                          sk_BoardSquare}
+        #                          sk_BoardSquare} entries
         # useful for node hit-testing, greatly simplifies touch_began
         return {tile.coord : sk_BoardSquare(tile)
                 for tile in self.game.board.tiles}
