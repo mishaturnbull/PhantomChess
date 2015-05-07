@@ -91,8 +91,12 @@ class Coord (PhantomObj):
             return Coord(self.x ** other, self.y ** other)
         raise TypeError('Coord cannot be exponentiated to type {}'.format(type(other)))
 
-    def __contains__(self, elem):
-        return (elem == self.x) or (elem == self.y)
+    #def __contains__(self, elem):
+    #    return (elem == self.x) or (elem == self.y)
+
+    def __iter__(self):  # enables: x, y = my_coord
+        yield self.x
+        yield self.y
 
     def __eq__(self, other):
         if isinstance(other, Coord):
