@@ -12,7 +12,7 @@ img_dir = '../gui_pythonista/imgs'
 
 class sk_BoardSquare(sk.SpriteNode):
     tile_size = sk.Size(C.scale_factor, C.scale_factor)
-    
+
     def __init__(self, tile):
         sk.SpriteNode.__init__(self) # , sk.Texture(tile.color))
         self.alpha = 0.3
@@ -91,7 +91,7 @@ class SkChessBoardScene(sk.Scene):
 
     def touch_began(self, node, touch):
         pass
-        #if node:
+        #if node is not self:
         #    print(node.__class__, node.name)
         #    node.position = touch.location
 

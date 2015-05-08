@@ -77,8 +77,14 @@ class ChessPiece (PhantomObj):
     This piece is threatened by: {}
     """
         valid = [c.as_chess for c in self.valid()]
-        return fmt.format(repr(self), valid, self.promotable, self.threatens(),
-                                                              self.threatened_by())
+        threatens_fmt = '{} at {}'
+        threatens = [threatens_fmt.format(p.ptype, p.coord.as_chess)
+                                          for p in self.threatens()]
+        threats_fmt = '{} at {}'
+        threats = [threats_fmt.format(p.ptype, p.coord.as_chess)
+                                      for p in self.threatened_by()]
+        return fmt.format(repr(self), valid, self.promotable, threatens,
+                                                              threats)
 
     def __repr__(self):
         return '<{} at {} in {}>'.format(self.name, self.coord, hex(id(self)))
@@ -142,6 +148,15 @@ class ChessPiece (PhantomObj):
         return True
 
     # TODO: make this work properly (sometimes it overshoots the target)
+    # 671: this seems to work on all pieces except the bishops, would an
+    #      iterative process be better:
+    #    pdir = dirfinder(self, target)
+    #    i = self.coord.__copy__()
+    #    ret = []
+    #    while not self.owner.board[target]:
+    #        i += some other coord at a dist of one in the correct direction
+    #        ret.append(i)
+    #    return ret
     @call_trace(3)
     def path_to(self, target):
         """Generate a path to a target."""

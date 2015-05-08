@@ -44,6 +44,7 @@ class Coord (PhantomObj):
 
     @integer_args
     def __init__(self, *args):
+        """Create a coordinate object.   Args: Coord(x, y)."""
         if len(args) == 1:
             c = Coord.from_chess(args[0])
             self.x = c.x
@@ -125,9 +126,13 @@ class Coord (PhantomObj):
     def __hash__(self):
         return (self.x + 2) ** (self.y + 2)
 
-    #@property
-    #def as_tup(self):
-    #    return self.__tuple__()
+    def __copy__(self):
+        return Coord(self.x, self.y)
+
+    # 671: needed in coord.vectored_lists
+    @property
+    def as_tup(self):
+        return self.__tuple__()
 
     @property
     def as_chess(self):
