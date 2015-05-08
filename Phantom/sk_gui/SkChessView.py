@@ -29,12 +29,12 @@ class SkChessView(ui.View):
         board_scene = SkChessBoardScene(game)
         scene_view = sk.View(board_scene)
         scene_view.frame = center_square()
-        #print(ui.get_screen_size(), scene_view.frame)
+        # print(ui.get_screen_size(), scene_view.frame)
         scene_view.shows_fps = True
         scene_view.shows_node_count = True
         scene_view.shows_physics = True
         self.add_subview(scene_view)
-        #scene_view.present()
+        # scene_view.present()
         return board_scene
 
     @classmethod
@@ -54,10 +54,10 @@ class SkChessView(ui.View):
 def gui_sk(game=None):
     game = game or ChessGame()
     SkChessView(game)
-    ##GameView(GameScene(game))  # throws TypeError
-    #scene_view = sk.View(GameScene(game))
-    #scene_view.shows_fps = True
-    #scene_view.present()
+    ## GameView(GameScene(game))  # throws TypeError
+    # scene_view = sk.View(GameScene(game))
+    # scene_view.shows_fps = True
+    # scene_view.present()
 
 if __name__ == '__main__':
     print('=' * 30)

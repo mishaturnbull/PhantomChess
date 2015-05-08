@@ -125,9 +125,9 @@ class Coord (PhantomObj):
     def __hash__(self):
         return (self.x + 2) ** (self.y + 2)
 
-    @property
-    def as_tup(self):
-        return self.__tuple__()
+    #@property
+    #def as_tup(self):
+    #    return self.__tuple__()
 
     @property
     def as_chess(self):

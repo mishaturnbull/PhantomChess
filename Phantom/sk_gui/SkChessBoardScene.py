@@ -50,7 +50,7 @@ class SkChessBoardScene(sk.Scene):
         chess_pieces_dict = self.create_pieces_sprite_dict()
         for i, piece_name in enumerate(sorted(chess_pieces_dict)):
             node = chess_pieces_dict[piece_name]
-            node.position += ((i+1) * 60, 20 + (i+1) * 50)
+            node.position += ((i+1) * 40, (i+1) * 40)
             self.add_child(node)
         board_tiles_dict = self.create_board_tiles_dict()
         for board_square in board_tiles_dict.itervalues():
@@ -64,9 +64,16 @@ class SkChessBoardScene(sk.Scene):
     @classmethod
     def create_pieces_sprite_dict(cls, piece_types=None):
         # return a dictionary of {piece_name : sk_BoardPiece} entries
-        piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
-        piece_names = ('{} {}'.format(color, ptype) for ptype in piece_types
-                                                    for color in ('black', 'white'))
+        pieces_dict = {'bishop': 2,
+                       'king':   1,
+                       'knight': 2,
+                       'pawn':   8,
+                       'queen':  1,
+                       'rook':   2}
+        #piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
+        piece_names = ('{} {} {}'.format(color, ptype) for i in pieces_dict[ptype]
+                                                       for ptype in pieces_dict
+                                                       for color in ('black', 'white'))
         return {name : sk_ChessPiece(name) for name in piece_names}
 
     def create_board_tiles_dict(self):
