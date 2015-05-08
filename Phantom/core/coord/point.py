@@ -130,9 +130,10 @@ class Coord (PhantomObj):
         return Coord(self.x, self.y)
 
     # 671: needed in coord.vectored_lists
-    @property
-    def as_tup(self):
-        return self.__tuple__()
+    # ccc: not anymore -- uses __iter__() instead
+    #@property
+    #def as_tup(self):
+    #    return self.__tuple__()
 
     @property
     def as_chess(self):
