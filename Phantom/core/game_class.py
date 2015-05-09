@@ -131,8 +131,8 @@ class ChessGame (PhantomObj):
         if in_pythonista:
             try:
                  import sk
-                 from Phantom.gui_pythonista.sk_game_view import GameView
-                 self.gui = GameView(self)
+                 from Phantom.sk_gui.SkChessVies import SkChessView
+                 self.gui = SkChessView(self)
             except ImportError:
                  sys.exit('Pythonista sk module no found!')
 
