@@ -32,8 +32,7 @@ import sys
 # self.data = Namespace()
 # then to set/get variables:
 # self.data.x = 5; print self.data.x
-# 99% of use for this class is a dictionary that doesnt
-# raise errors when it doesn't contain an object, but returns None instead
+# as of commit 4bce1f4 this class is no longer used
 class Namespace (PhantomObj):
 
     def __getitem__(self, i):

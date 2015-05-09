@@ -22,6 +22,11 @@ from Phantom.__version__ import __version__ as version
 from Phantom.can_print_unicode import can_print_unicode
 import sys
 
+import ConfigParser as cfgparse
+cfg_file_name = 'PhantomConfig.cfg'
+cfg = cfgparse.ConfigParser()
+cfg.read(cfg_file_name)
+
 try:
     import ui
     in_pythonista = True
@@ -29,7 +34,8 @@ try:
     del ui
 except ImportError:
     in_pythonista = False
-    screen_width, screen_height = 1024, 768
+    screen_width = cfg.getint('general', 'screen_width')
+    screen_height = cfg.getint('general', 'screen_height')
 
 ###################################################################################################################
 ############################################### USER SETTINGS #####################################################
@@ -38,7 +44,7 @@ except ImportError:
 # Debug level
 # This can make the program slow
 # Please select from xrange(11)
-debug = 0
+debug = cfg.getint('debug', 'level')
 
 # Use the unicode prettyprinter or an ASCII prettyprinter
 # By default this is set to "in_pythonista", so that in the app unicode will
@@ -54,7 +60,7 @@ use_unicode = can_print_unicode()
 ###################################################################################################################
 
 # if debug > exc_catch_cutoff, the exc_catch decorator does nothing
-exc_catch_cutoff = 3
+exc_catch_cutoff = cfg.getint('debug', 'exc_catch_cutoff')
 
 # 671: is this actually used anywhere? I can't think of any uses..
 # ccc: I hope not because nw is present twice and ne is not present at all
@@ -83,43 +89,35 @@ dirs = {'north': (0, 1),
 #                     }
 
 # these do affect gameplay and will raise errors if edited
-grid_width = 8
-grid_height = 8
-grid_colors = { 'black': (0.27462, 0.26326, 0.27367),
-                'white': (0.86674, 0.86674, 0.88017) }
-scale_factor = screen_height // grid_height  # Get the height, in pixels, of each square
+grid_width = cfg.getint('internal', 'grid_width')
+grid_height = cfg.getint('internal', 'grid_height')
+grid_colors = eval(cfg.get('internal', 'grid_colors'))
+scale_factor = cfg.getint('internal', 'scale_factor')
 
-holder_point = (-10, -10)
+holder_point = eval(cfg.get('internal', 'holder_point'))
 
-moves = []
-detailed = []
-counter = 1
-ncounter = 0
-
-filename = 'move_record.py'
-raw_name  = 'raw_record'
-save_fen = 'savegames_fen.txt'
-save_epd = 'savegames_epd.txt'
-test_suite = 'Phantom_test_suite.txt'  # don't add your own games to this!
-dbg_name  = 'debug.txt'
+save_fen = cfg.get('internal', 'save_fen')
+save_epd = cfg.get('internal', 'save_epd')
+test_suite = cfg.get('internal', 'test_suite')
+dbg_name  = cfg.get('internal', 'dbg_name')
 
 piece_chars = {    # (as_ascii, as_unicode) or [int(use_unicode)]
-    'white king'   : ('K', u'\u2654'),
-    'white queen'  : ('Q', u'\u2655'),
-    'white rook'   : ('R', u'\u2656'),
-    'white bishop' : ('B', u'\u2657'),
-    'white knight' : ('N', u'\u2658'),
-    'white pawn'   : ('P', u'\u2659'),
-    'black king'   : ('k', u'\u265a'),
-    'black queen'  : ('q', u'\u265b'),
-    'black rook'   : ('r', u'\u265c'),
-    'black bishop' : ('b', u'\u265d'),
-    'black knight' : ('n', u'\u265e'),
-    'black pawn'   : ('p', u'\u265f')}
+    'white king'   : eval(cfg.get('piece_chars', 'white_king')),
+    'white queen'  : eval(cfg.get('piece_chars', 'white_queen')),
+    'white rook'   : eval(cfg.get('piece_chars', 'white_rook')),
+    'white bishop' : eval(cfg.get('piece_chars', 'white_bishop')),
+    'white knight' : eval(cfg.get('piece_chars', 'white_knight')),
+    'white pawn'   : eval(cfg.get('piece_chars', 'white_pawn')),
+    'black king'   : eval(cfg.get('piece_chars', 'black_king')),
+    'black queen'  : eval(cfg.get('piece_chars', 'black_queen')),
+    'black rook'   : eval(cfg.get('piece_chars', 'black_rook')),
+    'black bishop' : eval(cfg.get('piece_chars', 'black_bishop')),
+    'black knight' : eval(cfg.get('piece_chars', 'black_knight')),
+    'black pawn'   : eval(cfg.get('piece_chars', 'black_pawn'))}
 
-turn_indicator   = ('<', u'\u25c0')
-black_space_char = ('.', u'\u2022')  # solid bullet
-white_space_char = (' ', u'\u25e6')  # hollow bullet
+turn_indicator   = eval(cfg.get('piece_chars', 'turn_indicator'))
+black_space_char = eval(cfg.get('piece_chars', 'black_space_char'))
+white_space_char = eval(cfg.get('piece_chars', 'white_space_char'))
 
 #piece_chars = dict(
 #c_white_pawn     = 'P',
@@ -154,12 +152,12 @@ white_space_char = (' ', u'\u25e6')  # hollow bullet
 #d_black_space    = u'\u2022',  # solid bullet
 #d_turn_indicator = u'\u25c0')
 
-fen_rank_split = '/'
-default_halfmove = 0
-default_fullmove = 1
-start_turn = 'w'
-default_castle = 'KQkq'
-default_ep = '-'
+fen_rank_split = cfg.get('piece_chars', 'fen_rank_split')
+default_halfmove = cfg.getint('piece_chars', 'default_halfmove')
+default_fullmove = cfg.getint('piece_chars', 'default_fullmove')
+start_turn = cfg.get('piece_chars', 'start_turn')
+default_castle = cfg.get('piece_chars', 'default_castle')
+default_ep = cfg.get('piece_chars', 'default_ep')
 
 # use a formatted version to allow easier changes to settings
 # (not that any changes are planned)
