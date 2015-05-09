@@ -92,6 +92,14 @@ class ChessPiece (PhantomObj):
     def __hash__(self):
         return int(self._uuid) % (self.owner.moves + 1)
 
+    @property
+    def as_chess(self):
+        return self.coord.as_chess
+
+    #@property
+    #def as_screen(self):
+    #    return self.coord.as_screen
+
     def set_owner(self, owner):
         if not self.owner:
             self.owner = owner
