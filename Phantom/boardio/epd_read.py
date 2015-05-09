@@ -150,8 +150,8 @@ def load_epd(string):
     op_fields = operations.split(';')[:-1]  # remove last '' element
     fen = ' '.join([layout, moving, castling_rights, en_passant_rights, halfmove, fullmove])
     b = Board(fen=fen)
-    b.data.raw_operations = operations
-    b.data.op_fields = op_fields
+    b.data['raw_operations'] = operations
+    b.data['op_fields'] = op_fields
     op_data = {}
     for operation in op_fields:
         fields = operation.strip().split()
@@ -160,7 +160,7 @@ def load_epd(string):
         name = opcodes[opcode]
         value = ''.join([o for o in operand])  # operand will be a list, make into a single object
         op_data.update({opcode: (name, value)})
-    b.data.op_data = op_data
+    b.data['op_data'] = op_data
     if 'fmvn' in op_data:
         b.fullmove_clock = int(op_data['fmvn'][1])
     if 'hmvc' in op_data:

@@ -49,7 +49,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
     def setup(self):
         self.game.data['has_gui'] = True
         self.data['game'] = self.game
-        self.data.copy_data_from(self.game.board.cfg)
+        self.data.update(self.game.board.cfg)
 
                         # ( name,           title,           value,   position,           action)
                         # toggles have action == None
@@ -89,7 +89,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         self.game = new_game
         # The reason this doesnt work is that after setting
         # self.game, the (new) game does NOT have the attributes
-        # necessary to have a GUI (missing g.data.main_scene etc)
+        # necessary to have a GUI (missing g.data['main_scene'] etc)
         # This makes the options class' `self.return_to_game()` raise AttributeError
     # ------------------ End button actions ------------------
 
@@ -99,8 +99,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
 
         # update our data as well in case any new variables have
         # been set
-        # TODO: this will raise an AttributeError but i don't know how to fix it -671
-        self.data.copy_data_from(self.game.board.cfg)
+        self.data.update(self.game.board.cfg)
 
     @staticmethod
     def draw_toggle(name, curval, pos):

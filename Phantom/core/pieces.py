@@ -48,7 +48,7 @@ class ChessPiece (PhantomObj):
             raise InvalidDimension('Piece spawned out of bounds: {}'.format(pos),
                                    'Phantom.core.pieces.ChessPiece.__init__()')
         self.coord = pos
-        self.color = Side(color)
+        self.color = color
         self.name = '{} {}'.format(color, self.ptype).lower()
         as_ascii, as_unicode = C.piece_chars[self.name]
         self.fen_char = as_ascii

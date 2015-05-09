@@ -22,7 +22,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 import Phantom.constants as C
 from Phantom.core.chessobj import PhantomObj
-from Phantom.core.players import Player, Side
+from Phantom.core.players import Player
 from Phantom.core.exceptions import InvalidMove, LogicError, ChessError
 from Phantom.core.pieces import ChessPiece
 # from Phantom.core.coord.vectored_lists import north, south, east, west, ne, se, nw, sw
@@ -111,7 +111,7 @@ class Board (PhantomObj):
             raise ChessError('Invalid FEN given to board',
                              'Phantom.core.board.Board.__init__')
         pieces = fields[0]
-        moving_color = Side(fields[1])
+        moving_color = fields[1]
         castling = fields[2]
         en_passant = fields[3]
         halfmove = int(fields[4])
@@ -208,7 +208,7 @@ class Board (PhantomObj):
                 fen += rank_split
         self.upd_rights()  # make sure the castling rights aren't ''
         fen += ' {turn} {castle} {ep} {half} {full}'.format(
-                turn=self.turn.color[0], castle=self.castling_rights,
+                turn=self.turn[0], castle=self.castling_rights,
                 ep=self.en_passant_rights, half=str(self.halfmove_clock),
                 full=str(self.fullmove_clock))
         return fen
@@ -309,11 +309,11 @@ class Board (PhantomObj):
 
     def switch_turn(self):
         if self.turn == 'white':
-            self.turn = Side('black')
+            self.turn = 'black'
             self.player1.timer.pause()
             self.player2.timer.resume()
         elif self.turn == 'black':
-            self.turn = Side('white')
+            self.turn = 'white'
             self.player1.timer.resume()
             self.player2.timer.pause()
 
