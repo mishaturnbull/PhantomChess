@@ -18,8 +18,8 @@ class sk_BoardSquare(sk.SpriteNode):
         self.alpha = 0.3
         self.color = tile.color
         self.name = tile.as_chess
-        pos = tile.as_screen
-        self.position = (pos.x-80, pos.y+48)  # magic numbers!!
+        x, y = tile.as_screen
+        self.position = (x-80, y+48)  # magic numbers!!
         self.size = self.tile_size
 
     def __contains__(self, touch_or_point):  # if touch in sk_BoardSquare
@@ -35,6 +35,7 @@ class sk_ChessPiece(sk.SpriteNode):
 
     def __init__(self, piece_name=None):
         piece_name = piece_name or 'white queen'
+        #piece_name = piece_name.rpartition(' ')[0]  # white queen 0 --> white queen
         sk.SpriteNode.__init__(self, sk.Texture(self.fmt.format(piece_name)))
         self.alpha = 0.5
         self.name = piece_name
@@ -47,14 +48,16 @@ class SkChessBoardScene(sk.Scene):
         sk.Scene.__init__(self)
         self.game = game
         self.name = 'GameScene'
-        chess_pieces_dict = self.create_pieces_sprite_dict()
-        for i, piece_name in enumerate(sorted(chess_pieces_dict)):
-            node = chess_pieces_dict[piece_name]
-            node.position += ((i+1) * 40, (i+1) * 40)
-            self.add_child(node)
-        board_tiles_dict = self.create_board_tiles_dict()
-        for board_square in board_tiles_dict.itervalues():
+        #chess_pieces_dict = self.create_pieces_sprite_dict()
+        #for i, piece_name in enumerate(sorted(chess_pieces_dict)):
+        #    node = chess_pieces_dict[piece_name]
+        #    node.position += ((i+1) * 40, (i+1) * 40)
+        #    self.add_child(node)
+        self.board_tiles_dict = self.create_board_tiles_dict()
+        #print(' '.join([x for x in self.board_tiles_dict]))
+        for board_square in self.board_tiles_dict.itervalues():
             self.add_child(board_square)
+        chess_pieces_list = self.create_pieces_list()
         #for piece in sorted(self.get_children_with_name('*')):
         #    print(piece.name, piece.frame)
         self.selected = None
@@ -71,16 +74,26 @@ class SkChessBoardScene(sk.Scene):
                        'queen':  1,
                        'rook':   2}
         #piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
-        piece_names = ('{} {} {}'.format(color, ptype) for i in pieces_dict[ptype]
-                                                       for ptype in pieces_dict
-                                                       for color in ('black', 'white'))
+        piece_names = ('{} {} {}'.format(color, ptype, i) for color in ('black', 'white')
+                                                          for ptype in pieces_dict
+                                                          for i in xrange(pieces_dict[ptype]))
         return {name : sk_ChessPiece(name) for name in piece_names}
+
+    def create_pieces_list(self):
+        def make_and_place_piece(piece):
+            gui_piece = sk_ChessPiece(piece.name)
+            #print(piece.coord.as_chess)
+            gui_piece.position = self.board_tiles_dict[piece.as_chess].position
+            self.add_child(gui_piece)
+            return gui_piece
+        return [make_and_place_piece(piece) for piece
+                in self.game.board.get_piece_list()]
 
     def create_board_tiles_dict(self):
         # return a dictionary of {Phantom.core.coord.point.Coord :
         #                          sk_BoardSquare} entries
         # useful for node hit-testing, greatly simplifies touch_began
-        return {tile.coord : sk_BoardSquare(tile)
+        return {tile.as_chess : sk_BoardSquare(tile)
                 for tile in self.game.board.tiles}
 
     def did_change_size(self, old_size):
