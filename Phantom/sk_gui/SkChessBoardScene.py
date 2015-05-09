@@ -109,7 +109,7 @@ class SkChessBoardScene(sk.Scene):
         #    node.position = touch.location
 
     def touch_moved(self, node, touch):
-        if node:
+        if node is not self:
             node.position = touch.location
 
     def touch_ended(self, node, touch):

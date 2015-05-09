@@ -42,12 +42,12 @@ class PhantomObj (object):
         return "<{}.{} object at {}>".format(__name__, self.__class__.__name__, hex(id(self)))
 
     def __del__(self):
-        # 671: could the log_msg & class_record be None due to namespace issues?
-        #      if __del__ is invoked by the garbage collector, would those vars be unavailable?
         if log_msg:  # ccc: it is unclear to me why log_msg == None
             log_msg('object of type {} deleted'.format(self.__class__.__name__), 10)
         if class_record:  # ccc: it is unclear to me why class_record == None
-            class_record[self.__class__] -= 1
+            if self.__class__ in class_record:
+                # 671: i don't know why self.__class__ wouldn't be in class_record
+                class_record[self.__class__] -= 1
 
     def __eq__(self, other):
         idmatch = id(self) == id(other)
