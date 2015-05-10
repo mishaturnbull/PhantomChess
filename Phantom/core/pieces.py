@@ -94,7 +94,7 @@ class ChessPiece (PhantomObj):
 
     @property
     def as_chess(self):
-        return self.coord.as_chess
+        return '{} @ {}'.format(self.fen_char, self.coord.as_chess)
 
     #@property
     #def as_screen(self):
