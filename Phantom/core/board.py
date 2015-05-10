@@ -119,7 +119,7 @@ class Board (PhantomObj):
 
         self.halfmove_clock = halfmove
         self.fullmove_clock = fullmove
-        self.turn = moving_color
+        self.turn = 'white' if moving_color.lower() == 'w' else 'black'
         self.castling_rights = castling
         self.en_passant_rights = en_passant
 
@@ -553,4 +553,3 @@ if __name__ == '__main__':
     b = Board()
     b.set_name('Chess')
     b.pprint()
-
