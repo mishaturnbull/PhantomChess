@@ -37,14 +37,10 @@ except ImportError:
     screen_width = cfg.getint('general', 'screen_width')
     screen_height = cfg.getint('general', 'screen_height')
 
-###################################################################################################################
-############################################### USER SETTINGS #####################################################
-###################################################################################################################
-
-# Debug level
-# This can make the program slow
-# Please select from xrange(11)
 debug = cfg.getint('debug', 'level')
+
+# if debug > exc_catch_cutoff, the exc_catch decorator does nothing
+exc_catch_cutoff = cfg.getint('debug', 'exc_catch_cutoff')
 
 # Use the unicode prettyprinter or an ASCII prettyprinter
 # By default this is set to "in_pythonista", so that in the app unicode will
@@ -53,42 +49,15 @@ debug = cfg.getint('debug', 'level')
 # 671: decide whether to use_unicode in `Phantom.can_print_unicode`
 default_encoding = (sys.stdout.encoding or
                     ('cp437' if sys.platform.startswith('win') else 'utf-8'))
-use_unicode = can_print_unicode()
 
-###################################################################################################################
-############################################# END USER SETTINGS ###################################################
-###################################################################################################################
+unicode_pref = cfg.get('general', 'use_unicode')
+if unicode_pref == 'auto':
+    use_unicode = can_print_unicode()
+elif unicode_pref == 'true':
+    use_unicode = True
+else:
+    use_unicode = False
 
-# if debug > exc_catch_cutoff, the exc_catch decorator does nothing
-exc_catch_cutoff = cfg.getint('debug', 'exc_catch_cutoff')
-
-# 671: is this actually used anywhere? I can't think of any uses..
-# ccc: I hope not because nw is present twice and ne is not present at all
-# 671: no it isnt.  Changed the second nw to ne as it should have been
-'''
-dirs = {'north': (0, 1),
-        'south': (0, -1),
-        'east': (1, 0),
-        'west': (-1, 0),
-        'nw': (1, 1),
-        'se': (1, -1),
-        'ne': (-1, 1),
-        'sw': (-1, -1),
-        'unknown': (None, None),
-        }
-'''
-
-# These don't affect gameplay, here for my own reference
-#pieces = ['king', 'rook', 'bishop', 'queen', 'knight', 'pawn']
-#pieces_per_player = {'rook': 2,
-#                     'king': 1,
-#                     'bishop': 2,
-#                     'queen': 1,
-#                     'knight': 2,
-#                     'pawn': 8,
-#                     }
-
-# these do affect gameplay and will raise errors if edited
 grid_width = cfg.getint('internal', 'grid_width')
 grid_height = cfg.getint('internal', 'grid_height')
 grid_colors = eval(cfg.get('internal', 'grid_colors'))
