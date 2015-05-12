@@ -21,11 +21,13 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 from Phantom.__version__ import __version__ as version
 from Phantom.can_print_unicode import can_print_unicode
 import sys
+import os
+phantom_dir = os.path.dirname(os.path.realpath(__file__))
 
 import ConfigParser as cfgparse
 cfg_file_name = 'PhantomConfig.cfg'
-cfg = cfgparse.ConfigParser()
-cfg.read(cfg_file_name)
+cfg = cfgparse.SafeConfigParser()
+cfg.read(os.path.join(phantom_dir, cfg_file_name))
 
 try:
     import ui
@@ -53,10 +55,8 @@ default_encoding = (sys.stdout.encoding or
 unicode_pref = cfg.get('general', 'use_unicode')
 if unicode_pref == 'auto':
     use_unicode = can_print_unicode()
-elif unicode_pref == 'true':
-    use_unicode = True
 else:
-    use_unicode = False
+    use_unicode = cfg.getboolean('general', 'use_unicode')
 
 grid_width = cfg.getint('internal', 'grid_width')
 grid_height = cfg.getint('internal', 'grid_height')
@@ -126,9 +126,7 @@ opening_fen = ('{r}{n}{b}{q}{k}{b}{n}{r}{S}'
                                               c=default_castle,
                                               e=default_ep)
 
-import os as _os
-phantom_dir = _os.path.dirname(_os.path.realpath(__file__))
-del _os
+
 
 if in_pythonista:
     import scene
@@ -144,5 +142,3 @@ else:
             self.w = w
             self.h = h
     screen_size = Rect(0, 0, screen_width, screen_height)
-
-
