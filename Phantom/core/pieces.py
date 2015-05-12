@@ -27,7 +27,6 @@ from Phantom.core.exceptions import InvalidDimension
 from Phantom.core.coord.vectored_lists import (north, south, east, west,
                                                ne, se, nw, sw)
 from Phantom.core.coord.dirs import dirfinder
-from Phantom.core.players import Side
 from Phantom.functions import dist, round_down
 from Phantom.utils.debug import call_trace, log_msg, run_debugged
 import uuid
