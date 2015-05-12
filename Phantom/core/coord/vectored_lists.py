@@ -98,3 +98,115 @@ def unknown(piece):
     return [c for c in all if not c in known]
 
 __all__ = [func.__name__ for func in (north, south, east, west, ne, se, nw, sw, unknown)]
+
+def to_alpha(coord_list):
+    print(coord_list)
+    try:
+        return [x.as_chess for x in coord_list]
+    except KeyError as e:
+        return [str(e)]
+
+if __name__ == '__main__':
+    print('=' * 20)
+    import string
+    class SimplePiece(object):
+        cols = 'abcdefgh'  #  west --> east
+        rows = '12345678'  # south --> north
+        
+        def __init__(self, fen_char='p', fen_loc='d4'):
+            self.fen_char = fen_char
+            self.fen_loc  = fen_loc
+
+        def __str__(self):  ''
+            return '{} @ {} ({})'.format(self.fen_char, self.fen_loc, self.coord)
+        
+        @property
+        def col(self):
+            return self.fen_loc[0]
+
+        @property
+        def row(self):
+            return self.fen_loc[1]
+        
+        def has_valid_loc(self):
+            return self.col in self.cols and self.row in self.rows
+
+        @property
+        def coord(self):
+            return Coord.from_chess(self.fen_loc)
+
+        @property
+        def north_part(self):  # 'd4' --> '5678'
+            return self.rows.partition(self.row)[2]
+
+        @property
+        def south_part(self):  # 'd4' --> '321'
+            return reversed(self.rows.partition(self.row)[0])
+
+        @property
+        def east_part(self):   # 'd4' --> 'efgh'
+            return self.cols.partition(self.col)[2]
+
+        @property
+        def west_part(self):   # 'd4' --> 'cba'
+            return reversed(self.cols.partition(self.col)[0])
+
+        def north(self):
+            print('north>' + ' '.join(to_alpha(north(self))))
+            fmt = '{}{}'.format(self.col, '{}')
+            return (fmt.format(x) for x in self.north_part)
+        
+        def south(self):
+            print('south>' + ' '.join(to_alpha(south(self))))
+            fmt = '{}{}'.format(self.col, '{}')
+            return (fmt.format(x) for x in self.south_part)
+
+        def east(self):
+            print(' east>' + ' '.join(to_alpha(east(self))))
+            fmt = '{}{}'.format('{}', self.row)
+            return (fmt.format(x) for x in self.east_part)
+            
+        def west(self):
+            print(' west>' + ' '.join(to_alpha(west(self))))
+            fmt = '{}{}'.format('{}', self.row)
+            return (fmt.format(x) for x in self.west_part)
+
+        def ne(self):
+            print('   ne>' + ' '.join(to_alpha(ne(self))))
+            return (y+x for x,y in zip(self.north_part, self.east_part))
+
+        def se(self):
+            print('   se>' + ' '.join(to_alpha(se(self))))
+            return (y+x for x,y in zip(self.south_part, self.east_part))
+
+        def nw(self):
+            print('   nw>' + ' '.join(to_alpha(nw(self))))
+            return (y+x for x,y in zip(self.north_part, self.west_part))
+
+        def sw(self):
+            print('   sw>' + ' '.join(to_alpha(sw(self))))
+            return (y+x for x,y in zip(self.south_part, self.west_part))
+
+        def dir_finder(self, target):
+            """Locate the direction in which the target lies and return a 2-tuple of:
+            (the string of the direction, the function that gives it)"""
+            for func in (self.north, self.south, self.east, self.west,
+                            self.ne, self.nw, self.se, self.sw):
+                if target in func():
+                    return func.__name__, func
+            return ('unknown', lambda p: [0])
+
+    my_piece = SimplePiece('p', 'h8')
+    
+    print('*' * 20)
+    print(my_piece, my_piece.rows, my_piece.cols)
+
+    print('north', ' '.join(my_piece.north()))
+    print('south', ' '.join(my_piece.south()))
+    print(' east', ' '.join(my_piece.east()))
+    print(' west', ' '.join(my_piece.west()))
+    print('')
+    print('   ne', ' '.join(my_piece.ne()))
+    print('   se', ' '.join(my_piece.se()))
+    print('   nw', ' '.join(my_piece.nw()))
+    print('   sw', ' '.join(my_piece.sw()))
