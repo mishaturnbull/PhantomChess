@@ -37,6 +37,31 @@ def clear_log():
     except Exception as e:
         log_msg('Exception {} in clear_log, unable to clear'.format(exception_str(e)), 1, err=True)
 
+def set_debug(new_level):
+    # 671: need to either import the cfg object from constants, or
+    #      read the cfg file again
+    from Phantom.constants import cfg, cfg_file_name
+    cfg.set('debug', 'level', str(new_level))
+    with open(os.path.join(phantom_dir, cfg_file_name), 'w') as f:
+        cfg.write(f)
+    import Phantom.constants
+    reload(Phantom.constants)
+    log_msg('Set debugger level to {}'.format(new_level), new_level + 1, p='>')
+    return new_level
+
+def get_debug():
+    from Phantom.constants import cfg
+    return cfg.getint('debug', 'level')
+
+def run_debugged(f, level, *args, **kwargs):
+    """Run function `f` with `*args, **kwargs` under debug level `level`.
+    run_debugged(f, level, *args, **kwargs)"""
+    original_debug_level = debug
+    set_debug(level)
+    ret = f(*args, **kwargs)
+    set_debug(original_debug_level)
+    return ret
+
 def log_msg(msg, level, **kwargs):
     err = kwargs.get('err', False)
     write = kwargs.get('write', True)

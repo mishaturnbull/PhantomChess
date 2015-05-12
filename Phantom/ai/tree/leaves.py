@@ -5,12 +5,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -31,11 +31,11 @@ import uuid
 __all__ = []
 
 class Node (object):
-    
+
     cnum = 0
     spawndepth = 0
     used_layouts = {}
-    
+
     def __init__(self, depth, terminal, board, parent=None):
         self.depth = depth
         self.is_terminal = terminal or (self.depth >= maxdepth)
@@ -53,35 +53,35 @@ class Node (object):
         self.children = []
         self.numchildren = window**self.depth if self.depth > 1 else window
         self.tree = None
-    
+
     def __hash__(self):
         return self.depth * self.board.__hash__()
-    
+
     def __repr__(self):
         return '<Phantom search node with depth {} at {}>'.format(self.depth, hex(id(self)))
-    
+
     def set_tree(self, t):
         self.tree = t
         self.tree.used_layouts.add(self.board.fen_str())
-    
+
     def set_parent(self, p):
         self.parent = p
         self.parent.set_child(self)
-    
+
     def set_child(self, c):
         self.children.append(c)
-    
+
     def variate(self, *args):
         ret = Board(fen=self.board.fen_str())
         ret.set_game(self.board.game)
         ret.move(*args)
         return ret
-    
+
     def boardcopy(self):
         newboard = Board(fen=self.board.fen_str())
         newboard.set_game(self.board.game)
         return newboard
-    
+
     def children_gen(self):
         for k in window:
             b = self.boardcopy()

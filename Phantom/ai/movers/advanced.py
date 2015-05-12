@@ -5,12 +5,12 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # This file is part of PhantomChess.                                    #
 #                                                                       #
 # PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  # 
+# it under the terms of the GNU General Public License as published by  #
 # the Free Software Foundation, either version 3 of the License, or     #
 # (at your option) any later version.                                   #
 #                                                                       #
 # PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        # 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
 # GNU General Public License for more details.                          #
 #                                                                       #
@@ -34,7 +34,7 @@ def make_smart_move(board):
         best = float('-inf')
         func = max
         cmp = lambda a, b: a > b
-    
+
     bestnode = None
     print("turn: {}, func: {}, best: {}".format(turn, func, best))
     for child in tree.children:
@@ -42,7 +42,7 @@ def make_smart_move(board):
         if cmp(child.score, best):
             print("New best node: {}".format(child))
             bestnode = child
-    
+
     move = bestnode.board.lastmove
     board.move(move[0], move[1])
     return True

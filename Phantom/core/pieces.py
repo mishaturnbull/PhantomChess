@@ -29,7 +29,7 @@ from Phantom.core.coord.vectored_lists import (north, south, east, west,
 from Phantom.core.coord.dirs import dirfinder
 from Phantom.core.players import Side
 from Phantom.functions import dist, round_down
-from Phantom.utils.debug import call_trace, log_msg
+from Phantom.utils.debug import call_trace, log_msg, run_debugged
 import uuid
 
 __all__ = []
@@ -165,16 +165,19 @@ class ChessPiece (PhantomObj):
     #        i += some other coord at a dist of one in the correct direction
     #        ret.append(i)
     #    return ret
+
+    # @ccc pointed out in issue #49 that a piece at (7, 7) has pieces to southeast
+    #      and northwest, neither of which is correct.
     @call_trace(3)
     def path_to(self, target):
         """Generate a path to a target."""
-        pdir = dirfinder(self, target)
-        dist_to = int(round_down(dist(self.coord, target)))
-        path = pdir[1](self)
-        squares = path
-        while len(squares) > dist_to:
-            squares = squares[:-1]
-        return squares
+        pdir = dirfinder(self, target)                        # get the direction to target
+        dist_to = int(round_down(dist(self.coord, target)))   # determine distance to target
+        path = pdir[1](self)                                  # get list of squares in target direction
+        squares = path                                        # copy list
+        while len(squares) > dist_to:                         # shrink list iteratively until len(squares) == dist_to
+            squares = squares[:-1]                            # shrink list iteratively until len(squares) == dist_to
+        return squares                                        # return list
 
     @call_trace(2)
     def is_move_valid(self, target):
@@ -183,7 +186,7 @@ class ChessPiece (PhantomObj):
             return False
         does_follow_rules = self.apply_ruleset(target)
         is_valid_target = self.check_target(target)
-        path = self.path_to(target)
+        path = run_debugged(self.path_to, 10, (target,), {})
         is_clear_path = self.check_path(path)
         is_turn = self.owner.is_turn()
         return does_follow_rules and is_valid_target and is_clear_path and is_turn
@@ -191,8 +194,13 @@ class ChessPiece (PhantomObj):
     @staticmethod
     def type_from_chr(p_chr):
         """Get the piece class from a SAN character."""
-        piece_dict = {'p': Pawn, 'r': Rook, 'n': Knight, 'b': Bishop,
-                      'q': Queen, 'k': King}
+        # 671: updated to use characters defined in PhantomConfig.cfg
+        piece_dict = {C.piece_chars['black pawn'][0]: Pawn,
+                      C.piece_chars['black rook'][0]: Rook,
+                      C.piece_chars['black knight'][0]: Knight,
+                      C.piece_chars['black bishop'][0]: Bishop,
+                      C.piece_chars['black queen'][0]: Queen,
+                      C.piece_chars['black king'][0]: King}
         return piece_dict.get(p_chr.lower(), None)
 
     @call_trace(3)
