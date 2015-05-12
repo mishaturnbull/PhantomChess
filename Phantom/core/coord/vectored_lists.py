@@ -117,7 +117,7 @@ if __name__ == '__main__':
             self.fen_char = fen_char
             self.fen_loc  = fen_loc
 
-        def __str__(self):  ''
+        def __str__(self):
             return '{} @ {} ({})'.format(self.fen_char, self.fen_loc, self.coord)
         
         @property
