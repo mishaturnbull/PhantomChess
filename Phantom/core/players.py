@@ -31,6 +31,7 @@ import uuid
 __all__ = []
 
 # 671: This shouldn't be needed anymore
+'''
 class Side (PhantomObj):
 
     def __init__(self, color):
@@ -67,6 +68,7 @@ class Side (PhantomObj):
     def opposite(self):
         return 'black' if self.color == 'white' else 'white'
 __all__.append('Side')
+'''
 
 class Player (PhantomObj):
 
