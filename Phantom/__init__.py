@@ -35,7 +35,7 @@ from Phantom.core.game_class import load_game, ChessGame
 from Phantom.core.pieces import ChessPiece, Pawn, Bishop, Knight, Rook, Queen, King
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.exceptions import ChessError, LogicError, InvalidMove, InvalidDimension
-from Phantom.core.players import Side, Player
+from Phantom.core.players import Player
 #import core.board as board
 #import core.game_class as game_class
 #import core.pieces as pieces
