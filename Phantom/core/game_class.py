@@ -24,6 +24,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 Generally, use this class rather than Phantom.core.board.Board, because this class
 keeps track of history, which Board doesn't."""
 
+import sys
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.board import Board, load as _load_board
 from Phantom.core.players import Player
@@ -130,11 +131,12 @@ class ChessGame (PhantomObj):
         from Phantom.constants import in_pythonista
         if in_pythonista:
             try:
-                 import sk
-                 from Phantom.sk_gui.SkChessVies import SkChessView
-                 self.gui = SkChessView(self)
-            except ImportError:
-                 sys.exit('Pythonista sk module no found!')
+                import sk
+                from Phantom.sk_gui.SkChessView import SkChessView
+                self.gui = SkChessView(self)
+            except ImportError as e:
+                print(e)
+                sys.exit('Pythonista sk module not found!')
 
     @call_trace(3)
     def is_won(self):

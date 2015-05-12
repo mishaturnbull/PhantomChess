@@ -9,8 +9,8 @@ from Phantom.core.pieces import ChessPiece
 from Phantom.core.game_class import ChessGame
 import Phantom.constants as C
 
-img_dir = '../gui_pythonista/imgs'
-img_dir = 'imgs'
+#img_dir = '../gui_pythonista/imgs'
+img_dir = 'images'
 
 #print(__name__)
 
@@ -154,8 +154,12 @@ class SkChessBoardScene(sk.Scene):
         for square in self.get_children_with_name('*'):
             if isinstance(square, sk_BoardSquare) and touch in square:
                 is_valid = node.is_move_valid(square.name)
-                print(node.name, square.name, is_valid)
+                #print(node.name, square.name, is_valid)
                 if is_valid:
+                    square_coord = Coord.from_chess(square.name)
+                    for (opponent in self.get_children_with_name('*')):
+                        if isinstance(opponent, sk_ChessPiece) and opponent.piece.coord == square_coord:
+                            opponent.remove_from_parent()
                     node.move(square.name)
                     node.set_position(square.position)
                     sound.play_effect('8ve:8ve-tap-professional')
@@ -163,7 +167,7 @@ class SkChessBoardScene(sk.Scene):
                 else:
                     node.undo_position()
                     sound.play_effect('8ve:8ve-beep-rejected')
-                not_str = '' if is_valid else 'not ' 
+                not_str = '' if is_valid else 'not '
                 print('{} was {}moved to square {}'.format(node.name, not_str, square.name))
 
 

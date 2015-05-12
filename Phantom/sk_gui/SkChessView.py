@@ -3,8 +3,8 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import sk, sys, ui
-import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
-from SkChessBoardScene import SkChessBoardScene
+#import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
+from Phantom.sk_gui.SkChessBoardScene import SkChessBoardScene
 from Phantom.core.game_class import ChessGame
 
 def quit_action(sender):
