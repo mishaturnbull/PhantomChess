@@ -1,23 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-#########################################################################
-# This file is part of PhantomChess.                                    #
-#                                                                       #
-# PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  #
-# the Free Software Foundation, either version 3 of the License, or     #
-# (at your option) any later version.                                   #
-#                                                                       #
-# PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
-# GNU General Public License for more details.                          #
-#                                                                       #
-# You should have received a copy of the GNU General Public License     #
-# along with PhantomChess.  If not, see <http://www.gnu.org/licenses/>. #
-#########################################################################
-
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import os, sk, sound, ui
@@ -28,7 +10,7 @@ from Phantom.core.game_class import ChessGame
 import Phantom.constants as C
 
 #img_dir = '../gui_pythonista/imgs'
-img_dir = 'images'
+img_dir = 'Images'
 
 #print(__name__)
 
@@ -172,12 +154,8 @@ class SkChessBoardScene(sk.Scene):
         for square in self.get_children_with_name('*'):
             if isinstance(square, sk_BoardSquare) and touch in square:
                 is_valid = node.is_move_valid(square.name)
-                #print(node.name, square.name, is_valid)
+                print(node.name, square.name, is_valid)
                 if is_valid:
-                    square_coord = Coord.from_chess(square.name)
-                    for (opponent in self.get_children_with_name('*')):
-                        if isinstance(opponent, sk_ChessPiece) and opponent.piece.coord == square_coord:
-                            opponent.remove_from_parent()
                     node.move(square.name)
                     node.set_position(square.position)
                     sound.play_effect('8ve:8ve-tap-professional')
@@ -185,7 +163,7 @@ class SkChessBoardScene(sk.Scene):
                 else:
                     node.undo_position()
                     sound.play_effect('8ve:8ve-beep-rejected')
-                not_str = '' if is_valid else 'not '
+                not_str = '' if is_valid else 'not ' 
                 print('{} was {}moved to square {}'.format(node.name, not_str, square.name))
 
 
