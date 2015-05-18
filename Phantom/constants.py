@@ -24,6 +24,39 @@ import sys
 import os
 phantom_dir = os.path.dirname(os.path.realpath(__file__))
 
+colors = ('white', 'black')
+x_chars = 'abcdefgh'  #  west --> east
+y_chars = '87654321'  # north --> south
+white_chars = 'RNBKQP'
+black_chars = 'rnbkqp'
+fen_chars = white_chars + black_chars
+
+def opposite_color(color):
+        for c in colors:
+            if c != color:
+                return c
+        assert False, 'Should never happen!'
+
+def is_valid_fen_loc(fen_loc):
+    x, y = fen_loc
+    return x in x_chars and y in y_chars
+
+def fen_loc_from_xy(x, y):
+    try:
+        return x_chars[x] + y_chars[y]
+    except IndexError:
+        return None
+
+print(fen_loc_from_xy(0, 0))
+print(fen_loc_from_xy(7, 7))
+print(fen_loc_from_xy(8, 8))
+
+def xy_from_fen_loc(fen_loc):
+    assert is_valid_fen_loc(fen_loc)
+    x, y = fen_loc
+    return x_chars.index(x), y_chars.index(y)
+    
+
 import ConfigParser as cfgparse
 cfg_file_name = 'PhantomConfig.cfg'
 cfg = cfgparse.SafeConfigParser()
