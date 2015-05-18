@@ -24,10 +24,25 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 Generally, use this class rather than Phantom.core.board.Board, because this class
 keeps track of history, which Board doesn't."""
 
+"""
+ChessGame
+    Has one Board
+        Has one players     [Player, Player]
+        Has one tiles_dict  {fen_loc : Tile}
+        Has one pieces_dict {fen_loc : Piece}
+        ### Has one graveyard   []
+
+ChessGame.__init__(ChessGame, fen_str=None)
+Board.__init__(fen_str=None)
+Player.__init__(Board, color)
+Tile.__init__(color, fen_loc)
+Piece.__init__(Player, fen_loc)
+"""
+
 import sys
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.board import Board, load as _load_board
-from Phantom.core.players import Player
+#from Phantom.core.players import Player
 from Phantom.utils.debug import call_trace  # , log_msg
 
 __all__ = []
@@ -37,34 +52,12 @@ def load_game(name):
     return ChessGame(board)
 
 class ChessGame (PhantomObj):
-
-    def __init__(self, *args):
-        self.board = Board()
-        self.player1 = self.board.player1
-        self.player2 = self.board.player2
-
-        if args and isinstance(args[0], str):
-            # assume name of a game and load it
-            self.board = _load_board(args[0])
-
-        for arg in args:
-            if isinstance(arg, Board):
-                self.board = arg
-            if isinstance(arg, Player):
-                self.player1 = arg
-                self.player2 = args[args.index(arg)+1]
-                del args[args.index(arg)+1]  # args is a tuple! del will not work
-
-        self.board.player1 = self.player1
-        self.board.player2 = self.player2
-        self.player1.board = self.board
-        self.player2.board = self.board
-
-        self.board.set_game(self)
-        self.history = []
-        self.moves = []
+    def __init__(self, fen_str=None):
+        self.board = Board(self, fen_str)
         self._uuid = self.board._uuid
         self.data = dict()
+        self.history = []
+        self.moves = []
 
     def __repr__(self):
         return self.board._pprnt()
@@ -73,27 +66,28 @@ class ChessGame (PhantomObj):
         return int(self._uuid) % (self.board.__hash__() + 1)
 
     def move(self, *args):
-        self.history.append(self.board.fen_str())
+        self.history.append(self.board.as_fen_str())
         ret = self.board.move(*args)
         self.moves.append(self.board.lastmove)
         return ret
 
     def castle(self, *args):
-        self.history.append(self.board.fen_str())
+        self.history.append(self.board.as_fen_str())
         self.board.castle(*args)
 
     def promote(self, *args):
-        self.history.append(self.board.fen_str())
+        self.history.append(self.board.as_fen_str())
         self.board.promote(*args)
 
     def clone(self):
-        fen = self.board.fen_str()
+        fen = self.board.as_fen_str()
         history = self.history
         cfg = self.board.cfg
         data = self.board.data
         sdata = self.data
         moves = self.moves
-        clone = ChessGame(self.player1, self.player2, Board(self.player1, self.player2, fen))
+        #clone = ChessGame(self.player1, self.player2, Board(self.player1, self.player2, fen))
+        clone = ChessGame(Board(self.board.players, fen))
         clone.history = history
         clone.board.cfg = cfg
         clone.board.data = data
@@ -105,9 +99,10 @@ class ChessGame (PhantomObj):
         fen = self.history[-1]
         data = self.board.data
         cfg = self.board.cfg
-        self.player1 = self.board.player1
-        self.player2 = self.board.player2
-        self.board = Board(self.player1, self.player2, fen)
+        #self.player1 = self.board.player1
+        #self.player2 = self.board.player2
+        #self.board = Board(self.player1, self.player2, fen)
+        self.board = Board(self.players, fen)
         self.board.data = data
         self.board.cfg = cfg
 
@@ -141,31 +136,20 @@ class ChessGame (PhantomObj):
     @call_trace(3)
     def is_won(self):
         """Tell if the game is won.  Returns one of [False, 'white', 'black']."""
-        if self.board.player1.kings <= 0:
-            ret = 'black'
-        elif self.board.player2.kings <= 0:
-            ret = 'white'
-        else:
-            ret = False
-
+        #kings = [player.get_piece_list(ptype='king') for player in self.board.players]
         kings = self.board.get_piece_list(ptype='king')
         if len(kings) == 1:
-            # at this point we don't need to do checkmate/stalemate tests, because
-            # one side has already lost a king so the game is over
-            return ret
-        else:
-            white_king = [k for k in kings if k.color == 'white'][0]
-            black_king = [k for k in kings if k.color == 'black'][0]
-            if self.board.turn == 'white':
-                if len(white_king.valid()) == 0 and white_king.threatened_by():
-                    ret = 'black'
-            elif self.board.turn == 'black':
-                if len(black_king.valid()) == 0 and black_king.threatened_by():
-                    ret = 'white'
-        return ret
+            return kings[0].color  # the last king left standing wins
+
+        for king in kings:
+            if not king.valid() and king.threatened_by():
+                return op_color(king.color)  # checkmate!
+
+        return False
 
 __all__.append('ChessGame')
 
 if __name__ == '__main__':
-    g = ChessGame('Long Endgame 1')
+    #g = ChessGame('Long Endgame 1')
+    g = load_game('Long Endgame 1')
     g.board.cfg.disp_sqrs = False
