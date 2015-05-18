@@ -22,6 +22,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 import Phantom.constants as C
 from Phantom.core.chessobj import PhantomObj
+from Phantom.core.pieces import ChessPiece
 from Phantom.core.exceptions import LogicError
 from Phantom.utils.debug import call_trace, log_msg
 from Phantom.utils.timer import Timer
@@ -75,9 +76,9 @@ class Player (PhantomObj):
     isFrozen = False
     total_moves = 0
 
-    def __init__(self, color):
-
-        self.color = color  #Side(color)
+    def __init__(self, board, color):
+        self.board = board
+        self.color = color
         self.score = 0
         self.remaining_pieces = 16
         self.pawns = 8
@@ -86,7 +87,6 @@ class Player (PhantomObj):
         self.bishops = 2
         self.kings = 1
         self.queens = 1
-        self.board = None  # will be changed later
         self.moves = 0
         self.owned_pieces = set()
         self.timer = Timer(self.color == 'white')  # start the clock if player is white
@@ -103,43 +103,50 @@ class Player (PhantomObj):
                                  self.kings +
                                  self.queens)
 
+    # Do players need to make / own their pieces?
+    def make_piece(self, fen_loc, fen_char):
+        cls = ChessPiece.type_from_chr(fen_char)
+        piece = cls(self, fen_loc)
+        self.add_owned_piece(piece)
+        return piece
+
     @call_trace(5)
     def is_turn(self):
         return self.color == self.board.turn
 
     def add_owned_piece(self, p):
-        wasfrozen = False
-        if self.isFrozen:
-            wasfrozen = True
-            self.unfreeze()
+        #freeze:wasfrozen = False
+        #freeze:if self.isFrozen:
+        #freeze:    wasfrozen = True
+        #freeze:    self.unfreeze()
         self.owned_pieces.add(p)
         self._update()
-        if wasfrozen:
-            self.freeze()
+        #freeze:if wasfrozen:
+        #freeze:    self.freeze()
 
-    def freeze(self):
-        self.isFrozen = True
-        self.owned_pieces = list(self.owned_pieces)
+    #freeze:def freeze(self):
+    #freeze:    self.isFrozen = True
+    #freeze:    self.owned_pieces = list(self.owned_pieces)
 
-    def unfreeze(self):
-        self.isFrozen = False
-        self.owned_pieces = set(self.owned_pieces)
+    #freeze:def unfreeze(self):
+    #freeze:    self.isFrozen = False
+    #freeze:    self.owned_pieces = set(self.owned_pieces)
 
-    @contextlib.contextmanager
-    def frozen(self):
-        self.freeze()
-        yield
-        self.unfreeze()
+    #freeze:@contextlib.contextmanager
+    #freeze:def frozen(self):
+    #freeze:    self.freeze()
+    #freeze:    yield
+    #freeze:    self.unfreeze()
 
     def premove(self):
         if not self.is_turn():
             return
         else:
-            self.freeze()
+            #freeze:self.freeze()
             self._update()
 
     def postmove(self):
-        self.unfreeze()
+        #freeze:self.unfreeze()
         self._update()
         self.moves += 1
         self.total_moves += 1
@@ -175,10 +182,17 @@ class Player (PhantomObj):
                                piece,    check,    canmove), 3)
         return check and canmove
 
-    @call_trace(2)
-    def make_move(self, p1, p2):
-        with self.board.frozen():
-            piece = self.board[p1]
-            piece.move(p2)
+    #@call_trace(2)
+    #def make_move(self, p1, p2):
+    #    with self.board.frozen():
+    #        piece = self.board[p1]
+    #        piece.move(p2)
+    #        del self.board.pieces_dict[p1]
+            
+            
 __all__.append('Player')
 
+if __name__ == '__main__':
+    print('=' * 20)
+    p = Player(None, 'white')
+    print(p)
