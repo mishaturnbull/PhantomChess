@@ -22,6 +22,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 The module IS `import *` safe.  (It's still not a good habit though.)"""
 
+'''
 from Phantom.core.coord.point import Coord, Grid, bounds
 from Phantom.core.coord.dirs import dirfinder
 from Phantom.core.coord.vectored_lists import north, south, east, west, ne, se, sw, nw
@@ -77,3 +78,4 @@ def main():
 
 if __name__ == '__main__':
     ChessGame().gui()
+'''
