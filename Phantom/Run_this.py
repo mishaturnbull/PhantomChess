@@ -24,7 +24,6 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 from Phantom.core.game_class import ChessGame
 from Phantom.docs.documentation import program_use
 from Phantom.utils.lic import license
-from Phantom.core.coord.point import Coord
 from Phantom.boardio.epd_read import load_test
 
 game = ChessGame()
