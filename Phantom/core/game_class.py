@@ -136,7 +136,6 @@ class ChessGame (PhantomObj):
     @call_trace(3)
     def is_won(self):
         """Tell if the game is won.  Returns one of [False, 'white', 'black']."""
-        #kings = [player.get_piece_list(ptype='king') for player in self.board.players]
         kings = self.board.get_piece_list(ptype='king')
         if len(kings) == 1:
             return kings[0].color  # the last king left standing wins
