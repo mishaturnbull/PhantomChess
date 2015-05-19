@@ -49,7 +49,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                             'pieces': cfg.disp_pieces,
                             'valid': cfg.highlight,
                             'coords': cfg.disp_coords,
-                            'turn': cfg.disp_turn,
+                            'turn_color': cfg.disp_turn,
                             'timers': cfg.disp_timers}
         self.is_selected = False
         self.selected = Coord(None, None)
@@ -203,7 +203,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                     scene.fill(0.47934,0.81198,0.41839, 0.3)
                     scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                     scene.fill(1, 1, 1, 1)
-        if self.render_mode['turn']:
+        if self.render_mode['turn_color']:
             if board.turn == 'white':
                 turn_y = 1 * scale_factor
             elif board.turn == 'black':

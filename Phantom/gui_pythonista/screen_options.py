@@ -56,7 +56,7 @@ class ChessOptionsScreen (scene.Scene, PhantomObj):
         self.buttons = [('disp_coords',    'Show coords',    True,    Coord(0, 672),      None),
                         ('',               'Save & exit',    'NA',    Coord(930, 576),    self.return_to_game),
                         ('force_moves',    'Force moves',    True,    Coord(0, 576),      None),
-                        ('disp_turn',      'Show turn',      True,    Coord(0, 480),      None),
+                        ('disp_turn',      'Show turn_color',      True,    Coord(0, 480),      None),
                         ('highlight',      'Show valid',     True,    Coord(0, 384),      None),
                         ('disp_pieces',    'Show pieces',    True,    Coord(0, 288),      None),
                         ('disp_sqrs',      'Show grid',      True,    Coord(0, 192),      None),

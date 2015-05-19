@@ -66,9 +66,11 @@ class ChessGame (PhantomObj):
         return int(self._uuid) % (self.board.__hash__() + 1)
 
     def move(self, *args):
-        self.history.append(self.board.as_fen_str())
+        save_fen_str = self.board.as_fen_str()
         ret = self.board.move(*args)
-        self.moves.append(self.board.lastmove)
+        if ret:
+            self.history.append(save_fen_str)
+            self.moves.append(self.board.lastmove)
         return ret
 
     def castle(self, *args):

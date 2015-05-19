@@ -39,7 +39,7 @@ def move_logic(): return """
  | |       freeze board layout & other player
  +-Level 1
  | +- 1.0: determine if piece's color is correct
- | |       for the current turn
+ | |       for the current turn_color
  | +- 1.1: test the move in the piece's ruleset
  | +- 1.2: test if the target is valid
  | +- 1.3: test if there are pieces "in the way"

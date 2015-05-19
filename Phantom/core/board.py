@@ -115,10 +115,11 @@ class Board (PhantomObj):
         self.cfg = Cfg(**cfgkws)
         self.cfg.set_board(self)
         self.lastmove = (None, None)
+        self.move_count = 0
         self._uuid = uuid.uuid4()
         self.data = dict()
         self.start_pos = self.fen_str
-        self.turn = None
+        self.turn = 'white'
         self.castling_rights = None
         self.en_passant_rights = None
         self.halfmove_clock = None
@@ -132,8 +133,8 @@ class Board (PhantomObj):
         fields = fen_str.split()
         if not len(fields) == 6:
             print('\n'.join(fields))
-            import sys
-            sys.exit(len(fields))
+            #import sys
+            #sys.exit(len(fields))
             raise ChessError('Invalid FEN given to board',
                              'Phantom.core.board.fen_parse')
         pieces, moving_color, castling, en_passant, halfmove, fullmove = fields
@@ -191,7 +192,7 @@ class Board (PhantomObj):
         return self.tiles_dict[fen_loc]
     
     def get_player_by_color(self, color):
-        return self.player_dict[color]
+        return self.players_dict[color]
 
     def get_piece_list(self, ptype=None, color=None):
         pieces = self.pieces
@@ -346,9 +347,7 @@ class Board (PhantomObj):
                ret='Cannot make specified move', log=4)
     def move(self, srce, dest=None):
         if not dest:         # if srce == 'a1b2':
-            dest = srce[2:]  #     dest = 'b2'
-            srce = srce[:2]  #     srce = 'a1'
-        #print('bd move: {} --> {}'.format(srce, dest))
+            srce, dest = srce[:2], srce[2:]  # srce = 'a1', dest = 'b2'
         assert C.is_valid_fen_loc(srce)
         assert C.is_valid_fen_loc(dest)
         #freeze:if self.isfrozen:
@@ -358,6 +357,18 @@ class Board (PhantomObj):
         if not piece:
             raise ChessError('No piece at {}'.format(srce),
                              'Phantom.core.board.Board.move()')
+            #return False
+        if piece.color != self.turn:
+            raise ChessError("It is not {}'s turn.".format(piece.color),
+                             'Phantom.core.board.Board.move()')
+            #return False
+        return_code = piece.move(dest)
+        if return_code:
+            self.pieces_dict[dest] = self.pieces_dict.pop(srce)
+            self.move_count += 1
+        return return_code
+
+        '''
         target = self[dest]
         if target and target.owner == piece.owner:
             print('You can not kill one of your own men!')
@@ -365,8 +376,8 @@ class Board (PhantomObj):
 
         self.premove()
         player = piece.owner
-        if not player.validatemove(srce, dest):
-            #print('Move in not valid and was rejected: {} --> {}'.format(srce, dest))
+        if not player.validate_move(srce, dest):
+            print('Move is not valid and was rejected: {} --> {}'.format(srce, dest))
             return False
         #print('True = {}.validatemove({}, {})'.format(player, srce, dest))
         if True:  # is_valid or self.cfg.force_moves:
@@ -445,6 +456,7 @@ class Board (PhantomObj):
         #freeze:self.unfreeze()
         print('return True')
         return True
+        '''
 
     # ccc: TODO FIXME from here down is broken...
 

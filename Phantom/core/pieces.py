@@ -27,51 +27,41 @@ import uuid
 
 __all__ = []
 
-class ChessPiece(): # (PhantomObj):
+class ChessPiece(object): # (PhantomObj):
     # overwritten by subclasses
     ptype = None
     default_origins = []
     
-    #@classmethod
-    #def is_valid_fen_loc(cls, fen_loc):
-    #    return (fen_loc[0] in C.col_chars
-    #        and fen_loc[1] in C.row_chars)
+    @staticmethod
+    def type_from_chr(p_chr):
+        """Get the piece class from a SAN character."""
+        # 671: updated to use characters defined in PhantomConfig.cfg
+        piece_dict = {C.piece_chars['black pawn'][0]: Pawn,
+                      C.piece_chars['black rook'][0]: Rook,
+                      C.piece_chars['black knight'][0]: Knight,
+                      C.piece_chars['black bishop'][0]: Bishop,
+                      C.piece_chars['black queen'][0]: Queen,
+                      C.piece_chars['black king'][0]: King}
+        return piece_dict.get(p_chr.lower(), None)
 
     def __init__(self, owner, fen_loc):
         self.owner = owner
         self.fen_loc = fen_loc
-        #print(self.x, self.y)
-        #self.x = self.y = 'dude'
-        #print(self.x, self.y)
-        #print(self.board)
-        #print(self.color)
-        #print(self.col+self.row)
-        #print(type(self.x), type(self.y))
-        #print(self.fen_loc, self.x, self.y, C.fen_loc_from_xy(self.x, self.y), C.xy_from_fen_loc(fen_loc))
-        #if pos not in self.bounds:
-        #    raise InvalidDimension('Piece spawned out of bounds: {}'.format(pos),
-        #                           'Phantom.core.pieces.ChessPiece.__init__()')
-        #self.coord = pos
-        #self.color = color
-        #self.name = '{} {}'.format(self.color, self.ptype).lower()
         as_ascii, as_unicode = C.piece_chars[self.name]
         self.fen_char = as_ascii
         self.disp_char = as_unicode if C.use_unicode else as_ascii
-        #self.pythonista_gui_img_name = 'Chess set images {}.jpg'.format(self.name)
         #freeze: self.isFrozen = False  # piece level freeze
         self.promotable = False
         self.first_move = True
         self._uuid = uuid.uuid4()
-        #self.owner = None  # Set the attribute before it can be checked in set_owner()
-        #if owner:
-        #    self.set_owner(owner)
-        self.data = dict()
+        self.data = dict()  # should this be the UserDict mixin from the standard library?
 
         # this cache holds moves that are allowed by the .apply_ruleset() method
         # it will be updated after a move and is used to speed up the .valid() method
         # by shortening the list it must iterate through
         #! self.subvalid_cache = self.update_cache()  FIXME!
         self.subvalid_cache = []
+        #print(self.col, self.x)
 
     @property
     def board(self):
@@ -82,8 +72,16 @@ class ChessPiece(): # (PhantomObj):
         return self.owner.color
 
     @property
+    def is_my_turn(self):
+        return self.owner.is_my_turn
+
+    @property
     def name(self):
         return '{} {}'.format(self.color, self.ptype).lower()
+
+    #@property
+    #def image(self):
+    #    return '{}_{}'.format(self.color, self.ptype)
 
     @property
     def col(self):
@@ -95,19 +93,15 @@ class ChessPiece(): # (PhantomObj):
 
     @property
     def x(self):
-        #_x, _y = self.fen_loc
-        #print('x:', _x, self.col)
-        #assert _x == self.col
+        # print('property x: {}.index({}) --> {}'.format(C.x_chars, self.col, C.x_chars.index(self.col)))
         return C.x_chars.index(self.col)
 
     @property
     def y(self):
-        #_x, _y = self.fen_loc
-        #print('y:', _y, self.row)
-        #assert _y == self.row
+        # print('property y: {}.index({}) --> {}'.format(C.y_chars, self.row, C.y_chars.index(self.row)))
         return C.y_chars.index(self.row)
 
-# 671: @ccc you were right in commit 79e3218 - __str__ causes loops
+    # 671: @ccc you were right in commit 79e3218 - __str__ causes loops
     def as_str(self):
         valid = [c.as_chess for c in self.valid()]
         threatens_fmt = '{} at {}'
@@ -130,42 +124,9 @@ class ChessPiece(): # (PhantomObj):
     def __hash__(self):
         return int(self._uuid) % (self.owner.moves + 1)
 
-    @property
-    def as_chess(self):
-        return '{} @ {}'.format(self.fen_char, self.fen_loc)
-
-    def friend_or_foe(self, target):
-        occupant = self.board[target]
-        if occupant:
-            return 'friend' if occupant.color == self.color else 'foe'
-        else:
-            return None
-
     #@property
-    #def as_screen(self):
-    #    return self.coord.as_screen
-
-    #def set_owner(self, owner):
-    #    if not self.owner:
-    #        self.owner = owner
-    #        self.owner.add_owned_piece(self)
-
-    # This applies the piece's ruleset as described in level 1.1
-    def apply_ruleset(self, target):
-        return True
-
-    # method is only usable after set_owner is used
-    def suicide(self):
-        self.board.kill(self)
-
-    @property
-    def image(self):
-        return '{}_{}'.format(self.color, self.ptype)
-
-    # implementation detail 5
-    @call_trace(3)
-    def valid(self):
-        return [pos for pos in self.subvalid_cache if self.owner.validatemove(self.coord, pos)]
+    #def as_chess(self):
+    #    return '{} @ {}'.format(self.fen_char, self.fen_loc)
 
     # 671: should this be a property or a function?  Does it even matter?
     # ccc: property.  but perhaps only a property of Pawns
@@ -177,20 +138,37 @@ class ChessPiece(): # (PhantomObj):
         return ((self.color == 'white' and self.row == '8')
              or (self.color == 'black' and self.row == '1'))
 
-    @call_trace(3)
-    def check_target(self, target):
-        """See if a target is valid.  Does not perform full move validation."""
-        piece = self.board[target]
-        if not piece:
-            log_msg('check_target: target is None, True', 5)
-            ret = True
-        elif piece.color == self.color:
-            log_msg('check_target: target is same color, False', 5)
-            ret = False
+    def friend_or_foe(self, target):
+        occupant = self.board[target]
+        if occupant:
+            return 'friend' if occupant.color == self.color else 'foe'
         else:
-            log_msg('check_target: unknown, True', 5)
-            ret = True
-        return ret
+            return None
+
+    # method is only usable after set_owner is used
+    def suicide(self):
+        self.board.kill(self)
+
+    ## implementation detail 5
+    #@call_trace(3)
+    #def valid(self):
+    #    return [pos for pos in self.subvalid_cache if self.owner.validatemove(self.coord, pos)]
+
+    # ccc: could we use friend_or_foe()?
+    # @call_trace(3)
+    #def check_target(self, target):
+    #    """See if a target is valid.  Does not perform full move validation."""
+    #    piece = self.board[target]
+    #    if not piece:
+    #        log_msg('check_target: target is None, True', 5)
+    #        ret = True
+    #    elif piece.color == self.color:
+    #        log_msg('check_target: target is same color, False', 5)
+    #        ret = False
+    #    else:
+    #        log_msg('check_target: unknown, True', 5)
+    #        ret = True
+    #    return ret
 
     '''
     @call_trace(3)
@@ -227,8 +205,12 @@ class ChessPiece(): # (PhantomObj):
         return squares                                        # return list
     '''
     
+    # This applies the piece's ruleset as described in level 1.1
+    def apply_ruleset(self, target):
+        return True
+
     @call_trace(3)
-    def clear_path_to_target(self, target):
+    def clear_path_to_target(self, target):  # knight and pawn will have their own implementations
         pdir = self.dir_finder(target)  # get the direction to target
         if not pdir:
             return False                # you can not get there
@@ -240,31 +222,20 @@ class ChessPiece(): # (PhantomObj):
 
     @call_trace(2)
     def is_move_valid(self, target):
-        if not self.owner.is_turn():
-            return False  # fast fail!
-        #print('{}.is_move_valid({}) {}'.format(self.__class__.__name__, target, type(target)))
-        """Test if the piece is allowed to move to a new specified position."""
-        #if target not in bounds:
-        if not C.is_valid_fen_loc(target):
-            return False
-        does_follow_rules = self.apply_ruleset(target)
-        is_valid_target = self.check_target(target)
-        #path = self.path_to(target)
-        #is_clear_path = self.check_path(path)
-        is_clear_path = self.clear_path_to_target(target)
-        return does_follow_rules and is_valid_target and is_clear_path
+        return (self.owner.is_my_turn
+            and C.is_valid_fen_loc(target)
+            and self.friend_or_foe(target) != 'friend'
+            and self.apply_ruleset(target)
+            and self.clear_path_to_target(target))
 
-    @staticmethod
-    def type_from_chr(p_chr):
-        """Get the piece class from a SAN character."""
-        # 671: updated to use characters defined in PhantomConfig.cfg
-        piece_dict = {C.piece_chars['black pawn'][0]: Pawn,
-                      C.piece_chars['black rook'][0]: Rook,
-                      C.piece_chars['black knight'][0]: Knight,
-                      C.piece_chars['black bishop'][0]: Bishop,
-                      C.piece_chars['black queen'][0]: Queen,
-                      C.piece_chars['black king'][0]: King}
-        return piece_dict.get(p_chr.lower(), None)
+    @call_trace(2)
+    def move(self, dest):
+        if not self.is_move_valid(dest):
+            return False
+        self.fen_loc = dest
+        self.owner.moves += 1  # my boss likes to take credit for my work
+        self.first_move = False
+        return True
 
     @call_trace(3)
     def threatens(self):
@@ -352,8 +323,8 @@ class Pawn (ChessPiece):
 
     ptype = 'pawn'
     #default_origins = [Coord(x, y) for x in range(C.grid_width) for y in (1, 6)]
-    #default_originz = 'a2 b2 c2 d2 e2 f2 g2 h2 a7 b7 c7 d7 e7 f7 g7 h7'.split()
-    default_origins = [x+'2' for x in C.x_chars] + [x+'7' for x in C.x_chars]
+    default_origins = 'a2 b2 c2 d2 e2 f2 g2 h2 a7 b7 c7 d7 e7 f7 g7 h7'.split()
+    #default_origins = [x+'2' for x in C.x_chars] + [x+'7' for x in C.x_chars]
     #assert default_origins == default_originz
     #y = '2' if self.color == 'white' else '7'
     #default_origins = [x+y for x in C.x_chars]
@@ -424,7 +395,7 @@ class Pawn (ChessPiece):
     # displayed on the GUI as valid moves
     def valid(self):
         self.subvalid_cache = self.update_cache()
-        return [p for p in self.subvalid_cache if self.owner.validatemove(self.coord, p)]
+        return [p for p in self.subvalid_cache if self.owner.validate_move(self.coord, p)]
 
 __all__.append('Pawn')
 
@@ -510,6 +481,17 @@ class Knight (ChessPiece):
     ptype = 'knight'
     #default_origins = [Coord(x, y) for x in (1, 6) for y in (0, 7)]
     default_origins = 'b1 b8 g1 g8'.split()
+
+    @call_trace(2)
+    def move(self, dest):
+        return_code = ChessPiece.move(self, dest)
+        if return_code:
+            castling_partner = {'a1' : 'Q',
+                                'h1' : 'K',
+                                'a8' : 'q',
+                                'h8' : 'k'}.get(piece.fen_loc, '')
+            self.board.castling_rights = self.board.castling_rights.replace(castling_partner, '')
+        return return_code
 
     def knight_moves(self):  # front page drivin' news
         print(self)

@@ -73,28 +73,34 @@ __all__.append('Side')
 
 class Player (PhantomObj):
 
-    isFrozen = False
-    total_moves = 0
+    #isFrozen = False  # this would freeze ALL players at once
+    #total_moves = 0   # this is the count of ALL moves and is better kept be the board
 
     def __init__(self, board, color):
         self.board = board
         self.color = color
         self.score = 0
-        self.remaining_pieces = 16
-        self.pawns = 8
-        self.knights = 2
-        self.rooks = 2
-        self.bishops = 2
-        self.kings = 1
-        self.queens = 1
+        #self.remaining_pieces = 16
+        #self.pawns = 8
+        #self.knights = 2
+        #self.rooks = 2
+        #self.bishops = 2
+        #self.kings = 1
+        #self.queens = 1
         self.moves = 0
-        self.owned_pieces = set()
+        #self.owned_pieces = set()
         self.timer = Timer(self.color == 'white')  # start the clock if player is white
         self._uuid = uuid.uuid4()
 
     def __repr__(self):
         return "Player('{}')".format(self.color)
 
+    #@call_trace(5)
+    @property
+    def is_my_turn(self):
+        return self.color == self.board.turn
+
+    '''
     def _update(self):
         self.remaining_pieces = (self.pawns +
                                  self.knights +
@@ -102,19 +108,16 @@ class Player (PhantomObj):
                                  self.bishops +
                                  self.kings +
                                  self.queens)
+    '''
 
     # Do players need to make / own their pieces?
     def make_piece(self, fen_loc, fen_char):
         cls = ChessPiece.type_from_chr(fen_char)
         piece = cls(self, fen_loc)
-        self.add_owned_piece(piece)
+        #self.add_owned_piece(piece)
         return piece
 
-    @call_trace(5)
-    def is_turn(self):
-        return self.color == self.board.turn
-
-    def add_owned_piece(self, p):
+    def z_add_owned_piece(self, p):
         #freeze:wasfrozen = False
         #freeze:if self.isFrozen:
         #freeze:    wasfrozen = True
@@ -138,8 +141,8 @@ class Player (PhantomObj):
     #freeze:    yield
     #freeze:    self.unfreeze()
 
-    def premove(self):
-        if not self.is_turn():
+    def z_premove(self):
+        if not self.is_my_turn():
             return
         else:
             #freeze:self.freeze()
@@ -147,7 +150,7 @@ class Player (PhantomObj):
 
     def postmove(self):
         #freeze:self.unfreeze()
-        self._update()
+        #self._update()
         self.moves += 1
         self.total_moves += 1
 
@@ -171,11 +174,11 @@ class Player (PhantomObj):
             self._update()
 
     @call_trace(3)
-    def validatemove(self, p1, p2):
-        piece = self.board[p1]
-        canmove = piece.is_move_valid(p2)
+    def validate_move(self, srce, dest):
+        piece = self.board[srce]
+        canmove = piece.is_move_valid(dest)
         if self.board.cfg.do_checkmate:
-            check = not self.board.will_checkmate(p1, p2)
+            check = not self.board.will_checkmate(srce, dest)
         else:
             check = True
         log_msg('validatemove: piece={}, check={}, canmove={}'.format(
