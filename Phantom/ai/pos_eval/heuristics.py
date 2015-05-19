@@ -49,16 +49,22 @@ locatable on the internet.
 
 import string
 from Phantom.ai.phases import Phase
-from Phantom.core.coord.point import Coord
-from Phantom.constants import *
+#from Phantom.core.coord.point import Coord
+import Phantom.constants as C
 from Phantom.utils.debug import call_trace, log_msg
 
-board_north_edge = [Coord(x, 7) for x in xrange(grid_width)]
-board_south_edge = [Coord(x, 0) for x in xrange(grid_width)]
-board_east_edge  = [Coord(7, y) for y in xrange(grid_height)]
-board_west_edge  = [Coord(0, y) for y in xrange(grid_height)]
-board_rim = board_north_edge + board_south_edge + board_east_edge + board_west_edge
+#board_north_edge = [Coord(x, 7) for x in xrange(grid_width)]
+#board_south_edge = [Coord(x, 0) for x in xrange(grid_width)]
+#board_east_edge  = [Coord(7, y) for y in xrange(grid_height)]
+#board_west_edge  = [Coord(0, y) for y in xrange(grid_height)]
 
+
+#board_rim = board_north_edge + board_south_edge + board_east_edge + board_west_edge
+def in_board_rim(fen_loc):
+    x, y = fen_loc
+    return x in 'ah' or y in '18'
+
+'''
 files = dict(
 a = [Coord(0, y) for y in xrange(grid_height)],
 b = [Coord(1, y) for y in xrange(grid_height)],
@@ -73,16 +79,16 @@ h = [Coord(7, y) for y in xrange(grid_height)],
 #filez = {string.lowercase[i]:[Coord(i, y) for y in xrange(grid_height)]
 #         for i in xrange(grid_width)}
 #assert files == filez, '{}\n{}'.format(files, filez)
+'''
 
 all_rules = []
 
 @call_trace(3)
 def knight_on_edge(board):
     from Phantom.ai.settings import knight_on_edge_score
-    east_west_edges = board_east_edge + board_west_edge
+    #east_west_edges = board_east_edge + board_west_edge
     return sum(knight_on_edge_score * (1 if p.color == 'white' else -1)
-               for p in board.get_piece_list(ptype='knight')
-               if p.coord in east_west_edges)
+               for p in board.get_piece_list(ptype='knight') if p.col in 'ah')
 # this is left out for the more advanced & precise assess_knights()
 #all_rules.append(knight_on_edge)
 
@@ -100,13 +106,13 @@ def advanced_pawns(board):
     score = 0
     for piece in board.get_piece_list(ptype='pawn'):
         if piece.color == 'white':
-            if piece.coord.y >= 4:
-                score += piece.coord.y * advanced_pawn_mul
+            if piece.y >= 4:
+                score += piece.y * advanced_pawn_mul
             if piece.is_promotable:
                 score += promotable_bonus
         elif piece.color == 'black':
-            if piece.coord.y <= 3:
-                score -= (grid_height - piece.coord.y) * advanced_pawn_mul
+            if piece.y <= 3:
+                score -= (8 - piece.y) * advanced_pawn_mul
             if piece.is_promotable:
                 score -= promotable_bonus
     return score
@@ -165,7 +171,7 @@ def pawn_structure(board):
     score = 0
     from Phantom.ai.settings import (doubled_pawn, tripled_pawn, isolated_pawn,
                                      pawn_ram, eight_pawns, passed_pawn)
-    from Phantom.core.coord.point import Coord
+    #from Phantom.core.coord.point import Coord
     pawns       = board.get_piece_list(ptype='pawn')
     white_pawns = [p for p in pawns if p.color == 'white']
     black_pawns = [p for p in pawns if p.color == 'black']
@@ -178,51 +184,37 @@ def pawn_structure(board):
     log_msg('pawn_structure: finished pawn count score={}'.format(score), 5)
 
     log_msg('pawn_structure: analyzing passed pawns...', 5)
-    score += passed_pawn * len([pawn for pawn in white_pawns if pawn.coord.y >= 5])
-    score -= passed_pawn * len([pawn for pawn in black_pawns if pawn.coord.y <= 2])
+    score += passed_pawn * len([pawn for pawn in white_pawns if pawn.y >= 5])
+    score -= passed_pawn * len([pawn for pawn in black_pawns if pawn.y <= 2])
     log_msg('pawn_structure: finished passed pawns score={}'.format(score), 5)
 
     log_msg('pawn_structure: analyzing doubled pawns...', 5)
     for pawn in white_pawns:
-        xf = files[pawn.coord.as_chess[0]]
-        for c in xf:
-            p = pawn.owner.board[c]
-            if (p
-            and p is pawn
-            and p.ptype == 'pawn'
-            and p.color == 'white'
-            and p.coord.y == (pawn.coord.y - 1)):
+        for p in list(pawn.north())[:1]:  # a list of zero or one items
+            if board[p] in white_pawns:
                 score += doubled_pawn
     for pawn in black_pawns:
-        xf = files[pawn.coord.as_chess[0]]
-        for c in xf:
-            p = pawn.owner.board[c]
-            if (p
-            and p is not pawn
-            and p.ptype == 'pawn'
-            and p.color == 'black'
-            and p.coord.y == (pawn.coord.y - 1)):
+        for p in list(pawn.south())[:1]:  # a list of zero or one items
+            if board[p] in black_pawns:
                 score += doubled_pawn  # CCC: should this be minus instead of plus?!?
     log_msg('pawn_structure: finished doubled pawns score={}'.format(score), 5)
 
     log_msg('pawn_structure: analyzing isolated pawns...', 5)
-    iso_white = iso_black = []
-    tests = [Coord(x, y) for x in [-1, 0, 1] for y in [-1, 0, 1]]
-    tests.remove(Coord(0, 0))
+    iso_white = iso_black = 0
+    #tests = [Coord(x, y) for x in [-1, 0, 1] for y in [-1, 0, 1]]
+    #tests.remove(Coord(0, 0))
     for pawn in pawns:
-        p_c, iso = pawn.coord, True
-        for test in tests:
-            t_c = p_c + test
-            if board[t_c]:
-                iso = False
-                break
-        if iso:
+        neighbors = (list(pawn.north())[:1] + list(pawn.south())[:1]
+                    + list(pawn.east())[:1] + list(pawn.west())[:1]
+                      + list(pawn.ne())[:1] + list(pawn.nw())[:1]
+                      + list(pawn.sw())[:1] + list(pawn.sw())[:1])
+        if not [x for x in neighbors if board[x]]:  # if no occupied neighbors
             if pawn.color == 'white':
-                iso_white.append(pawn)
-            elif pawn.color == 'black':
-                iso_black.append(pawn)
-    score += isolated_pawn * len(iso_white)
-    score -= isolated_pawn * len(iso_black)
+                iso_white += 1
+            else:
+                iso_black += 1
+    score += isolated_pawn * iso_white
+    score -= isolated_pawn * iso_black
     log_msg('pawn_structure: finished isolated pawns score={}'.format(score), 5)
 
     return score
@@ -241,14 +233,14 @@ def bad_bishops(board):
     score = 0
     white_pawns = board.get_piece_list(ptype='pawn',   color='white')
     for bishop in board.get_piece_list(ptype='bishop', color='white'):
-        tc = board.tile_at(bishop.coord).color
-        same_color = [pawn for pawn in white_pawns if board.tile_at(pawn.coord).color == tc]
+        tc = board.tile_at(bishop.fen_loc).color
+        same_color = [pawn for pawn in white_pawns if board.tile_at(pawn.fen_loc).color == tc]
         score += (bad_bishop_mul * len(same_color)) * colors['white']
 
     black_pawns = board.get_piece_list(ptype='pawn',   color='black')
     for bishop in board.get_piece_list(ptype='bishop', color='black'):
-        tc = board.tile_at(bishop.coord).color
-        same_color = [pawn for pawn in black_pawns if board.tile_at(pawn.coord).color == tc]
+        tc = board.tile_at(bishop.fen_loc).color
+        same_color = [pawn for pawn in black_pawns if board.tile_at(pawn.fen_loc).color == tc]
         score += (bad_bishop_mul * len(same_color)) * colors['black']
     return score
 all_rules.append(bad_bishops)
@@ -350,4 +342,28 @@ def king_assess(board):
     return score
 all_rules.append(king_assess)
 
-# ----------------------------------------end piece layout assessment-------------------------------------------------------
+# tests...
+
+def main(clear=True):
+    from Phantom.utils.debug import log_msg, clear_log
+    from Phantom.core.game_class import load_game # ChessGame
+    if clear:
+        clear_log()
+    log_msg('Testing Phantom.ai.pos_eval.heuristics functions', 0)
+    g = load_game('Game 1')
+    log_msg('Testing AI heuristics on savegame "Game 1":', 0)
+    score = 0
+    for rule in all_rules:
+        #try:
+            log_msg(rule.__name__ + " evaluating...", 0)
+            r = rule(g.board)
+            log_msg(rule.__name__ + ' returned {}'.format(r), 0)
+            score += r
+        #except Exception as e:
+        #    log_msg('{} failed:\n{}'.format(f.__name__, e), 0, err=True)
+    log_msg('Test complete', 0)
+    return score
+
+if __name__ == '__main__':
+    score = main()
+    print(score)
