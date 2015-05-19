@@ -321,7 +321,7 @@ class Board (PhantomObj):
                 player.timer.pause()
             else:
                 player.timer.resume()
-            self.turn = C.opposite_color(self.turn)
+        self.turn = C.opposite_color(self.turn)
 
     def upd_rights(self):
         """This method soely exists so that if an exception occurs during a
@@ -366,6 +366,7 @@ class Board (PhantomObj):
         if return_code:
             self.pieces_dict[dest] = self.pieces_dict.pop(srce)
             self.move_count += 1
+            self.switch_turn()
         return return_code
 
         '''
