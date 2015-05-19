@@ -41,15 +41,15 @@ Piece.__init__(Player, fen_loc)
 
 import sys
 from Phantom.core.chessobj import PhantomObj
-from Phantom.core.board import Board, load as _load_board
+from Phantom.core.board import Board # , load as _load_board
+from Phantom.boardio.load import load_game as load_board_fen
 #from Phantom.core.players import Player
 from Phantom.utils.debug import call_trace  # , log_msg
 
 __all__ = []
 
 def load_game(name):
-    board = _load_board(name)
-    return ChessGame(board)
+    return ChessGame(load_board_fen(name))
 
 class ChessGame (PhantomObj):
     def __init__(self, fen_str=None):
@@ -123,15 +123,13 @@ class ChessGame (PhantomObj):
 
     def sk_gui(self):
         """Spawn a GUI for the game.  **Only works in Pythonista, on other platforms does nothing."""
-        from Phantom.constants import in_pythonista
-        if in_pythonista:
-            try:
-                import sk
-                from Phantom.sk_gui.SkChessView import SkChessView
-                self.gui = SkChessView(self)
-            except ImportError as e:
-                print(e)
-                sys.exit('Pythonista sk module not found!')
+        try:
+            import sk  # only available in Pythonista
+            from Phantom.sk_gui.SkChessView import SkChessView
+            self.gui = SkChessView(self)
+        except ImportError as e:
+            print(e)
+            #sys.exit('Pythonista sk module not found!')
 
     @call_trace(3)
     def is_won(self):
@@ -151,4 +149,6 @@ __all__.append('ChessGame')
 if __name__ == '__main__':
     #g = ChessGame('Long Endgame 1')
     g = load_game('Long Endgame 1')
+    print(g)
     g.board.cfg.disp_sqrs = False
+    print(g)
