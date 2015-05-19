@@ -179,5 +179,5 @@ else:
             self.h = h
     screen_size = Rect(0, 0, screen_width, screen_height)
 '''
-print(color_by_number(0))
-print(color_by_number(1))
+#print(color_by_number(0))
+#print(color_by_number(1))
