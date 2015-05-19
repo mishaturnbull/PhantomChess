@@ -22,18 +22,10 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 import Phantom.constants as C
 from Phantom.utils.debug import call_trace, log_msg
-
 import itertools
 import uuid
 
 __all__ = []
-
-'''
-def xy_from_fen_loc(fen_loc):
-    assert is_valid_fen_loc(fen_loc)
-    x, y = fen_loc
-    return x_chars.index(x), y_chars.index(y)
-'''
 
 class ChessPiece(): # (PhantomObj):
     # overwritten by subclasses

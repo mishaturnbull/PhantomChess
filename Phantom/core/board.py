@@ -188,7 +188,7 @@ class Board (PhantomObj):
             return self.tiles_dict[fen_loc].disp_char
 
     def tile_at(self, fen_loc):
-        return self.tiles[fen_loc]
+        return self.tiles_dict[fen_loc]
     
     def get_player_by_color(self, color):
         return self.player_dict[color]
