@@ -24,18 +24,25 @@ import sys
 import os
 phantom_dir = os.path.dirname(os.path.realpath(__file__))
 
-colors = ('white', 'black')
+colors = ('black', 'white')
 x_chars = 'abcdefgh'  #  west --> east
 y_chars = '87654321'  # north --> south
-white_chars = 'RNBKQP'
+grid_height = len(y_chars)  # still needed?
 black_chars = 'rnbkqp'
-fen_chars = white_chars + black_chars
+white_chars = 'RNBKQP'
+fen_chars = black_chars + white_chars
+
+def fen_locs():  # a8, b8, c8, d8, e8, f8, g8, h8, a7...
+    return (x+y for y in y_chars for x in x_chars )
+
+def color_by_number(i):             # even tiles are black
+    return colors[i % len(colors)]  #  odd tiles are white
 
 def opposite_color(color):
-        for c in colors:
-            if c != color:
-                return c
-        assert False, 'Should never happen!'
+    for c in colors:
+        if c != color:
+            return c
+    assert False, 'Should never happen!'
 
 def is_valid_fen_loc(fen_loc):
     x, y = fen_loc
@@ -46,10 +53,6 @@ def fen_loc_from_xy(x, y):
         return x_chars[x] + y_chars[y]
     except IndexError:
         return None
-
-print(fen_loc_from_xy(0, 0))
-print(fen_loc_from_xy(7, 7))
-print(fen_loc_from_xy(8, 8))
 
 def xy_from_fen_loc(fen_loc):
     assert is_valid_fen_loc(fen_loc)
@@ -62,15 +65,15 @@ cfg_file_name = 'PhantomConfig.cfg'
 cfg = cfgparse.SafeConfigParser()
 cfg.read(os.path.join(phantom_dir, cfg_file_name))
 
-try:
-    import ui
-    in_pythonista = True
-    screen_width, screen_height = ui.get_screen_size()
-    del ui
-except ImportError:
-    in_pythonista = False
-    screen_width = cfg.getint('general', 'screen_width')
-    screen_height = cfg.getint('general', 'screen_height')
+#try:
+#    import ui
+#    in_pythonista = True
+#    screen_width, screen_height = ui.get_screen_size()
+#    del ui
+#except ImportError:
+#    in_pythonista = False
+#    screen_width = cfg.getint('general', 'screen_width')
+#    screen_height = cfg.getint('general', 'screen_height')
 
 debug = cfg.getint('debug', 'level')
 
@@ -91,10 +94,10 @@ if unicode_pref == 'auto':
 else:
     use_unicode = cfg.getboolean('general', 'use_unicode')
 
-grid_width = cfg.getint('internal', 'grid_width')
-grid_height = cfg.getint('internal', 'grid_height')
+#grid_width = cfg.getint('internal', 'grid_width')
+#grid_height = cfg.getint('internal', 'grid_height')
 grid_colors = eval(cfg.get('internal', 'grid_colors'))
-scale_factor = cfg.getint('internal', 'scale_factor')
+#scale_factor = cfg.getint('internal', 'scale_factor')
 
 holder_point = eval(cfg.get('internal', 'holder_point'))
 
@@ -160,7 +163,7 @@ opening_fen = ('{r}{n}{b}{q}{k}{b}{n}{r}{S}'
                                               e=default_ep)
 
 
-
+'''
 if in_pythonista:
     import scene
     screen_size = scene.Rect(0, 0, screen_width, screen_height)
@@ -175,3 +178,6 @@ else:
             self.w = w
             self.h = h
     screen_size = Rect(0, 0, screen_width, screen_height)
+'''
+print(color_by_number(0))
+print(color_by_number(1))
