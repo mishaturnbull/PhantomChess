@@ -149,7 +149,7 @@ def load_epd(string):
     operations = ' '.join(fields[4:])
     op_fields = operations.split(';')[:-1]  # remove last '' element
     fen = ' '.join([layout, moving, castling_rights, en_passant_rights, halfmove, fullmove])
-    b = Board(fen=fen)
+    b = Board(None, fen)
     b.data['raw_operations'] = operations
     b.data['op_fields'] = op_fields
     op_data = {}
