@@ -28,8 +28,6 @@ from Phantom.core.chessobj import PhantomObj
 from Phantom.core.players import Player
 from Phantom.core.exceptions import InvalidMove, LogicError, ChessError
 from Phantom.core.pieces import ChessPiece
-# from Phantom.core.coord.vectored_lists import north, south, east, west, ne, se, nw, sw
-#from Phantom.core.coord.point import Coord
 from Phantom.boardio.save import save
 from Phantom.boardio.load import load_game
 from Phantom.boardio.boardcfg import Cfg
@@ -42,38 +40,30 @@ import uuid
 
 __all__ = []
 
-
 def load(name):
     fen = load_game(name)
-    game = Board(Player('white'), Player('black'), fen)
+    game = Board(None, fen)
     game.set_name(name)
     return game
 __all__.append('load')
 
-
 class Tile (PhantomObj):
     isfrozen = False
 
-    def __init__(self, fen_loc, color):
+    def __init__(self, fen_loc):
         self.fen_loc = fen_loc
-        #self.x = pos.x
-        #self.y = pos.y
-        #self.color = color
-        #self.coord = pos
-        if color == 'black':
+        self.color = C.color_by_number(self.x + self.y)
+        if self.color == 'black':
             self.disp_char = C.black_space_char[int(C.use_unicode)]  # zero or one
         else:
             self.disp_char = C.white_space_char[int(C.use_unicode)]  # zero or one
-        self.tile_color = C.grid_colors[color]
+        self.tile_color = C.grid_colors[self.color]
         #print(repr(self))
-        
-        #def __repr__(self):
-        #    return '{}({}, {}) ({}, {})'.format(self.__class__.__name__, self.fen_loc,
-        #                                        self.tile_color, self.x, self.y)
 
     def __repr__(self):
         fmt = '<{} {} at {} ({}, {}) in {}>'
-        return fmt.format(self.tile_color, self.__class__.__name__, self.fen_loc, self.x, self.y, hex(id(self)))
+        return fmt.format(self.color, self.__class__.__name__, self.fen_loc,
+                            self.x, self.y, hex(id(self)))
 
     @property
     def col(self):
@@ -91,34 +81,7 @@ class Tile (PhantomObj):
     def y(self):
         return C.y_chars.index(self.row)
 
-    #@property
-    #def zas_chess(self):
-    #    #return self.coord.as_chess
-    #    return self.fen_loc
-
-    #@property
-    #def as_screen(self):
-    #    return self.zcoord.as_screen
-
-    #@property
-    #def zcoord(self):
-    #    #return self.coord.as_screen
-    #    #return Coord.from_chess(self.fen_loc)
-    #    return Coord(self.x, self.y)
-
 __all__.append('Tile')
-
-def make_tiles_dict():
-    fen_locs = [col+row for col in 'abcdefgh' for row in '12345678']
-    #print(' '.join(fen_loc + ('w' if i % 2 else 'b') for i, fen_loc in enumerate(fen_locs)))
-    #print(len(list(fen_locs)))
-    return {fen_loc: Tile(fen_loc, ('white' if i % 2 else 'black'))
-            for i, fen_loc in enumerate(fen_locs)}
-    #tiles_dict = collections.OrderedDict()  # is OrderedDict useful??
-    #for fen_loc in (col+row for col in cols for row in rows):
-    #    tiles_dict[fen_loc] = Tile(fen_loc, color)
-    #    color = self.opcolor(color)
-    #return tiles_dict
 
 def _make_pieces_dict(fen_str='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'):
     # returns a dict of {fen_str : fen_char} entries like {'e8': 'k'}
@@ -136,56 +99,25 @@ def _make_pieces_dict(fen_str='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'):
     return pieces_dict
 
 class Board (PhantomObj):
-    isfrozen = False  # is the board frozen?
-    movenum = 0       # how many moves have been made
-
-    #@classmethod
-    #def is_valid_fen_loc(cls, fen_loc):
-    #    return (fen_loc[0] in C.x_chars
-    #        and fen_loc[1] in C.y_chars)
-
-    #@classmethod
-    #def fen_loc_from_xy(x, y):
-    #    try:
-    #        return C.col_chars[y] + C.row_chars[x]
-    #    except IndexError:
-    #        return None
-
-    @classmethod
-    def op_color(cls, color):
-        for c in C.colors:
-            if c != color:
-                return c
-        assert False, 'Should never happen!'
+    # ccc: would a chess server ever run multiple boards at the same time?
+    #      if so, these should be instance variables, not class variables.
+    isfrozen = False  # is the board frozen?  ccc: are all boards frozen
+    movenum = 0       # how many moves have been made  ccc: moves on all boards combined
 
     def __init__(self, chess_game, fen_str=None, **cfgkws):
         self.game = chess_game
         self.fen_str = fen_str or C.opening_fen
-        self.players_dict = {x : Player(self, x) for x in C.colors}
-        self.tiles_dict = make_tiles_dict()
-        #p1=Player('white'), p2=Player('black'), fen=C.opening_fen, **cfgkws):
-        
-        #self.players = [Player(self, 'white'), Player(self, 'black')]
-        #self.pieces = set()
+        assert isinstance(self.fen_str, basestring), str(type(self.fen_str))
+        self.players_dict = {color : Player(self, color) for color in C.colors}
+        self.tiles_dict = {fen_loc: Tile(fen_loc) for fen_loc in C.fen_locs()}
         self.dead = set()
         self.name = 'New Game'
         self.cfg = Cfg(**cfgkws)
         self.cfg.set_board(self)
-        #self.game = None
         self.lastmove = (None, None)
         self._uuid = uuid.uuid4()
         self.data = dict()
         self.start_pos = self.fen_str
-
-        #tile_color = 'black'
-        #op_color = lambda c: 'white' if c == 'black' else 'black'
-        #self.tiles = set()
-        #for x in range(C.grid_width):
-        #    for y in range(C.grid_height):
-        #        self.tiles.add(Tile(Coord(x, y), tile_color))
-        #        tile_color = op_color(tile_color)
-        #    tile_color = op_color(tile_color)
-        #self.tiles = make_tiles_dict()
         self.turn = None
         self.castling_rights = None
         self.en_passant_rights = None
@@ -193,69 +125,15 @@ class Board (PhantomObj):
         self.fullmove_clock = None
         pieces = self.fen_parse(self.fen_str)
         self.pieces_dict = self.make_pieces_dict(pieces)
-        
-        
-        '''
-        # parse given FEN and create board layout
-        fields = fen.split()
-        if not len(fields) == 6:
-            raise ChessError('Invalid FEN given to board',
-                             'Phantom.core.board.Board.__init__')
-        pieces = fields[0]
-        moving_color = fields[1]
-        castling = fields[2]
-        en_passant = fields[3]
-        halfmove = int(fields[4])
-        fullmove = int(fields[5])
-
-        self.halfmove_clock = halfmove
-        self.fullmove_clock = fullmove
-        self.turn = 'white' if moving_color.lower() == 'w' else 'black'
-        self.castling_rights = castling
-        self.en_passant_rights = en_passant
-
-        # parse the FEN into a board layout
-        rank_split = '/'
-        # 671: not used
-        # is_rank_split = lambda char: char == rank_split
-        is_file_split = lambda char: char in '12345678'
-        is_white_chr = lambda char: char in 'RNBKQP'
-        is_black_chr = lambda char: char in 'rnbkqp'
-        is_piece_chr = lambda char: is_white_chr(char) or is_black_chr(char)
-
-        ranks = pieces.split(rank_split)
-        #print(ranks)
-        y_c = C.grid_height
-        for rank in ranks:
-            y_c -= 1
-            if y_c < 0:
-                break
-            fileind = 0
-            for char in rank:
-                if is_piece_chr(char):
-                    klass = ChessPiece.type_from_chr(char)
-                    #print(fileind, y_c)
-                    pos = Coord(fileind, y_c)
-                    #owner = self.player1 if is_white_chr(char) else self.player2
-                    #color = owner.color
-                    color = 'white' if is_white_chr(char) else 'black'
-                    owner = self.get_player_by_color(color)
-                    print(pos, color, owner)
-                    newpiece = klass(pos, color, owner)
-                    if newpiece.coord not in klass.default_origins:
-                        # 671: this test isnt color-sensitive, could cause problems
-                        newpiece.first_move = False
-                    self.pieces.add(newpiece)
-                elif is_file_split(char):
-                    fileind += int(char)
-                    continue
-                fileind += 1
-        '''
 
     def fen_parse(self, fen_str):
         # parse given FEN and create board layout
+        assert isinstance(fen_str, basestring), str(type(fen_str))
         fields = fen_str.split()
         if not len(fields) == 6:
+            print('\n'.join(fields))
+            import sys
+            sys.exit(len(fields))
             raise ChessError('Invalid FEN given to board',
                              'Phantom.core.board.fen_parse')
         pieces, moving_color, castling, en_passant, halfmove, fullmove = fields
@@ -302,14 +180,6 @@ class Board (PhantomObj):
     def __getitem__(self, fen_loc):
         assert C.is_valid_fen_loc(fen_loc), '__getitem__({})'.format(fen_loc)
         return self.pieces_dict.get(fen_loc, None)
-        #possible = []
-        #for piece in self.pieces:
-        #    if piece.coord == x:
-        #        possible.append(piece)
-        ## if there was only one item, return it otherwise a list of them all
-        #if len(possible) == 0:
-        #    return None
-        #return possible[0] if len(possible) == 1 else possible
 
     def disp_char(self, fen_loc):
         if fen_loc in self.pieces_dict:
@@ -317,12 +187,8 @@ class Board (PhantomObj):
         else:
             return self.tiles_dict[fen_loc].disp_char
 
-    def tile_at(self, pos):
-        return self.tiles[pos.as_chess]
-        #print('pos:', pos)
-        #for tile in self.tiles:
-        #    if tile.coord == pos:
-        #        return tile
+    def tile_at(self, fen_loc):
+        return self.tiles[fen_loc]
     
     def get_player_by_color(self, color):
         return self.player_dict[color]
@@ -387,42 +253,18 @@ class Board (PhantomObj):
         lines.append(header)
         return '\n'.join(lines).encode(C.default_encoding)          
 
-    def _zpprnt(self):
-        dash   = '–' if self.cfg.use_unicode else '-'
-        turn_indicator = ' ' + C.turn_indicator[int(C.use_unicode)]  # zero or one
-        lines = [self.name.center(19), dash * 19]
-        for y in range(C.grid_height, -2, -1):
-            line = []
-            for x in range(-1, C.grid_width+1):
-                if y in (-1, 8) and not (x in (-1, 8)):
-                    char = Coord.tochesskeys[x+1]
-                elif y in range(0, 8) and x in (-1, 8):
-                    char = str(y+1)
-                    if x == 8 and self.cfg.disp_turn:
-                        if ((y == 0 and self.turn == 'white')
-                         or (y == 7 and self.turn == 'black')):
-                            char += turn_indicator
-                elif x in (-1, 8):
-                    char = ' '
-                else:
-                    piece = self[Coord(x, y)]
-                    if piece:
-                        char = piece.disp_char
-                    else:
-                        char = self.tile_at(Coord(x, y)).char if self.cfg.disp_sqrs else ' '
-                line.append(char)
-            lines.append(' '.join(line))
-        return '\n'.join(lines).encode(C.default_encoding)
-
     def pprint(self):
         """Print a pretty version of the board."""
-        if C.in_pythonista:
+        in_pythonista = False
+        try:
             import console
             console.set_font('DejaVuSansMono', 18)
-            print(self._pprnt())
+            in_pythonista = True
+        except ImportError:
+            pass
+        print(self._pprnt())
+        if in_pythonista:
             console.set_font()
-        else:
-            print(self._pprnt())
 
     def __str__(self):
         return self.fen_str()
@@ -469,8 +311,8 @@ class Board (PhantomObj):
         """Unfreeze and send a signal to players that a move has been
         completed."""
         #freeze:self.unfreeze()
-        #freeze:for player in self.players:
-        #freeze:    player.postmove()
+        for player in self.players:
+            player.postmove()
 
     def switch_turn(self):
         for player in self.players:
@@ -478,7 +320,7 @@ class Board (PhantomObj):
                 player.timer.pause()
             else:
                 player.timer.resume()
-            self.turn = self.op_color(self.turn)
+            self.turn = C.opposite_color(self.turn)
 
     def upd_rights(self):
         """This method soely exists so that if an exception occurs during a
@@ -506,7 +348,7 @@ class Board (PhantomObj):
         if not dest:         # if srce == 'a1b2':
             dest = srce[2:]  #     dest = 'b2'
             srce = srce[:2]  #     srce = 'a1'
-        print('bd move: {} --> {}'.format(srce, dest))
+        #print('bd move: {} --> {}'.format(srce, dest))
         assert C.is_valid_fen_loc(srce)
         assert C.is_valid_fen_loc(dest)
         #freeze:if self.isfrozen:
@@ -524,9 +366,9 @@ class Board (PhantomObj):
         self.premove()
         player = piece.owner
         if not player.validatemove(srce, dest):
-            print('Move in not valid and was rejected: {} --> {}'.format(srce, dest))
+            #print('Move in not valid and was rejected: {} --> {}'.format(srce, dest))
             return False
-        print('True = {}.validatemove({}, {})'.format(player, srce, dest))
+        #print('True = {}.validatemove({}, {})'.format(player, srce, dest))
         if True:  # is_valid or self.cfg.force_moves:
             log_msg('move: specified move is valid, continuing', 3)
             # update castling rights
@@ -544,8 +386,9 @@ class Board (PhantomObj):
                     self.castling_rights = self.castling_rights.replace('k', '')
                     self.castling_rights = self.castling_rights.replace('q', '')
 
+            # ccc: en_passent rights moved into Pawn
             # update en_passant rights
-            self.en_passant_rights = '-'  # ccc: FIXME
+            #self.en_passant_rights = '-'
             #if piece.ptype == 'pawn':
             #    if piece.first_move:
             #        if round_down(dist(srce, dest)) == 2:
@@ -576,23 +419,23 @@ class Board (PhantomObj):
             #    self.data['move_en_passant'] = False
 
             #player.make_move(p1, p2)
-            print(0, piece, srce, dest)
-            print('sb', self.pieces_dict.get(srce, None))
+            #print(0, piece, srce, dest)
+            #print('sb', self.pieces_dict.get(srce, None))
             piece = self.pieces_dict.pop(srce)  # vacate srce square
-            print('sa', self.pieces_dict.get(srce, None))
-            print(1, piece.fen_loc)
+            #print('sa', self.pieces_dict.get(srce, None))
+            #print(1, piece.fen_loc)
             piece.fen_loc = dest
-            print(2, piece.fen_loc)
-            print('db', self.pieces_dict.get(dest, None))
+            #print(2, piece.fen_loc)
+            #print('db', self.pieces_dict.get(dest, None))
             self.pieces_dict[dest] = piece      # links piece and unlinks target
-            print('da', self.pieces_dict.get(dest, None))
-            print(3, piece, srce, dest)
+            #print('da', self.pieces_dict.get(dest, None))
+            #print(3, piece, srce, dest)
 
             #self.kill(target)
             self.lastmove = (srce, dest)
             self.switch_turn()
             self.postmove()
-            print(4)
+            #print(4)
         else:
             assert False, 'if True: above!!'
             self.postmove()
@@ -602,6 +445,8 @@ class Board (PhantomObj):
         #freeze:self.unfreeze()
         print('return True')
         return True
+
+    # ccc: TODO FIXME from here down is broken...
 
     def castle(self, pos):
         """Castle a king.
