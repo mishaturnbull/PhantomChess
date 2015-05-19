@@ -376,6 +376,8 @@ class Pawn (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
+        if not self.first_move:
+            self.en_passant_rights = False
         forward_steps = 2 if self.en_passant_rights else 1
         if self.color == 'white':
             allowed = list(self.north())[:forward_steps]
