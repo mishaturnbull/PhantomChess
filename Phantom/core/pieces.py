@@ -277,41 +277,68 @@ class ChessPiece(object): # (PhantomObj):
     def west_part(self):   # 'd4' --> 'cba'
         return reversed(C.x_chars.partition(self.col)[0])
 
-    # the following functions are generators to improve performance
-    def north(self):
-        fmt = '{}{}'.format(self.col, '{}')
-        return (fmt.format(x) for x in self.north_part)
+    # the following functions return a list of max_count or fewer
+    # neighboring fen_locs in order from closest to furthest
+    # 'a4'.north()  --> a5 a6 a7 a8
+    # 'a4'.north(1) --> a5
+    # 'a4'.north(2) --> a5 a6
+    def north(self, max_count=8):
+        #fmt = '{}{}'.format(self.col, '{}')
+        #return [fmt.format(x) for x in self.north_part][:max_count]
+        return [x+y for x,y in zip(self.col * max_count, self.north_part)]
         
-    def south(self):
-        fmt = '{}{}'.format(self.col, '{}')
-        return (fmt.format(x) for x in self.south_part)
+    def south(self, max_count=8):
+        #fmt = '{}{}'.format(self.col, '{}')
+        #return [fmt.format(x) for x in self.south_part][:max_count]
+        return [x+y for x,y in zip(self.col * max_count, self.south_part)]
 
-    def east(self):
-        fmt = '{}{}'.format('{}', self.row)
-        return (fmt.format(x) for x in self.east_part)
+    def east(self, max_count=8):
+        #fmt = '{}{}'.format('{}', self.row)
+        #return [fmt.format(x) for x in self.east_part][:max_count]
+        return [x+y for x,y in zip(self.east_part, self.row * max_count)]
             
-    def west(self):
-        fmt = '{}{}'.format('{}', self.row)
-        return (fmt.format(x) for x in self.west_part)
+    def west(self, max_count=8):
+        #fmt = '{}{}'.format('{}', self.row)
+        #return [fmt.format(x) for x in self.west_part][:max_count]
+        return [x+y for x,y in zip(self.west_part, self.row * max_count)]
 
-    def ne(self):
-        return (y+x for x,y in zip(self.north_part, self.east_part))
+    def ne(self, max_count=8):
+        return [x+y for x,y in zip(self.east_part, self.north_part)][:max_count]
 
-    def se(self):
-        return (y+x for x,y in zip(self.south_part, self.east_part))
+    def se(self, max_count=8):
+        return [x+y for x,y in zip(self.east_part, self.south_part)][:max_count]
 
-    def nw(self):
-        return (y+x for x,y in zip(self.north_part, self.west_part))
+    def nw(self, max_count=8):
+        return [x+y for x,y in zip(self.west_part, self.north_part)][:max_count]
 
-    def sw(self):
-        return (y+x for x,y in zip(self.south_part, self.west_part))
+    def sw(self, max_count=8):
+        return [x+y for x,y in zip(self.west_part, self.south_part)][:max_count]
 
-    def dir_finder(self, target):
+    @property
+    def directions_major(self):
+        return self.north, self.east, self.south, self.west
+
+    @property
+    def directions_diagonal(self):
+        return self.ne, self.se, self.sw, self.nw
+
+    @property
+    def directions_all(self):
+        # return self.directions_major + self.directions_diagonal
+        return (self.north, self.ne, self.east, self.se,
+                self.south, self.sw, self.west, self.nw)
+    
+    def print_neighbors(self):
+        print('Neighbors for {}:'.format(self))
+        print('\n'.join('{:>5}: {}'.format(func.__name__, ' '.join(func()))
+            for func in self.directions_all))
+
+    def dir_finder(self, target, max_count=8):
         """Locate the direction in which the target lies and return a 2-tuple of:
         (the string of the direction, the function that gives it)"""
         for func in (self.north, self.south, self.east, self.west,
                         self.ne, self.nw, self.se, self.sw):
-            if target in func():
+            if target in func(max_count):
                 return func.__name__, func
         return None
 
@@ -343,11 +370,11 @@ class Pawn (ChessPiece):
             self.en_passant_rights = False
         forward_steps = 2 if self.en_passant_rights else 1
         if self.color == 'white':
-            allowed = list(self.north())[:forward_steps]
-            diagonal_kills = list(self.ne())[:1] + list(self.nw())[:1]
+            allowed = self.north(forward_steps)
+            diagonal_kills = self.ne(1) + self.nw(1)
         else:
             allowed = list(self.south())[:forward_steps]
-            diagonal_kills = list(self.sw())[:1] + list(self.se())[:1]
+            diagonal_kills = self.se(1) + self.sw(1)
         allowed = [x for x in allowed if not self.friend_or_foe(x)]
         for diagonal_kill in diagonal_kills:
             if self.friend_or_foe(diagonal_kill) == 'foe':
@@ -407,10 +434,13 @@ class Rook (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        return (target in self.north()
-             or target in self.south()
-             or target in self.east()
-             or target in self.west())
+        #return (target in self.north()
+        #     or target in self.south()
+        #     or target in self.east()
+        #     or target in self.west())
+        for func in self.directions_major:
+            if target in func():
+                return True
 __all__.append('Rook')
 
 class Bishop (ChessPiece):
@@ -421,10 +451,13 @@ class Bishop (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        return (target in self.ne()
-             or target in self.nw()
-             or target in self.se()
-             or target in self.sw())
+        #return (target in self.ne()
+        #     or target in self.se()
+        #     or target in self.sw()
+        #     or target in self.nw())
+        for func in self.directions_diagonal:
+            if target in func():
+                return True
 __all__.append('Bishop')
 
 class Queen (ChessPiece):
@@ -435,14 +468,17 @@ class Queen (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        return (target in self.north()
-             or target in self.south()
-             or target in self.east()
-             or target in self.west()
-             or target in self.ne()
-             or target in self.nw()
-             or target in self.se()
-             or target in self.sw())
+        #return (target in self.north()
+        #     or target in self.ne()
+        #     or target in self.east()
+        #     or target in self.se()
+        #     or target in self.south()             
+        #     or target in self.sw()
+        #     or target in self.west()
+        #     or target in self.nw())
+        for func in self.directions_all:
+            if target in func():
+                return True
 __all__.append('Queen')
 
 class King (ChessPiece):
@@ -457,9 +493,17 @@ class King (ChessPiece):
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        allowed = [list(func())[:1] for func in (self.north, self.south, self.east, self.west,
-                                                 self.ne, self.nw, self.se, self.sw)]
-        return [target] in allowed  # allowed is a list of lists
+        #return (target in self.north(1)
+        #     or target in self.ne(1)
+        #     or target in self.east(1)
+        #     or target in self.se(1)
+        #     or target in self.south(1)             
+        #     or target in self.sw(1)
+        #     or target in self.west(1)
+        #     or target in self.nw(1))
+        for func in self.directions_all:
+            if target in func(1):
+                return True
     '''
     return False  # FIXME!!
         if not self.board.cfg.do_checkmate:
@@ -535,13 +579,11 @@ class Knight (ChessPiece):
         return True
 
 __all__.append('Knight')
-
-
+    
 if __name__ == '__main__':
     print('=' * 20)
     from Phantom.core.players import Player
     p = Pawn(Player(None, 'white'), 'a4')
-    #print('main_:', p, p.x, p.y)
-    #print('main:', p, p.x, p.y, p.col+p.row)
+    p.print_neighbors()
     p.fen_loc = 'b5'
-    #print('main:', p, p.x, p.y, p.col+p.row)
+    p.print_neighbors()
