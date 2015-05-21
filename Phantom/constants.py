@@ -20,14 +20,14 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 from Phantom.__version__ import __version__ as version
 from Phantom.can_print_unicode import can_print_unicode
-import sys
 import os
+import sys
 phantom_dir = os.path.dirname(os.path.realpath(__file__))
 
 colors = ('black', 'white')
 x_chars = 'abcdefgh'  #  west --> east
 y_chars = '87654321'  # north --> south
-grid_height = len(y_chars)  # still needed?
+#grid_height = len(y_chars)  # still needed?
 black_chars = 'rnbkqp'
 white_chars = 'RNBKQP'
 fen_chars = black_chars + white_chars
@@ -181,3 +181,15 @@ else:
 '''
 #print(color_by_number(0))
 #print(color_by_number(1))
+
+def cheat_sheet():
+    def row(y):
+        values = (x+y for x in x_chars)
+        print([v for v in values])
+
+        values = ' '.join('{},{}'.format(xy_from_fen_loc(v)) for v in values)
+#        values = ' '.join('{},{}'.format(xy_from_fen_loc(x+y)) for x in x_chars)
+        return '{} {} {}'.format(y, values, y)
+    return ('\n'.join(row(y) for y in y_chars))
+
+#print(cheat_sheet())

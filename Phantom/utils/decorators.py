@@ -60,7 +60,8 @@ class exc_catch (object):
             try:
                 f(*args, **kwargs)
             except Exception as e:
-                if debug > exc_catch_cutoff:
+                #if exc_catch_cutoff and debug > exc_catch_cutoff:
+                if True:
                     # if debugging, print full tracebacks
                     import traceback
                     traceback.print_exc()  # prints a full stack trace

@@ -21,17 +21,25 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 """The core of the pieces."""
 
 import Phantom.constants as C
-from Phantom.utils.debug import call_trace, log_msg
+from Phantom.utils.debug import call_trace  # , log_msg
 import itertools
 import uuid
 
+grid_width = len(C.x_chars)
+
 __all__ = []
 
-class ChessPiece(object): # (PhantomObj):
+# print(list(flatten(([], [0], (1, 2))))) # --> [0, 1, 2]
+def flatten(list_of_lists):
+    for a_list in list_of_lists:
+        for element in a_list:
+            yield element
+
+class ChessPiece(object):  # (PhantomObj):
     # overwritten by subclasses
     ptype = None
     default_origins = []
-    
+
     @staticmethod
     def type_from_chr(p_chr):
         """Get the piece class from a SAN character."""
@@ -50,23 +58,31 @@ class ChessPiece(object): # (PhantomObj):
         as_ascii, as_unicode = C.piece_chars[self.name]
         self.fen_char = as_ascii
         self.disp_char = as_unicode if C.use_unicode else as_ascii
-        #freeze: self.isFrozen = False  # piece level freeze
+        # freeze: self.isFrozen = False  # piece level freeze
         self.promotable = False
         self.first_move = True
+        self.directions_valid = self.directions_all
         self._uuid = uuid.uuid4()
         self.data = dict()  # should this be the UserDict mixin from the standard library?
 
         # this cache holds moves that are allowed by the .apply_ruleset() method
         # it will be updated after a move and is used to speed up the .valid() method
         # by shortening the list it must iterate through
-        #! self.subvalid_cache = self.update_cache()  FIXME!
+        # ! self.subvalid_cache = self.update_cache()  FIXME!
         self.subvalid_cache = []
-        #print(self.col, self.x)
+        # print(self.col, self.x)
+
+    def __repr__(self):
+        fmt = '<{} at {} ({}, {}) in {}>'
+        return fmt.format(self.name, self.fen_loc, self.x, self.y, hex(id(self)))
+
+    def __hash__(self):
+        return int(self._uuid) % (self.owner.moves + 1)
 
     @property
     def board(self):
         return self.owner.board
-        
+
     @property
     def color(self):
         return self.owner.color
@@ -79,8 +95,12 @@ class ChessPiece(object): # (PhantomObj):
     def name(self):
         return '{} {}'.format(self.color, self.ptype).lower()
 
-    #@property
-    #def image(self):
+    @property
+    def as_type_at_loc(self):
+        return '{} @ {}'.format(self.ptype, self.fen_loc)
+
+    # @property
+    # def image(self):
     #    return '{}_{}'.format(self.color, self.ptype)
 
     @property
@@ -102,14 +122,12 @@ class ChessPiece(object): # (PhantomObj):
         return C.y_chars.index(self.row)
 
     # 671: @ccc you were right in commit 79e3218 - __str__ causes loops
+    @property
     def as_str(self):
-        valid = [c.as_chess for c in self.valid()]
-        threatens_fmt = '{} at {}'
-        threatens = [threatens_fmt.format(p.ptype, p.fen_char)
-                                          for p in self.threatens()]
-        threats_fmt = '{} at {}'
-        threats = [threats_fmt.format(p.ptype, p.fen_char)
-                                      for p in self.threatened_by()]
+        #valid = 'FIXME'  # [c.as_chess for c in self.valid()] # FIXME
+        valid = ', '.join(self.all_valid_moves)
+        threatens = ', '.join(self.board[loc].as_type_at_loc for loc in self.threatens)
+        threats = ', '.join(piece.as_type_at_loc for piece in self.threatened_by)
         return """    {}
     Valid moves: {}
     Is promotable: {}
@@ -117,15 +135,37 @@ class ChessPiece(object): # (PhantomObj):
     This piece is threatened by: {}
     """.format(repr(self), valid, self.promotable, threatens, threats)
 
-    def __repr__(self):
-        fmt = '<{} at {} ({}, {}) in {}>'
-        return fmt.format(self.name, self.fen_loc, self.x, self.y, hex(id(self)))
+    #@call_trace(3)
+    @property
+    def threatens(self):
+        """List of fen_locs of pieces that this piece could kill."""
+        # return [self.board[move] for move in self.valid() if self.board[move]]
+        #print(self, 'threatens')
+        reachable_neighbors = []
+        for func in self.directions_all:
+            reachable_neighbors += func()
+        #print(self, 'threatens', [x for x in (dest for dest in reachable_neighbors
+        #        if self.is_move_valid(dest) and self.friend_or_foe(dest) == 'foe')])
+        return (dest for dest in reachable_neighbors
+                if self.is_move_valid(dest) and self.friend_or_foe(dest) == 'foe')
+        #print(sorted(reachable_neighbors))
+        #print(0)
+        #reachable_neighbors = [dest for dest in [func() for func in self.directions_all] if dest]
+        #print('rn', reachable_neighbors)
+        #print(dest for dest in (x for x in reachable_neighbors if x))
+        #return (dest for dest in (x for x in reachable_neighbors)
+        #        if self.is_move_valid(dest) and self.friend_or_foe(dest) == 'foe')
 
-    def __hash__(self):
-        return int(self._uuid) % (self.owner.moves + 1)
+    # @call_trace(3)
+    @property
+    def threatened_by(self):
+        """List pieces that could kill this piece."""
+        return self.board.threatened_by(self)
+        # return [piece for piece in self.board.all_legal()
+        #        if piece.color != self.color and self.coord in piece.valid()]
 
-    #@property
-    #def as_chess(self):
+    # @property
+    # def as_chess(self):
     #    return '{} @ {}'.format(self.fen_char, self.fen_loc)
 
     # 671: should this be a property or a function?  Does it even matter?
@@ -136,7 +176,7 @@ class ChessPiece(object): # (PhantomObj):
         if self.ptype != 'pawn':
             return False
         return ((self.color == 'white' and self.row == '8')
-             or (self.color == 'black' and self.row == '1'))
+                or (self.color == 'black' and self.row == '1'))
 
     def friend_or_foe(self, target):
         occupant = self.board[target]
@@ -150,13 +190,13 @@ class ChessPiece(object): # (PhantomObj):
         self.board.kill(self)
 
     ## implementation detail 5
-    #@call_trace(3)
-    #def valid(self):
+    # @call_trace(3)
+    # def valid(self):
     #    return [pos for pos in self.subvalid_cache if self.owner.validatemove(self.coord, pos)]
 
     # ccc: could we use friend_or_foe()?
     # @call_trace(3)
-    #def check_target(self, target):
+    # def check_target(self, target):
     #    """See if a target is valid.  Does not perform full move validation."""
     #    piece = self.board[target]
     #    if not piece:
@@ -204,32 +244,54 @@ class ChessPiece(object): # (PhantomObj):
             squares = squares[:-1]                            # shrink list iteratively until len(squares) == dist_to
         return squares                                        # return list
     '''
-    
+
     # This applies the piece's ruleset as described in level 1.1
     def apply_ruleset(self, target):
         return True
+
+    @property
+    def all_moves(self):
+        """returns a list of all fen_locs that can be moved to.
+        It does NOT check the validity of each move."""
+        return sorted(flatten(func() for func in self.directions_valid))
+
+        #def print_neighbors(self):
+        #print('Neighbors for {}:'.format(self))
+        #print('\n'.join('{:>5}: {}'.format(func.__name__, ' '.join(func()))
+        #                for func in self.directions_all))
+        #return 'FIXME'
+
+    @property
+    def all_valid_moves(self):
+        return (dest for dest in self.all_moves if self.is_move_valid(dest))
+        #def print_neighbors(self):
+        #print('Neighbors for {}:'.format(self))
+        #print('\n'.join('{:>5}: {}'.format(func.__name__, ' '.join(func()))
+        #                for func in self.directions_all))
+        #return 'FIXME'
 
     @call_trace(3)
     def clear_path_to_target(self, target):  # knight and pawn will have their own implementations
         pdir = self.dir_finder(target)  # get the direction to target
         if not pdir:
-            return False                # you can not get there
-        for fen_loc in pdir[1]():       # pdir is ['north', north()]
+            return False  # you can not get there
+        for fen_loc in pdir[1]():  # pdir is ['north', north()]
             if fen_loc == target:
-                return True             # target was reached
+                return True  # target was reached
             if self.board[fen_loc]:
-                return False            # another piece is in the way
+                return False  # another piece is in the way
 
     @call_trace(2)
-    def is_move_valid(self, target):
-        return (self.owner.is_my_turn
-            and C.is_valid_fen_loc(target)
-            and self.friend_or_foe(target) != 'friend'
-            and self.apply_ruleset(target)
-            and self.clear_path_to_target(target))
+    def is_move_valid(self, target):  # used by move() and threatens()
+        return (C.is_valid_fen_loc(target)
+                and self.friend_or_foe(target) != 'friend'
+                and self.apply_ruleset(target)
+                and self.clear_path_to_target(target))
 
     @call_trace(2)
     def move(self, dest):
+        if not self.is_my_turn:
+            return False
         if not self.is_move_valid(dest):
             return False
         self.fen_loc = dest
@@ -237,19 +299,8 @@ class ChessPiece(object): # (PhantomObj):
         self.first_move = False
         return True
 
-    @call_trace(3)
-    def threatens(self):
-        """List the pieces that this piece could kill."""
-        return [self.board[move] for move in self.valid() if self.board[move]]
-
-    @call_trace(3)
-    def threatened_by(self):
-        """List the pieces that could kill this piece."""
-        return [piece for piece in self.board.all_legal()
-                if piece.color != self.color and self.coord in piece.valid()]
-
-    #@call_trace(2)
-    #def move(self, target):
+    # @call_trace(2)
+    # def move(self, target):
     #    """Go somewhere."""
     #    self.board.kill(self.board[target])
     #    self.coord = target
@@ -259,7 +310,8 @@ class ChessPiece(object): # (PhantomObj):
     @call_trace(4)
     def update_cache(self):
         """Return an updated subvalid cache."""
-        return [tile.fen_loc for tile in self.board.tiles if self.apply_ruleset(tile.fen_loc)]
+        return []  # FIXME
+        # return [tile.fen_loc for tile in self.board.tiles if self.apply_ruleset(tile.fen_loc)]
 
     @property
     def north_part(self):  # 'd4' --> '5678'
@@ -270,11 +322,11 @@ class ChessPiece(object): # (PhantomObj):
         return C.y_chars.partition(self.row)[2]
 
     @property
-    def east_part(self):   # 'd4' --> 'efgh'
+    def east_part(self):  # 'd4' --> 'efgh'
         return C.x_chars.partition(self.col)[2]
 
     @property
-    def west_part(self):   # 'd4' --> 'cba'
+    def west_part(self):  # 'd4' --> 'cba'
         return reversed(C.x_chars.partition(self.col)[0])
 
     # the following functions return a list of max_count or fewer
@@ -282,37 +334,29 @@ class ChessPiece(object): # (PhantomObj):
     # 'a4'.north()  --> a5 a6 a7 a8
     # 'a4'.north(1) --> a5
     # 'a4'.north(2) --> a5 a6
-    def north(self, max_count=8):
-        #fmt = '{}{}'.format(self.col, '{}')
-        #return [fmt.format(x) for x in self.north_part][:max_count]
-        return [x+y for x,y in zip(self.col * max_count, self.north_part)]
-        
-    def south(self, max_count=8):
-        #fmt = '{}{}'.format(self.col, '{}')
-        #return [fmt.format(x) for x in self.south_part][:max_count]
-        return [x+y for x,y in zip(self.col * max_count, self.south_part)]
+    def north(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.col * max_count, self.north_part)]
 
-    def east(self, max_count=8):
-        #fmt = '{}{}'.format('{}', self.row)
-        #return [fmt.format(x) for x in self.east_part][:max_count]
-        return [x+y for x,y in zip(self.east_part, self.row * max_count)]
-            
-    def west(self, max_count=8):
-        #fmt = '{}{}'.format('{}', self.row)
-        #return [fmt.format(x) for x in self.west_part][:max_count]
-        return [x+y for x,y in zip(self.west_part, self.row * max_count)]
+    def south(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.col * max_count, self.south_part)]
 
-    def ne(self, max_count=8):
-        return [x+y for x,y in zip(self.east_part, self.north_part)][:max_count]
+    def east(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.east_part, self.row * max_count)]
 
-    def se(self, max_count=8):
-        return [x+y for x,y in zip(self.east_part, self.south_part)][:max_count]
+    def west(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.west_part, self.row * max_count)]
 
-    def nw(self, max_count=8):
-        return [x+y for x,y in zip(self.west_part, self.north_part)][:max_count]
+    def ne(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.east_part, self.north_part)][:max_count]
 
-    def sw(self, max_count=8):
-        return [x+y for x,y in zip(self.west_part, self.south_part)][:max_count]
+    def se(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.east_part, self.south_part)][:max_count]
+
+    def nw(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.west_part, self.north_part)][:max_count]
+
+    def sw(self, max_count=grid_width):
+        return [x + y for x, y in zip(self.west_part, self.south_part)][:max_count]
 
     @property
     def directions_major(self):
@@ -324,45 +368,58 @@ class ChessPiece(object): # (PhantomObj):
 
     @property
     def directions_all(self):
-        # return self.directions_major + self.directions_diagonal
         return (self.north, self.ne, self.east, self.se,
                 self.south, self.sw, self.west, self.nw)
-    
+
     def print_neighbors(self):
         print('Neighbors for {}:'.format(self))
         print('\n'.join('{:>5}: {}'.format(func.__name__, ' '.join(func()))
-            for func in self.directions_all))
+                        for func in self.directions_all))
+        print('    valid_moves:', ', '.join(self.all_moves))
+        print('all_valid_moves:', ', '.join(self.all_valid_moves))
 
-    def dir_finder(self, target, max_count=8):
+    def dir_finder(self, target, max_count=grid_width):
         """Locate the direction in which the target lies and return a 2-tuple of:
         (the string of the direction, the function that gives it)"""
-        for func in (self.north, self.south, self.east, self.west,
-                        self.ne, self.nw, self.se, self.sw):
+        # for func in (self.north, self.south, self.east, self.west,
+        #                self.ne, self.nw, self.se, self.sw):
+        for func in self.directions_all:
             if target in func(max_count):
                 return func.__name__, func
         return None
+
 
 __all__.append('ChessPiece')
 
 # Individual piece subtypes
 
-class Pawn (ChessPiece):
-
+class Pawn(ChessPiece):
     ptype = 'pawn'
-    #default_origins = [Coord(x, y) for x in range(C.grid_width) for y in (1, 6)]
+    # default_origins = [Coord(x, y) for x in range(C.grid_width) for y in (1, 6)]
     default_origins = 'a2 b2 c2 d2 e2 f2 g2 h2 a7 b7 c7 d7 e7 f7 g7 h7'.split()
-    #default_origins = [x+'2' for x in C.x_chars] + [x+'7' for x in C.x_chars]
-    #assert default_origins == default_originz
-    #y = '2' if self.color == 'white' else '7'
-    #default_origins = [x+y for x in C.x_chars]
-        
-
-    #tests = [Coord(1, 1), Coord(-1, 1)]
+    # default_origins = [x+'2' for x in C.x_chars] + [x+'7' for x in C.x_chars]
+    # assert default_origins == default_originz
+    # y = '2' if self.color == 'white' else '7'
+    # default_origins = [x+y for x in C.x_chars]
+    # tests = [Coord(1, 1), Coord(-1, 1)]
 
     def __init__(self, owner, fen_loc):
         ChessPiece.__init__(self, owner, fen_loc)
         default_row = '2' if self.color == 'white' else '7'
         self.en_passant_rights = self.row == default_row
+
+    #@call_trace(4)
+    @property
+    def threatens(self):
+        """Returns a list of fen_locs of pieces that this piece could kill."""
+        if self.color == 'white':
+            diagonal_kills = self.ne(1) + self.nw(1)
+        else:
+            diagonal_kills = self.se(1) + self.sw(1)
+        #print(self, 'pawn threatens', [x for x in [diagonal_kill for diagonal_kill in diagonal_kills
+        #        if self.friend_or_foe(diagonal_kill) == 'foe']])
+        return [diagonal_kill for diagonal_kill in diagonal_kills
+                if self.friend_or_foe(diagonal_kill) == 'foe']
 
     @call_trace(4)
     def apply_ruleset(self, target):
@@ -371,15 +428,10 @@ class Pawn (ChessPiece):
         forward_steps = 2 if self.en_passant_rights else 1
         if self.color == 'white':
             allowed = self.north(forward_steps)
-            diagonal_kills = self.ne(1) + self.nw(1)
         else:
-            allowed = list(self.south())[:forward_steps]
-            diagonal_kills = self.se(1) + self.sw(1)
-        allowed = [x for x in allowed if not self.friend_or_foe(x)]
-        for diagonal_kill in diagonal_kills:
-            if self.friend_or_foe(diagonal_kill) == 'foe':
-                allowed.append(diagonal_kill)
-        print('{}.apply_ruleset({}) --> {}'.format(self, target, allowed))
+            allowed = self.south(forward_steps)
+        allowed = [x for x in allowed if not self.friend_or_foe(x)] + self.threatens
+        #print('{}.apply_ruleset({}) --> {}'.format(self, target, allowed))
         return target in allowed
         '''
         
@@ -424,51 +476,73 @@ class Pawn (ChessPiece):
         self.subvalid_cache = self.update_cache()
         return [p for p in self.subvalid_cache if self.owner.validate_move(self.coord, p)]
 
+
 __all__.append('Pawn')
 
-class Rook (ChessPiece):
 
+class Rook(ChessPiece):
     ptype = 'rook'
-    #default_origins = [Coord(x, y) for x in (0, 7) for y in (0, 7)]
+    # default_origins = [Coord(x, y) for x in (0, 7) for y in (0, 7)]
     default_origins = 'a1 a8 h1 h8'.split()
+
+    def __init__(self, owner, fen_loc):
+        ChessPiece.__init__(self, owner, fen_loc)
+        self.directions_valid = self.directions_major  # north, south, east, west
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        #return (target in self.north()
+        # return (target in self.north()
         #     or target in self.south()
         #     or target in self.east()
         #     or target in self.west())
         for func in self.directions_major:
             if target in func():
                 return True
+
+    @call_trace(2)
+    def move(self, dest):
+        return_code = ChessPiece.move(self, dest)
+        if return_code and self.first_move:
+            castling_partner = {'a1': 'Q',
+                                'h1': 'K',
+                                'a8': 'q',
+                                'h8': 'k'}.get(self.fen_loc, '')
+            self.board.castling_rights = self.board.castling_rights.replace(castling_partner, '')
+        return return_code
+
 __all__.append('Rook')
 
-class Bishop (ChessPiece):
 
+class Bishop(ChessPiece):
     ptype = 'bishop'
-    #default_origins = [Coord(x, y) for x in (2, 5) for y in (0, 7)]
+    # default_origins = [Coord(x, y) for x in (2, 5) for y in (0, 7)]
     default_origins = 'c1 c8 f1 f8'.split()
+
+    def __init__(self, owner, fen_loc):
+        ChessPiece.__init__(self, owner, fen_loc)
+        self.directions_valid = self.directions_diagonal  # ne, se, sw, nw
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        #return (target in self.ne()
+        # return (target in self.ne()
         #     or target in self.se()
         #     or target in self.sw()
         #     or target in self.nw())
         for func in self.directions_diagonal:
             if target in func():
                 return True
+
 __all__.append('Bishop')
 
-class Queen (ChessPiece):
 
+class Queen(ChessPiece):
     ptype = 'queen'
-    #default_origins = [Coord(3, y) for y in (0, 7)]
+    # default_origins = [Coord(3, y) for y in (0, 7)]
     default_origins = 'd1 d8'.split()
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        #return (target in self.north()
+        # return (target in self.north()
         #     or target in self.ne()
         #     or target in self.east()
         #     or target in self.se()
@@ -479,21 +553,23 @@ class Queen (ChessPiece):
         for func in self.directions_all:
             if target in func():
                 return True
+
+
 __all__.append('Queen')
 
-class King (ChessPiece):
 
+class King(ChessPiece):
     ptype = 'king'
-    #default_origins = [Coord(4, y) for y in (0, 7)]
+    # default_origins = [Coord(4, y) for y in (0, 7)]
     default_origins = 'e1 e8'.split()
 
-    #@call_trace(4)
-    #def _apply_ruleset(self, target):
+    # @call_trace(4)
+    # def _apply_ruleset(self, target):
     #    return round_down(dist(self.coord, target)) == 1
 
     @call_trace(4)
     def apply_ruleset(self, target):
-        #return (target in self.north(1)
+        # return (target in self.north(1)
         #     or target in self.ne(1)
         #     or target in self.east(1)
         #     or target in self.se(1)
@@ -501,9 +577,16 @@ class King (ChessPiece):
         #     or target in self.sw(1)
         #     or target in self.west(1)
         #     or target in self.nw(1))
-        for func in self.directions_all:
+        for func in self.directions_valid:
             if target in func(1):
                 return True
+
+    @property
+    def all_moves(self):
+        """returns a list of all fen_locs that can be moved to.
+        It does NOT check the validity of each move."""
+        return sorted(flatten(func(1) for func in self.directions_all))
+
     '''
     return False  # FIXME!!
         if not self.board.cfg.do_checkmate:
@@ -518,72 +601,63 @@ class King (ChessPiece):
         return False if target in other_allowed else empty_board
     '''
 
+
 __all__.append('King')
 
-class Knight (ChessPiece):
 
+class Knight(ChessPiece):
     ptype = 'knight'
-    #default_origins = [Coord(x, y) for x in (1, 6) for y in (0, 7)]
+    # default_origins = [Coord(x, y) for x in (1, 6) for y in (0, 7)]
     default_origins = 'b1 b8 g1 g8'.split()
 
-    @call_trace(2)
-    def move(self, dest):
-        return_code = ChessPiece.move(self, dest)
-        if return_code:
-            castling_partner = {'a1' : 'Q',
-                                'h1' : 'K',
-                                'a8' : 'q',
-                                'h8' : 'k'}.get(piece.fen_loc, '')
-            self.board.castling_rights = self.board.castling_rights.replace(castling_partner, '')
-        return return_code
-
     def knight_moves(self):  # front page drivin' news
-        print(self)
         the_moves = []
         for x, y in itertools.permutations((-1, 1, -2, 2), 2):
             if abs(x) != abs(y):
                 x = self.x + x
                 y = self.y + y
-                #print('t/f', self.x, self.y, x, y, 0 <= x <= 7 and 0 <= y <= 7)
                 if 0 <= x <= 7 and 0 <= y <= 7:
-                    #print(x, y, C.x_chars[x] + C.y_chars[y])
                     the_moves.append(C.x_chars[x] + C.y_chars[y])
-        #print (self.ptype, [C.fen_loc_from_xy(x, y) for x, y in self.default_origins])
-        print('{}.knight_moves: {} ({}, {}) {}'.format(self.__class__.__name__, self, self.x, self.y, the_moves))
+        # print('{}.knight_moves: {} ({}, {}) {}'.format(self.__class__.__name__, self, self.x, self.y, the_moves))
         return tuple(the_moves)
 
     @call_trace(4)
     def apply_ruleset(self, target):
         return target in self.knight_moves()
-        #allowed = [self.coord + Coord(1, 2), 
-        #           self.coord + Coord(2, 1),
-        #           self.coord + Coord(2, -1),
-        #           self.coord + Coord(1, -2),
-        #           self.coord - Coord(1, 2),
-        #           self.coord - Coord(2, 1),
-        #           self.coord - Coord(2, -1),
-        #           self.coord - Coord(1, -2)]
-        #for pos in allowed:
-        #    if not (C.grid_height > pos.y >= 0 and C.grid_width > pos.x >= 0):
-        #        allowed.remove(pos)
-        #return target in allowed
+
+    @property
+    def all_moves(self):
+        """returns a list of all fen_locs that can be moved to.
+        It does NOT check the validity of each move."""
+        return self.knight_moves()
+
 
     @call_trace(4)
     # override this method for two reasons:
-    # A. knights can jump over pieces so this is irrevelent
+    # A. knights can jump over pieces so this is irrelevant
     # B. the path generator doesn't work properly for the knight's direction of movement
     #    and this saves having to implement special-case code in the ChessPiece.path_to method
-    #def path_to(self, target):
+    # def path_to(self, target):
     #    return [0]
     def clear_path_to_target(self, target):
         return True
 
+    #@call_trace(4)
+    @property
+    def threatens(self):
+        """Returns a list of fen_locs of pieces that this piece could kill."""
+        return (dest for dest in self.knight_moves()
+                if self.friend_or_foe(dest) == 'foe')
+
 __all__.append('Knight')
-    
+
 if __name__ == '__main__':
     print('=' * 20)
     from Phantom.core.players import Player
+
     p = Pawn(Player(None, 'white'), 'a4')
     p.print_neighbors()
+    print(p.as_str())
     p.fen_loc = 'b5'
     p.print_neighbors()
+    print(p.as_str())

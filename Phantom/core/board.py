@@ -171,8 +171,8 @@ class Board (PhantomObj):
     def pieces(self):
         return self.pieces_dict.itervalues()
 
-    def __contains__(self, elem):
-        return elem in self.pieces
+    def __contains__(self, piece):
+        return piece in self.pieces
 
     def __hash__(self):
         return int(self._uuid) % len(self.pieces) + self.fullmove_clock
@@ -183,10 +183,11 @@ class Board (PhantomObj):
         return self.pieces_dict.get(fen_loc, None)
 
     def disp_char(self, fen_loc):
-        if fen_loc in self.pieces_dict:
-            return self.pieces_dict[fen_loc].disp_char
-        else:
-            return self.tiles_dict[fen_loc].disp_char
+        #if fen_loc in self.pieces_dict:
+        #    return self.pieces_dict[fen_loc].disp_char
+        #else:
+        #    return self.tiles_dict[fen_loc].disp_char
+        return (self[fen_loc] or self.tile_at(fen_loc)).disp_char
 
     def tile_at(self, fen_loc):
         return self.tiles_dict[fen_loc]
@@ -200,13 +201,11 @@ class Board (PhantomObj):
         return   [p for p in pieces if p.color == color] if color else pieces
 
     @call_trace(4)
-    def as_fen_str(self):
-        rank_split = '/'
+    def as_fen_str(self):  # FIXME: could this be __repr__()?
+        rank_split = C.fen_rank_split or '/'
         fen = ''
-        #for y in range(C.grid_height, -1, -1):
         for y in C.y_chars:
             file_gap = 0
-            #for x in range(C.grid_width):
             for x in C.x_chars:
                 fen_loc = x+y
                 piece = self[fen_loc]
@@ -218,7 +217,6 @@ class Board (PhantomObj):
                         fen += str(file_gap)
                         file_gap = 0
                     fen += piece.fen_char
-            #if y not in (8, 0):
             if y != '1':
                 if file_gap > 0:
                     fen += str(file_gap)
@@ -228,10 +226,10 @@ class Board (PhantomObj):
                 turn=self.turn[0], castle=self.castling_rights,
                 ep=self.en_passant_rights, half=self.halfmove_clock,
                 full=self.fullmove_clock)
-        print(fen)
+        print('as_fen_str:', fen)
         return fen
 
-    def all_legal(self):
+    def all_legal(self):  # FIXME: Still needed?
         ret = {}
         for piece in self.pieces:
             try:
@@ -240,7 +238,7 @@ class Board (PhantomObj):
                 continue
         return ret
 
-    def _pprnt(self):
+    def _pprnt(self):  #  FIXME: could this be __str__()?
         dash   = '–' if self.cfg.use_unicode else '-'
         turn_indicator = ' ' + C.turn_indicator[int(C.use_unicode)]  # zero or one
         header = '  ' + ' '.join(C.x_chars)
@@ -268,7 +266,7 @@ class Board (PhantomObj):
             console.set_font()
 
     def __str__(self):
-        return self.fen_str()
+        return self.fen_str
 
     def save(self, name):
         self.set_name(name)
@@ -346,7 +344,7 @@ class Board (PhantomObj):
     @exc_catch(LogicError, ChessError, KeyError,
                ret='Cannot make specified move', log=4)
     def move(self, srce, dest=None):
-        if not dest:         # if srce == 'a1b2':
+        if not dest:                      # if srce is 'a1b2':
             srce, dest = srce[:2], srce[2:]  # srce = 'a1', dest = 'b2'
         assert C.is_valid_fen_loc(srce)
         assert C.is_valid_fen_loc(dest)
@@ -365,6 +363,8 @@ class Board (PhantomObj):
         return_code = piece.move(dest)
         if return_code:
             self.pieces_dict[dest] = self.pieces_dict.pop(srce)
+            print(piece.as_str)
+            # piece.print_neighbors()
             self.move_count += 1
             self.switch_turn()
         return return_code
@@ -458,6 +458,21 @@ class Board (PhantomObj):
         print('return True')
         return True
         '''
+
+    def threatened_by(self, piece):
+        """Returns a list of pieces that threaten piece"""
+        #print('{}.threatened_by({}) --> {}'.format(self, piece, self.get_piece_list(color=C.opposite_color(piece.color))))
+        #for p in self.get_piece_list(color=C.opposite_color(piece.color)):
+        #    print(p, [x for x in p.threatens])
+        #print('done.')
+        return (p for p in self.get_piece_list(color=C.opposite_color(piece.color))
+#                 if p.is_move_valid(piece.fen_loc))
+                if piece.fen_loc in p.threatens)
+
+        #print(0, self.get_piece_list(color=C.opposite_color(piece.color)))
+#        return (p for p in self.get_piece_list(color=C.opposite_color(piece.color))
+#                 if p.is_move_valid(piece.fen_loc))
+#                if piece.fen_loc in p.threatens)
 
     # ccc: TODO FIXME from here down is broken...
 

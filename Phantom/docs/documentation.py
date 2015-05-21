@@ -108,6 +108,22 @@ def class_interface(): return """
  as a is the low_level itself.
 """
 
+# FIXME To be continued...
+
+def location_in_phantom(): return """
+                 HOW DOES LOCATION WORK IN PHANTOM
+––––––––––––––––––––––––––––––––––––––––––––––
+ The chess board is set up in rows from '8' to '1' and columns from 'a' to 'h'.
+ These are combined into a board location called a "fen_loc" e.g. a8, h1, etc.
+ Every chess piece and board tile has a fen_loc variable and the following properties:
+     row -- possible values '8', '7', '6', '5', '3', '3', '2', '1'
+     col -- possible values 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+     x -- possible values 0 thru 7
+     y -- possible values 0 thru 7
+ """
+
+# FIXME Is eval() still used?  Eval() is also a security nightmare which is another reason to avoid it.
+
 def use_of_eval(): return """
                  WHEN/WHERE/WHY IS EVAL() USED
 ––––––––––––––––––––––––––––––––––––––––––––––
@@ -179,6 +195,8 @@ def links(): return """
  http://chesshouse.com/how_to_read_and_write_chess_notation_a/166.htm
 """
 
+# FIXME Is freeze still useful?
+
 def why_freeze(): return '''
             WHY FREEZE THE BOARD?
 –––––––––––––––––––––––––––––––––
@@ -191,7 +209,7 @@ def why_freeze(): return '''
             self.pieces = list(self.pieces)
         ```
 
- The most inportant thing that happens is the `self.pieces = list(self.pieces)`.
+ The most important thing that happens is the `self.pieces = list(self.pieces)`.
  The reason:
      For the Phantom.ai.basic.mover.make_random_move function to work, it needs to select a random
      element from the board's pieces.  From the `random` module sourcecode, the choice method does this:
