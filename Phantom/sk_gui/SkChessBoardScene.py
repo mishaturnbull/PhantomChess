@@ -69,9 +69,9 @@ class sk_ChessPiece(sk.SpriteNode):
         #self.prev_position = self.position
         self.touch_enabled = True
 
-    #@property
-    #def fen_loc(self):
-    #    return self.piece.fen_loc
+    @property
+    def fen_loc(self):
+        return self.piece.fen_loc
 
     @property
     def name(self):
@@ -247,6 +247,7 @@ class SkChessBoardScene(sk.Scene):
         if node == self:
             return
         for square in self.get_children_with_name('*'):
+            #print(square.name)
             if isinstance(square, sk_BoardSquare) and touch in square:
                 target_fen_loc = square.name
                 #is_valid = node.is_move_valid(square.name)
@@ -255,11 +256,20 @@ class SkChessBoardScene(sk.Scene):
                 #target_piece = self.board.pieces_dict.get(target, None)
                 #if is_valid:
                 save_piece_name = repr(node.piece)
+                print(0, node.fen_loc)
+                #node.move()is called on a different thread so it returns None!!!
                 move_was_made = node.move(target_fen_loc)
-                print('mwm 1', move_was_made)
+                print(1, node.fen_loc)
+                #print('mwm 1', move_was_made)
                 move_was_made = repr(node.piece) != save_piece_name
-                print('mwm 2', move_was_made)
+                #print('mwm 2', move_was_made)
                 if move_was_made:
+                    for piece in self.get_children_with_name('*'):
+                        if (piece != node
+                        and isinstance(piece, sk_ChessPiece)
+                        and piece.fen_loc == node.fen_loc):
+                            piece.remove_from_parent()
+                    #killed_piece = 
                     node.position = square.position
                     sound.play_effect('8ve:8ve-tap-professional')
                     #self.game.board.switch_turn()
