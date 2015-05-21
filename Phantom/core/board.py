@@ -362,7 +362,11 @@ class Board (PhantomObj):
             #return False
         return_code = piece.move(dest)
         if return_code:
+            dead_guy = self.pieces_dict.pop(dest, None)
             self.pieces_dict[dest] = self.pieces_dict.pop(srce)
+            if dead_guy and dead_guy.ptype == 'king':
+                import sys
+                sys.exit('Game over man!!')
             print(piece.as_str)
             # piece.print_neighbors()
             self.move_count += 1
