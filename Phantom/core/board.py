@@ -26,7 +26,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 import Phantom.constants as C
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.players import Player
-from Phantom.core.exceptions import InvalidMove, LogicError, ChessError
+from Phantom.core.exceptions import ChessError, InvalidMove, LogicError
 from Phantom.core.pieces import ChessPiece
 from Phantom.boardio.save import save
 from Phantom.boardio.load import load_game
@@ -341,8 +341,8 @@ class Board (PhantomObj):
 
     # accepts: move('a1', 'b2') or move('a1b2')
     @call_trace(1)
-    @exc_catch(LogicError, ChessError, KeyError,
-               ret='Cannot make specified move', log=4)
+    #@exc_catch(LogicError, ChessError, KeyError,
+    #           ret='Cannot make specified move', log=4)
     def move(self, srce, dest=None):
         if not dest:                      # if srce is 'a1b2':
             srce, dest = srce[:2], srce[2:]  # srce = 'a1', dest = 'b2'
@@ -365,9 +365,12 @@ class Board (PhantomObj):
             dead_guy = self.pieces_dict.pop(dest, None)
             self.pieces_dict[dest] = self.pieces_dict.pop(srce)
             if dead_guy and dead_guy.ptype == 'king':
-                import sys
-                sys.exit('Game over man!!')
+                print('Game over man!!')
+                #import sys
+                #sys.exit('Game over man!!')
             print(piece.as_str)
+            print('history:', self.game.history)
+            print('  moves:', self.game.moves)
             # piece.print_neighbors()
             self.move_count += 1
             self.switch_turn()
