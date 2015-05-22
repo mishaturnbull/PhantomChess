@@ -34,10 +34,10 @@ class ChessError (Exception, PhantomObj):
         self.caller = caller
 
     def __str__(self):
-        if self.caller is not None:
-            return repr(self.msg) + " sourced at {}".format(repr(self.caller))
+        if self.caller:
+            return '{} sourced at {}'.format(repr(self.msg), repr(self.caller))
         else:
-            return repr(self.msg) + " with no source"
+            return '{} with no source'.format(repr(self.msg))
 
     def __repr__(self):
         return self.__str__()
