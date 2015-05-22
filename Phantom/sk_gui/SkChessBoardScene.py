@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
-import os, sk, sound, ui
+import dialogs, os, sk, sound, ui
 #from create_pieces_sprite_dict import GameScene
 #from Phantom.core.coord.point import Coord
+from Phantom.core.exceptions import ChessError, InvalidMove, LogicError
 from Phantom.core.pieces import ChessPiece
 from Phantom.core.game_class import ChessGame
 import Phantom.constants as C
@@ -95,7 +96,11 @@ class sk_ChessPiece(sk.SpriteNode):
 
     def move(self, target):
         assert C.is_valid_fen_loc(target)
-        return self.piece.board.move(self.piece.fen_loc + target)
+        try:
+            return self.piece.board.move(self.piece.fen_loc + target)
+        except (ChessError, InvalidMove, LogicError) as e:
+            dialogs.hud_alert('{}: {}'.format(e.__class__.__name__, e))
+        return False
     
     '''
     #@ui.in_background
@@ -255,54 +260,32 @@ class SkChessBoardScene(sk.Scene):
                 
                 #target_piece = self.board.pieces_dict.get(target, None)
                 #if is_valid:
-                save_piece_name = repr(node.piece)
-                print(0, node.fen_loc)
-                #node.move()is called on a different thread so it returns None!!!
-                move_was_made = node.move(target_fen_loc)
-                print(1, node.fen_loc)
-                #print('mwm 1', move_was_made)
-                move_was_made = repr(node.piece) != save_piece_name
+                save_fen_loc = node.fen_loc
+                #node.move() is called on a different thread so it returns None!!!
+                move_was_made = node.move(target_fen_loc) # always returns None!!
+                #print('mwm 1', move_was_made)  # fails!!
+                move_was_made = node.fen_loc != save_fen_loc
                 #print('mwm 2', move_was_made)
                 if move_was_made:
                     for piece in self.get_children_with_name('*'):
+                        # remove the killed sk_ChessPiece
                         if (piece != node
                         and isinstance(piece, sk_ChessPiece)
                         and piece.fen_loc == node.fen_loc):
+                            if piece.piece.ptype == 'king':
+                                import dialogs
+                                dialogs.hud_alert('Game over man!')
                             piece.remove_from_parent()
-                    #killed_piece = 
                     node.position = square.position
                     sound.play_effect('8ve:8ve-tap-professional')
-                    #self.game.board.switch_turn()
                 else:
                     node.position = self.save_position
                     sound.play_effect('8ve:8ve-beep-rejected')
-                not_str = '' if move_was_made else 'not ' 
-                print('{} was {}moved to square {}'.format(save_piece_name, not_str, square.name))
-                print(repr(node.piece))
+                not_str = '' if move_was_made else 'not '
+                fmt = '{} at {} was {}moved to square {}'
+                print(fmt.format(node.name, save_fen_loc, not_str, square.name))
+                #print(repr(node.piece))
                 print('')
-
-    '''
-    def ztouch_ended(self, node, touch):
-        if node == self:
-            return
-        for square in self.get_children_with_name('*'):
-            if isinstance(square, sk_BoardSquare) and touch in square:
-                is_valid = node.is_move_valid(square.name)
-                print(node.name, square.name, is_valid)
-                save_piece_name = repr(node.piece)
-                if is_valid:
-                    node.move(square.name)
-                    node.set_position(square.position)
-                    sound.play_effect('8ve:8ve-tap-professional')
-                    self.game.board.switch_turn()
-                else:
-                    node.undo_position()
-                    sound.play_effect('8ve:8ve-beep-rejected')
-                not_str = '' if is_valid else 'not ' 
-                print('{} was {}moved to square {}'.format(save_piece_name, not_str, square.name))
-                print(repr(node.piece))
-                print('')
-    '''
 
 if __name__ == '__main__':
     print('=' * 30)
