@@ -64,3 +64,22 @@ def spawn_tree(board):
     return root
 __all__.append('spawn_tree')
 
+def main(clear=True):
+    print('=' * 50)
+    from Phantom.core.game_class import ChessGame
+    from Phantom.utils.debug import log_msg, clear_log
+    
+    if clear: clear_log()
+    log_msg('Testing Phantom.ai.tree.generate.spawn_tree()', 0)
+    tree = None
+    try:
+        g = ChessGame()
+        tree = spawn_tree(g.board)
+    except ImportError:  #Exception as e:
+        log_msg('Phantom.ai.tree.generate.spawn_tree() test failed:\n{}'.format(e), 0, err=True)
+    finally:
+        log_msg('Test complete', 0)
+    return tree
+
+if __name__ == '__main__':
+    tree = main()
