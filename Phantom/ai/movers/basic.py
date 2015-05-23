@@ -20,9 +20,9 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """The code that makes the AI do stuff.  Although this AI doesn't do very smart stuff."""
 
-from Phantom.core.board import Board
-from Phantom.core.coord.point import Coord
-from Phantom.core.exceptions import InvalidMove, InvalidDimension, ChessError, LogicError
+#from Phantom.core.board import Board
+#from Phantom.core.coord.point import Coord
+#from Phantom.core.exceptions import InvalidMove, InvalidDimension, ChessError, LogicError
 import random
 
 def make_random_move(board):
