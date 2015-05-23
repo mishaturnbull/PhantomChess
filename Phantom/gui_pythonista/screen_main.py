@@ -25,23 +25,37 @@ import os
 import sys
 import scene
 
-from Phantom.core.coord.point import Coord, bounds
+#from Phantom.core.coord.point import Coord, bounds
+Coord = scene.Point
+import Phantom.constants as C
 from Phantom.core.chessobj import PhantomObj
 from Phantom.utils.debug import log_msg, call_trace
-from Phantom.constants import *
-from Phantom.ai.pos_eval.advanced import pos_eval_advanced
+#from Phantom.constants import *
+#from Phantom.ai.pos_eval.advanced import pos_eval_advanced
 from Phantom.core.exceptions import InvalidMove
 from Phantom.gui_pythonista.screen_options import ChessOptionsScreen
 from Phantom.gui_pythonista.screen_promote import ChessPromoteScreen
 
 
-class ChessMainScreen (scene.Scene, PhantomObj):
+class ChessMainScreen (scene.Scene): #, PhantomObj):
 
     def __init__(self, game_view):
         self.game_view = game_view
-        self.tmp_t = 0
+        #print(self.bounds, self.size)
+        self.tmp_t = 0  # ccc: what?, why?
 
     def setup(self):
+        #print(self.bounds, self.size)
+        #print(type(self.bounds))
+        #sys.exit(type(self.bounds))
+        self.square_size = min(*self.size) / 8
+        if self.size.w > self.size.h:
+            self.offset = scene.Point((self.size.w - self.size.h) / 2, 0)
+        else:
+            self.offset = scene.Point(0, (self.size.w - self.size.h) / 2)
+        
+        #self.offset = 
+        #print(self.square_size)
         cfg = self.game_view.game.board.cfg
         self.coord_disp_mode = {'onoff': cfg.disp_coords,
                                 'mode': cfg.coord_mode}
@@ -52,37 +66,49 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                             'turn_color': cfg.disp_turn,
                             'timers': cfg.disp_timers}
         self.is_selected = False
-        self.selected = Coord(None, None)
+        self.selected = ''  # Coord(None, None)  self.selected --> a fen_pos
         self.target = self.selected
         self.err = None
-        self.err_pos = Coord(None, None)
+        self.err_pos = ''  # Coord(None, None)
         self.valid_cache = []
         self.img_names = self.game_view.load_images()
+        print(self.img_names)
         self.turn_indicator_img = 'White_Square'
         self.pos_score = None
         self.disp_score = False
-        min = Coord(0, 0).as_screen
-        max = Coord(8, 8).as_screen
-        self.bounds = scene.Rect(min.x, min.y, max.x-min.x, max.y-min.y)
-        print(screen_size)
-        self.size = screen_size
-        print(self.bounds) # --> Rect(x=128, y=0, w=768, h=768)
+        #min = Coord(0, 0).as_screen
+        #max = Coord(8, 8).as_screen
+        #self.bounds = scene.Rect(min.x, min.y, max.x-min.x, max.y-min.y)
+        #print(screen_size)
+        #self.size = screen_size
+        #print(self.bounds) # --> Rect(x=128, y=0, w=768, h=768)
         self.won = self.game_view.game.is_won()
+
+    def as_screen(self, piece):
+        return scene.Point(piece.x * self.square_size + self.offset.x,
+                           piece.y * self.square_size + self.offset.y)
+        
+    def from_screen(self, touch_loc):
+        return (int((touch_loc.x - self.offset.x) / self.square_size),
+                int((touch_loc.y - self.offset.y) / self.square_size))
 
     def did_err(self, e):
         self.err = sys.exc_info()
-        self.selected = Coord(None, None)
+        self.selected = ''  # Coord(None, None)
         self.is_selected = False
-        self.game_view.game.board.freeze()
+        #self.game_view.game.board.freeze()
 
     def touch_began(self, touch):
         game = self.game_view.game
         self.valid_cache = []
         tpos = Coord(touch.location.x, touch.location.y)
-        cpos = Coord.from_screen(tpos)
+        #cpos = Coord.from_screen(tpos)
+        cpos = self.from_screen(tpos)
+        fen_loc = C.fen_loc_from_xy(*cpos)
+        print(tpos, cpos, fen_loc)
         if touch.location in self.bounds:
             if not self.is_selected:
-                piece = game.board[cpos]
+                piece = game.board[fen_loc]
                 if isinstance(piece, list):
                     try:
                         raise ChessError('More than one piece at position',
@@ -91,29 +117,29 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                         self.did_err(e)
                         return
                 if piece:
-                    self.selected = cpos
-                    self.valid_cache = piece.valid()
+                    self.selected = fen_loc  # cpos
+                    self.valid_cache = piece.all_valid_moves  # piece.valid()
                     self.is_selected = True
                 else:
-                    self.selected = Coord(None, None)
+                    self.selected = ''  # Coord(None, None)
             else:
-                self.target = cpos
+                self.target = fen_loc
                 try:
                     if game.board[self.selected].ptype == 'king':
                         piece = game.board[self.selected]
                         castling_rights = game.board.castling_rights
                         if piece.color == 'white':
-                            if self.target == Coord(6, 0):
+                            if self.target == 'g8':  # Coord(6, 0):
                                 if 'K' in castling_rights:
                                     game.castle('K')
-                            elif self.target == Coord(2, 0):
+                            elif self.target == 'c8':  # Coord(2, 0):
                                 if 'Q' in castling_rights:
                                     game.castle('Q')
                         elif piece.color == 'black':
-                            if self.target == Coord(6, 7):
+                            if self.target == 'g1':  # Coord(6, 7):
                                 if 'k' in castling_rights:
                                     game.castle('k')
-                            elif self.target == Coord(2, 7):
+                            elif self.target == 'c1':  # Coord(2, 7):
                                 if 'q' in castling_rights:
                                     game.castle('q')
                     mr = game.move(self.selected, self.target)
@@ -124,8 +150,8 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                     self.did_err(e)
                 except Exception as e:
                     self.did_err(e)
-                self.selected = Coord(None, None)
-                self.target = Coord(None, None)
+                self.selected = ''  # Coord(None, None)
+                self.target = ''  # Coord(None, None)
                 self.is_selected = False
                 if isinstance(mr, str):
                     self.err_pos = self.target
@@ -145,21 +171,23 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                 game.rollback()
             elif scale_factor < touch.location.y:
                 self.is_selected = False
-                self.selected = Coord(None, None)
-                self.target = Coord(None, None)
+                self.selected = ''  # Coord(None, None)
+                self.target = ''  # Coord(None, None)
 
     def draw(self):
+        scale_factor = self.square_size
         scene.background(0, 0, 0)
         scene.fill(1, 1, 1, 1)
         board = self.game_view.game.board
         if self.render_mode['pieces']:
             for piece in board.pieces:
                 scene.tint(1, 1, 1, 0.5)
-                pos = piece.coord.as_screen
-                img = self.img_names[piece.pythonista_gui_img_name]
+                pos = self.as_screen(piece)  # piece.coord.as_screen
+                #print(self.img_names)
+                img = self.img_names['Chess set images {}.jpg'.format(piece.name)]
                 scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
                 scene.tint(1, 1, 1, 1)
-                if piece.coord == self.selected:
+                if piece.fen_loc == self.selected:
                     scene.fill(0.23347,0.3564,0.59917, 0.6)
                     scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                     scene.fill(1, 1, 1, 1)
@@ -177,7 +205,7 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                 x = int(tile.color == 'white')  # zero or one Thi is code
                 color = (x, x, x, 0.57)  # alpha value
                 scene.fill(*color)
-                pos = tile.as_screen
+                pos = self.as_screen(tile)  # tile.as_screen
                 scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                 scene.fill(1, 1, 1, 1)
                 if self.render_mode['coords']:
@@ -188,18 +216,21 @@ class ChessMainScreen (scene.Scene, PhantomObj):
                     coord = str(tile.coord.as_tup)
                     scene.text(chess, x=chess_pos.x, y=chess_pos.y)
                     scene.text(coord, x=coord_pos.x, y=coord_pos.y)
-            if self.err_pos.x is not None:
-                sc = self.err_pos.as_screen
-                scene.fill(1, 0, 0, 0.3)
-                scene.rect(sc.x, sc.y, scale_factor, scale_factor)
-                scene.fill(1, 1, 1, 1)
-                scene.tint(0, 0, 1, 1)
-                scene.text('Move\nInvalid', x=(sc.x + scale_factor/2), y=(sc.y + scale_factor/2))
-                scene.tint(1, 1, 1, 1)
+            #if self.err_pos:  # FIXME this needs to be reenabled!
+            #    sc = self.err_pos.as_screen
+            #    scene.fill(1, 0, 0, 0.3)
+            #    scene.rect(sc.x, sc.y, scale_factor, scale_factor)
+            #    scene.fill(1, 1, 1, 1)
+            #    scene.tint(0, 0, 1, 1)
+            #    scene.text('Move\nInvalid', x=(sc.x + scale_factor/2), y=(sc.y + scale_factor/2))
+            #    scene.tint(1, 1, 1, 1)
         if self.render_mode['valid']:
             for tile in board.tiles:
-                if tile.coord in self.valid_cache:
-                    pos = tile.coord.as_screen
+                if self.valid_cache:
+                    print(self.valid_cache)
+                #if tile.coord in self.valid_cache:  # FIXME
+                if tile.fen_loc in self.valid_cache:
+                    pos = self.as_screen(tile)  # tile.coord.as_screen
                     scene.fill(0.47934,0.81198,0.41839, 0.3)
                     scene.rect(pos.x, pos.y, scale_factor, scale_factor)
                     scene.fill(1, 1, 1, 1)
@@ -233,8 +264,9 @@ class ChessMainScreen (scene.Scene, PhantomObj):
         scene.text('Options', x=x, y=scale_factor*7 - x)
 
 if __name__ == '__main__':
-    from Phantom.core.game_class import ChessGame, load_game
-    game = ChessGame()  #load_game('Long Endgame 1')
+    from Phantom.core.game_class import load_game  # ChessGame
+    from Phantom.gui_pythonista.game_view import GameView
+    game = load_game('Long Endgame 1')  # ChessGame()
     game.board.cfg.disp_sqrs = True
-    s = ChessMainScreen(game)
+    s = ChessMainScreen(GameView(game))
     scene.run(s, orientation=scene.LANDSCAPE)
