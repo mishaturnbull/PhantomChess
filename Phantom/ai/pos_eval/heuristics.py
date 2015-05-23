@@ -102,7 +102,7 @@ all_rules.append(developed_pieces)
 @call_trace(3)
 def advanced_pawns(board):
     from Phantom.ai.settings import advanced_pawn_mul, promotable_bonus
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_width
     score = 0
     for piece in board.get_piece_list(ptype='pawn'):
         if piece.color == 'white':
@@ -249,11 +249,11 @@ all_rules.append(bad_bishops)
 @call_trace(3)
 def pawn_assess(board):
     from Phantom.ai.pos_eval.piece_tables import white_pawns, black_pawns
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_width
     score = 0
     for piece in board.get_piece_list(ptype='pawn'):
         print(repr(piece))
-        # x, y = piece.coord.x, (grid_height - piece.coord.y) - 1
+        # x, y = piece.coord.x, (grid_width - piece.coord.y) - 1
         if piece.color == 'white':
             score += white_pawns[piece.y][piece.x]  # ccc: should order be y,x or x,y?  Repeats below
         elif piece.color == 'black':
@@ -264,10 +264,10 @@ all_rules.append(pawn_assess)
 @call_trace(3)
 def knight_assess(board):
     from Phantom.ai.pos_eval.piece_tables import white_knights, black_knights
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_width
     score = 0
     for piece in board.get_piece_list(ptype='knight'):
-        # x, y = piece.coord.x, (grid_height - piece.coord.y) - 1
+        # x, y = piece.coord.x, (grid_width - piece.coord.y) - 1
         if piece.color == 'white':
             score += white_knights[piece.y][piece.x]
         elif piece.color == 'black':
@@ -278,7 +278,7 @@ all_rules.append(knight_assess)
 @call_trace(3)
 def bishop_assess(board):
     from Phantom.ai.pos_eval.piece_tables import white_bishops, black_bishops
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_height
     score = 0
     for piece in board.get_piece_list(ptype='bishop'):
         # x, y = piece.coord.x, (grid_height - piece.coord.y) - 1
@@ -292,7 +292,7 @@ all_rules.append(bishop_assess)
 @call_trace(3)
 def rook_assess(board):
     from Phantom.ai.pos_eval.piece_tables import white_rooks, black_rooks
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_height
     score = 0
     for piece in board.get_piece_list(ptype='rook'):
         # x, y = piece.coord.x, (grid_height - piece.coord.y) - 1
@@ -306,7 +306,7 @@ all_rules.append(rook_assess)
 @call_trace(3)
 def queen_assess(board):
     from Phantom.ai.pos_eval.piece_tables import white_queens, black_queens
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_height
     score = 0
     for piece in board.get_piece_list(ptype='queen'):
         # x, y = piece.coord.x, (grid_height - piece.coord.y) - 1
@@ -323,7 +323,7 @@ def king_assess(board):
                                                   white_kings_endgame,
                                                   black_kings_endgame)
     from Phantom.ai.phases import Phase
-    from Phantom.constants import grid_height
+    #from Phantom.constants import grid_height
     score = 0
     phase = Phase.analyze(board)
     if phase in (Phase.opening, Phase.midgame):
