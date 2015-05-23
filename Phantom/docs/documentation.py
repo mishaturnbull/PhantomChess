@@ -113,13 +113,38 @@ def class_interface(): return """
 def location_in_phantom(): return """
                  HOW DOES LOCATION WORK IN PHANTOM
 ––––––––––––––––––––––––––––––––––––––––––––––
- The chess board is set up in rows from '8' to '1' and columns from 'a' to 'h'.
+ The chess board is set up in columns from 'a' to 'h' and rows from '8' to '1'.
  These are combined into a board location called a "fen_loc" e.g. a8, h1, etc.
  Every chess piece and board tile has a fen_loc variable and the following properties:
      row -- possible values '8', '7', '6', '5', '3', '3', '2', '1'
      col -- possible values 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
      x -- possible values 0 thru 7
      y -- possible values 0 thru 7
+ 
+ Cheat sheet of mappings of fen_locs (e.g. d4)
+ to x, y coordinates (e.g. (3,4)).
+
+     a    b    c    d    e    f    g    h
+    ======================================
+ 8  0,0  1,0  2,0  3,0  4,0  5,0  6,0  7,0  8
+ 7  0,1  1,1  2,1  3,1  4,1  5,1  6,1  7,1  7
+ 6  0,2  1,2  2,2  3,2  4,2  5,2  6,2  7,2  6
+ 5  0,3  1,3  2,3  3,3  4,3  5,3  6,3  7,3  5
+ 4  0,4  1,4  2,4  3,4  4,4  5,4  6,4  7,4  4
+ 3  0,5  1,5  2,5  3,5  4,5  5,5  6,5  7,5  3
+ 2  0,6  1,6  2,6  3,6  4,6  5,6  6,6  7,6  2
+ 1  0,7  1,7  2,7  3,7  4,7  5,7  6,7  7,7  1
+    ======================================
+     a    b    c    d    e    f    g    h
+
+ Note that a8 is (0,0) while h1 is (7,7) which
+ is unintuitive and caused difficult to spot
+ location bugs in earlier versions of Phantom.
+
+ Now Phantom objects Tile and Piece have
+ attributes .row, .col, .x and .y to
+ facilitate the interchangable use of both
+ col,row-based fen_locs and x, y coordinates. 
  """
 
 # FIXME Is eval() still used?  Eval() is also a security nightmare which is another reason to avoid it.
