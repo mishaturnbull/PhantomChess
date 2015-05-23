@@ -95,8 +95,7 @@ if __name__ == '__main__':
             game.ai_hard()
             return game
         elif command == 'rate':
-            from Phantom.ai.pos_eval.advanced import pos_eval_advanced
-            return pos_eval_advanced(game.board)
+            return game.ai_rateing
         else:
             return 'Valid "ai" commands are "easy", "hard", and "rate".'
 
@@ -112,7 +111,7 @@ if __name__ == '__main__':
         if cmd == 'ai':
             print(str(ai_command(modifier.lower())))
         elif cmd == 'castle':
-            if modifier.lower() in ('k', 'q'):
+            if modifier in 'KQkq':
                 game.castle(modifier)
             else:
                 print('"castle" must be followed by "K", "Q", "k", or "q".')
