@@ -39,7 +39,7 @@ class Node (object):
     def __init__(self, depth, terminal, board, parent=None):
         self.depth = depth
         self.is_terminal = terminal or (self.depth >= maxdepth)
-        self.board = Board(fen=board.fen_str())  # deepcopy the board
+        self.board = Board(None, fen_str=board.fen_str)  # deepcopy the board
         self.board.set_game(board.game)
         self.score = pos_eval_advanced(self.board)
         self.nid = self.cnum + 1
@@ -48,7 +48,7 @@ class Node (object):
         self.cnum = self.nid
         self._uuid = uuid.uuid4()
         self.parent = parent
-        if self.parent is not None:
+        if self.parent:
             self.parent.set_child(self)
         self.children = []
         self.numchildren = window**self.depth if self.depth > 1 else window
