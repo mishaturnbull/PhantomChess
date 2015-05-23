@@ -33,7 +33,7 @@ from Phantom.boardio.load import load_game
 from Phantom.boardio.boardcfg import Cfg
 from Phantom.utils.debug import call_trace, log_msg
 from Phantom.utils.decorators import exc_catch
-from Phantom.functions import round_down, dist
+#from Phantom.functions import round_down, dist
 import collections
 import contextlib
 import uuid
@@ -41,8 +41,8 @@ import uuid
 __all__ = []
 
 def load(name):
-    fen = load_game(name)
-    game = Board(None, fen)
+    fen_str = load_game(name)
+    game = Board(None, fen_str)
     game.set_name(name)
     return game
 __all__.append('load')
@@ -62,8 +62,8 @@ class Tile (PhantomObj):
 
     def __repr__(self):
         fmt = '<{} {} at {} ({}, {}) in {}>'
-        return fmt.format(self.color, self.__class__.__name__, self.fen_loc,
-                            self.x, self.y, hex(id(self)))
+        return fmt.format(self.color, self.__class__.__name__,
+                            self.fen_loc, self.x, self.y, hex(id(self)))
 
     @property
     def col(self):
@@ -92,9 +92,7 @@ def _make_pieces_dict(fen_str='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'):
             if c.isdigit():
                 x += int(c)
             else:
-                fen_loc = C.x_chars[x] + C.y_chars[y]
-                #print(fen_loc, C.xy_from_fen_loc(fen_loc), c)
-                pieces_dict[fen_loc] = c
+                pieces_dict[C.fen_loc_from_xy(x, y)] = c
                 x += 1
     return pieces_dict
 
@@ -369,8 +367,8 @@ class Board (PhantomObj):
                 #import sys
                 #sys.exit('Game over man!!')
             print(piece.as_str)
-            print('history:', self.game.history)
-            print('  moves:', self.game.moves)
+            # print('history:', self.game.history)
+            # print('  moves:', self.game.moves)
             # piece.print_neighbors()
             self.move_count += 1
             self.switch_turn()
@@ -609,6 +607,6 @@ __all__.append('Board')
 
 if __name__ == '__main__':
     from Phantom.core.game_class import ChessGame
-    b = Board(ChessGame())
+    b = ChessGame().board
     b.set_name('Chess')
     b.pprint()
