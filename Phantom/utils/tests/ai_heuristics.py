@@ -23,12 +23,13 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 from Phantom.utils.debug import log_msg, clear_log
 from Phantom.ai.pos_eval.heuristics import all_rules
-from Phantom.core.game_class import ChessGame
+from Phantom.core.game_class import load_game
 
 def main(clear=True):
     if clear: clear_log()
     log_msg('Testing Phantom.ai.pos_eval.heuristics functions', 0)
-    g = ChessGame('Game 1')
+    #g = ChessGame('Game 1')
+    g = load_game('Game 1')
     log_msg('Testing AI heuristics on savegame "Game 1":', 0)
     score = 0
     for rule in all_rules:
@@ -43,4 +44,6 @@ def main(clear=True):
     return score
 
 if __name__ == '__main__':
+    print('=' * 20)
     score = main()
+    print('score: {}'.format(score))
