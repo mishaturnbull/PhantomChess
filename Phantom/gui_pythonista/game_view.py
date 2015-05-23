@@ -21,6 +21,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """The main scene object for the GUI.  Allows use of multiple scene classes with one GUI."""
 
+'''
 try:
     import os, scene, ui
     try:
@@ -32,8 +33,13 @@ try:
         raise e
 except ImportError:
     pass
+'''
 
-import scene, ui
+import os, scene, ui
+from Phantom.constants import phantom_dir
+from Phantom.core.chessobj import PhantomObj
+from Phantom.gui_pythonista.screen_main import ChessMainScreen
+from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
 
 class GameView(ui.View):
     def __init__(self, game, in_scene=None):
