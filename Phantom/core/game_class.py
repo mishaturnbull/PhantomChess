@@ -29,17 +29,18 @@ ChessGame
     Has one Board
         Has one players     [Player, Player]
         Has one tiles_dict  {fen_loc : Tile}
-        Has one pieces_dict {fen_loc : Piece}
+        Has one pieces_dict {fen_loc : ChessPiece}
         ### Has one graveyard   []
 
 ChessGame.__init__(ChessGame, fen_str=None)
 Board.__init__(fen_str=None)
 Player.__init__(Board, color)
 Tile.__init__(color, fen_loc)
-Piece.__init__(Player, fen_loc)
+ChessPiece.__init__(Player, fen_loc)
 """
 
 import sys
+import Phantom.constants as C
 from Phantom.core.chessobj import PhantomObj
 from Phantom.core.board import Board # , load as _load_board
 from Phantom.boardio.load import load_game as load_board_fen
@@ -58,12 +59,30 @@ class ChessGame (PhantomObj):
         self.data = dict()
         self.history = []
         self.moves = []
+        #try:  # autostart the gui?
+        #    import sk
+        #    self.sk_gui()
+        #except ImportError:
+        #    pass
 
     def __repr__(self):
         return self.board._pprnt()
 
     def __hash__(self):
         return int(self._uuid) % (self.board.__hash__() + 1)
+
+    @property
+    def ai_rateing(self):
+        from Phantom.ai.pos_eval.advanced import pos_eval_advanced
+        return pos_eval_advanced(self.board)
+
+    def ai_easy(self):
+        from Phantom.ai.movers.basic import make_random_move
+        return make_random_move(self.board)
+
+    def ai_hard(self):
+        from Phantom.ai.movers.advanced import make_smart_move
+        return make_smart_move(self.board)
 
     def move(self, *args):
         save_fen_str = self.board.as_fen_str()
@@ -108,14 +127,6 @@ class ChessGame (PhantomObj):
         self.board.data = data
         self.board.cfg = cfg
 
-    def ai_easy(self):
-        from Phantom.ai.movers.basic import make_random_move
-        return make_random_move(self.board)
-
-    def ai_hard(self):
-        from Phantom.ai.movers.advanced import make_smart_move
-        return make_smart_move(self.board)
-
     def gui(self):
         """Spawn a GUI for the game.  **Only works in Pythonista, on other platforms does nothing."""
         from Phantom.constants import in_pythonista
@@ -141,8 +152,8 @@ class ChessGame (PhantomObj):
             return kings[0].color  # the last king left standing wins
 
         for king in kings:
-            if not king.valid() and king.threatened_by():
-                return op_color(king.color)  # checkmate!
+            if not king.all_valid_moves and king.threatened_by:
+                return C.opposite_color(king.color)  # checkmate!
 
         return False
 
