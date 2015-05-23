@@ -129,13 +129,16 @@ class ChessGame (PhantomObj):
 
     def gui(self):
         """Spawn a GUI for the game.  **Only works in Pythonista, on other platforms does nothing."""
-        from Phantom.constants import in_pythonista
-        if in_pythonista:
+        try:
+            import scene
             from Phantom.gui_pythonista.game_view import GameView
             self.gui = GameView(self)
+        except ImportError as e:
+            print(e)
+            #sys.exit('Pythonista scene module not found!')
 
     def sk_gui(self):
-        """Spawn a GUI for the game.  **Only works in Pythonista, on other platforms does nothing."""
+        """Spawn a GUI for the game.  **Only works in Pythonista v1.6+, on other platforms does nothing."""
         try:
             import sk  # only available in Pythonista
             from Phantom.sk_gui.SkChessView import SkChessView
