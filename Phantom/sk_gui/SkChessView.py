@@ -43,8 +43,8 @@ class SkChessView(ui.View):
         self.width, self.height = ui.get_screen_size()
         if photos.is_authorized():
             self.add_subview(self.make_image_view())
-        game = game or ChessGame()
-        board_scene = self.make_board_scene(game)
+        self.game = game or ChessGame()
+        board_scene = self.make_board_scene(self.game)
         self.make_buttons()
         self.present(orientations=['landscape'], hide_title_bar=True)
 
@@ -67,7 +67,7 @@ class SkChessView(ui.View):
 
     @classmethod
     def make_button(cls, title, i):
-        button = ui.Button(title=title)
+        button = ui.Button(name=title, title=title)
         button.action = quit_action
         button.x = 30
         button.y = 105 * (i + 1)
@@ -77,6 +77,10 @@ class SkChessView(ui.View):
         menu_titles = menu_titles or 'Options AI_Easy AI_Hard Get_score Undo Deselect'.split()
         for i, title in enumerate(menu_titles):
             self.add_subview(self.make_button(title.replace('_', ' '), i))
+        self['Get score'].action = self.action_get_score
+
+    def action_get_score(self, sender):
+        dialogs.hud_alert('Score: {}'.format(self.game.ai_rateing))
 
 
 def gui_sk(game=None):
