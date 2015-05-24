@@ -252,7 +252,7 @@ def pawn_assess(board):
     #from Phantom.constants import grid_width
     score = 0
     for piece in board.get_piece_list(ptype='pawn'):
-        print(repr(piece))
+        #print('pawn_assess:', repr(piece))
         # x, y = piece.coord.x, (grid_width - piece.coord.y) - 1
         if piece.color == 'white':
             score += white_pawns[piece.y][piece.x]  # ccc: should order be y,x or x,y?  Repeats below
