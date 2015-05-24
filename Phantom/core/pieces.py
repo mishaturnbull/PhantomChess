@@ -472,9 +472,9 @@ class Pawn(ChessPiece):
     # may *not* have en passant rights or other weird things that pawns can do
     # These would not be included in the .subvalidcache list and therefore not
     # displayed on the GUI as valid moves
-    def valid(self):
-        self.subvalid_cache = self.update_cache()
-        return [p for p in self.subvalid_cache if self.owner.validate_move(self.coord, p)]
+    #def valid(self):
+    #    self.subvalid_cache = self.update_cache()
+    #    return [p for p in self.subvalid_cache if self.owner.validate_move(self.coord, p)]
 
 
 __all__.append('Pawn')
