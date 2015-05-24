@@ -48,9 +48,13 @@ def main(clear=True):
     from Phantom.core.game_class import ChessGame
     board = ChessGame().board
     board.pprint()
-    for i in xrange(5):
+    for i in xrange(105):
         print('make_random_move {}: {}'.format(i + 1, make_random_move(board)))
         board.pprint()
+        winner = board.game.is_won()
+        if winner:
+            print('{} won this game in {} random moves.'.format(winner, (i + 1) / 2))
+            break
     return(board.game.ai_rateing)
 
 if __name__ == '__main__':
