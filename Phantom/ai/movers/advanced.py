@@ -47,3 +47,20 @@ def make_smart_move(board):
     board.move(move[0], move[1])
     return True
 
+def main(clear=True):
+    from Phantom.core.game_class import ChessGame
+    board = ChessGame().board
+    board.pprint()
+    for i in xrange(105):
+        print('make_smart_move {}: {}'.format(i + 1, make_smart_move(board)))
+        board.pprint()
+        winner = False # board.game.is_won()
+        if winner:
+            print('{} won this game in {} smart moves.'.format(winner, (i + 1) / 2))
+            break
+    return(board.game.ai_rateing)
+
+if __name__ == '__main__':
+    print('=' * 80)
+    score = main()
+    print(score)
