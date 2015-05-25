@@ -52,6 +52,9 @@ class Namespace (PhantomObj):
             self[key] = other[key]
 
 class Cfg (PhantomObj):
+    field_names = '''game board coord_mode disp_coords disp_pieces
+        disp_sqrs disp_turn disp_timers do_checkmate force_moves
+        highlight move_limit recur_limit use_unicode'''.split()
 
     def __init__(self, **kwargs):
         self.highlight = kwargs.get('highlight', True)
@@ -69,6 +72,12 @@ class Cfg (PhantomObj):
         self.board = None
         self.game = None
 
+    def __getitem__(self, i):
+        return getattr(self, i, None)
+
+    def __str__(self):
+        return '\n'.join('{:>12}: {}'.format(name, self[name]) for name in self.field_names)
+
     def set_board(self, b):
         self.board = b
         if hasattr(self.board, 'game'):
@@ -76,3 +85,7 @@ class Cfg (PhantomObj):
 
     def set_game(self, g):
         self.game = g
+
+if __name__ == '__main__':
+    print('=' * 18)
+    print(Cfg())
