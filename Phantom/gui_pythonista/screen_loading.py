@@ -23,7 +23,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 import scene
 
-from Phantom.constants import debug, screen_width, screen_height, version
+import Phantom.constants as C  # debug, screen_width, screen_height, version
 from Phantom.utils.lic import short
 from Phantom.core.chessobj import PhantomObj
 
@@ -32,7 +32,6 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
     def __init__(self, parent=None):
         self.parent = parent
         self.tmp_t = 0
-        #print(self.bounds)
 
     @property
     def parent(self):
@@ -60,10 +59,10 @@ class ChessLoadingScreen (scene.Scene, PhantomObj):
         d_y = s_y - 30
         l_y = s_y - 75
         scene.tint(0.32645, 0.28306, 0.93492)
-        scene.text('PhantomChess version {}'.format(version), x=x, y=s_y, font_size=20.0)
+        scene.text('PhantomChess version {}'.format(C.version), x=x, y=s_y, font_size=20.0)
         scene.tint(1, 1, 1)
-        if debug:
-            scene.text('Debugger set to level {}'.format(debug), x=x, y=d_y)
+        if C.debug:
+            scene.text('Debugger set to level {}'.format(C.debug), x=x, y=d_y)
         for i, line in enumerate(short().splitlines()):
             scene.text(line, x=x, y=l_y - (i*20))
 
