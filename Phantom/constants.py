@@ -18,16 +18,16 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # along with PhantomChess.  If not, see <http://www.gnu.org/licenses/>. #
 #########################################################################
 
+import os, sys
 from Phantom.__version__ import __version__ as version
 from Phantom.can_print_unicode import can_print_unicode
-import os
-import sys
+
 phantom_dir = os.path.dirname(os.path.realpath(__file__))
+image_path_fmt = os.path.join(phantom_dir, 'Images', 'Chess set images {}.jpg')
 
 colors = ('black', 'white')
 x_chars = 'abcdefgh'  #  west --> east
 y_chars = '87654321'  # north --> south
-#grid_height = len(y_chars)  # still needed?
 black_chars = 'rnbkqp'
 white_chars = 'RNBKQP'
 fen_chars = black_chars + white_chars
@@ -58,22 +58,11 @@ def xy_from_fen_loc(fen_loc):
     assert is_valid_fen_loc(fen_loc)
     x, y = fen_loc
     return x_chars.index(x), y_chars.index(y)
-    
 
 import ConfigParser as cfgparse
 cfg_file_name = 'PhantomConfig.cfg'
 cfg = cfgparse.SafeConfigParser()
 cfg.read(os.path.join(phantom_dir, cfg_file_name))
-
-#try:
-#    import ui
-#    in_pythonista = True
-#    screen_width, screen_height = ui.get_screen_size()
-#    del ui
-#except ImportError:
-#    in_pythonista = False
-#    screen_width = cfg.getint('general', 'screen_width')
-#    screen_height = cfg.getint('general', 'screen_height')
 
 debug = cfg.getint('debug', 'level')
 
@@ -94,11 +83,7 @@ if unicode_pref == 'auto':
 else:
     use_unicode = cfg.getboolean('general', 'use_unicode')
 
-#grid_width = cfg.getint('internal', 'grid_width')
-#grid_height = cfg.getint('internal', 'grid_height')
 grid_colors = eval(cfg.get('internal', 'grid_colors'))
-#scale_factor = cfg.getint('internal', 'scale_factor')
-
 holder_point = eval(cfg.get('internal', 'holder_point'))
 
 save_fen = cfg.get('internal', 'save_fen')
@@ -123,8 +108,6 @@ piece_chars = {    # (as_ascii, as_unicode) or [int(use_unicode)]
 turn_indicator   = eval(cfg.get('piece_chars', 'turn_indicator'))
 black_space_char = eval(cfg.get('piece_chars', 'black_space_char'))
 white_space_char = eval(cfg.get('piece_chars', 'white_space_char'))
-
-
 
 fen_rank_split = cfg.get('piece_chars', 'fen_rank_split')
 default_halfmove = cfg.getint('piece_chars', 'default_halfmove')
@@ -161,26 +144,6 @@ opening_fen = ('{r}{n}{b}{q}{k}{b}{n}{r}{S}'
                                               t=start_turn,
                                               c=default_castle,
                                               e=default_ep)
-
-
-'''
-if in_pythonista:
-    import scene
-    screen_size = scene.Rect(0, 0, screen_width, screen_height)
-    del scene
-else:
-    # if no Rect class is available, make a (much) simpler version with the
-    # necessary attributes
-    class Rect (object):
-        def __init__(self, x, y, w, h):
-            self.x = x
-            self.y = y
-            self.w = w
-            self.h = h
-    screen_size = Rect(0, 0, screen_width, screen_height)
-'''
-#print(color_by_number(0))
-#print(color_by_number(1))
 
 def cheat_sheet():
     def row(y):
