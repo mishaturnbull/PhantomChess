@@ -48,10 +48,11 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         #print(self.bounds, self.size)
         #print(type(self.bounds))
         #sys.exit(type(self.bounds))
-        self.square_size = min(*self.size) / 8
+        self.square_size = min(*self.size) / 8  # normally 96.0 on an iPad
+
         if self.size.w > self.size.h:
             self.offset = scene.Point((self.size.w - self.size.h) / 2, 0)
-        else:
+        else:  # normally Point(x=128.0, y=0) on an iPad in landscape mode
             self.offset = scene.Point(0, (self.size.h - self.size.w) / 2)
         
         #self.offset = 
