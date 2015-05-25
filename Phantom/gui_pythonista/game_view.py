@@ -21,30 +21,16 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 """The main scene object for the GUI.  Allows use of multiple scene classes with one GUI."""
 
-'''
-try:
-    import os, scene, ui
-    try:
-        from Phantom.constants import phantom_dir
-        from Phantom.core.chessobj import PhantomObj
-        from Phantom.gui_pythonista.screen_main import ChessMainScreen
-        from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
-    except ImportError as e:
-        raise e
-except ImportError:
-    pass
-'''
-
 import os, scene, ui
 from Phantom.constants import phantom_dir
 from Phantom.core.chessobj import PhantomObj
+from Phantom.core.game_class import ChessGame
 from Phantom.gui_pythonista.screen_main import ChessMainScreen
 from Phantom.gui_pythonista.screen_loading import ChessLoadingScreen
 
 class GameView(ui.View):
-    def __init__(self, game, in_scene=None):
-        property(9)
-        self.game = game
+    def __init__(self, game=None, in_scene=None):
+        self.game = game or ChessGame()
         in_scene = in_scene or ChessLoadingScreen
         self.present('full_screen', orientations=['landscape'], hide_title_bar=True)
         self.scene_view = scene.SceneView(frame=self.frame)
@@ -73,13 +59,12 @@ class GameView(ui.View):
     def load_images(cls, piece_types=None):
         # returns a dict of {piece_name : piece_image} entries
         piece_types = piece_types or 'pawn rook queen king bishop knight'.split()
-        folder = 'imgs'
+        folder = 'Images'
         fmt = 'Chess set images {} {}.jpg'
-        filenames = [os.path.join(phantom_dir, 'gui_pythonista', folder, fmt.format(color, type))
+        filenames = [os.path.join(phantom_dir, folder, fmt.format(color, type))
                      for type in piece_types for color in ('black', 'white')]
         return {os.path.split(filename)[1]:scene.load_image_file(filename)
                      for filename in filenames}
 
 if __name__ == '__main__':
-    from Phantom.core.game_class import ChessGame
-    GameView(ChessGame())
+    GameView()
