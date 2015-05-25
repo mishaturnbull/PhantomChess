@@ -25,8 +25,8 @@ import scene, sys
 
 from Phantom.boardio.boardcfg import Cfg
 from Phantom.core.chessobj import PhantomObj
-from Phantom.constants import scale_factor, screen_size
-from Phantom.core.coord.point import Coord
+#from Phantom.constants import scale_factor, screen_size
+#from Phantom.core.coord.point import Coord
 from Phantom.core.game_class import ChessGame
 
 class ChessOptionsScreen (scene.Scene, PhantomObj):
