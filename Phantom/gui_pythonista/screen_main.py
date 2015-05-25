@@ -72,7 +72,7 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         self.err_pos = ''  # Coord(None, None)
         self.valid_cache = []
         self.img_names = self.game_view.load_images()
-        print(self.img_names)
+        #print(self.img_names)
         self.turn_indicator_img = 'White_Square'
         self.pos_score = None
         self.disp_score = False
@@ -99,14 +99,16 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         #self.game_view.game.board.freeze()
 
     def touch_began(self, touch):
+        scale_factor = self.square_size
         game = self.game_view.game
         self.valid_cache = []
         tpos = Coord(touch.location.x, touch.location.y)
         #cpos = Coord.from_screen(tpos)
         cpos = self.from_screen(tpos)
         fen_loc = C.fen_loc_from_xy(*cpos)
-        print(tpos, cpos, fen_loc)
-        if touch.location in self.bounds:
+        print(tpos, cpos, fen_loc, self.offset)
+        #if touch.location in self.bounds:
+        if touch.location.x >= self.offset.x and touch.location.y >= self.offset.y:
             if not self.is_selected:
                 piece = game.board[fen_loc]
                 if isinstance(piece, list):
@@ -165,7 +167,7 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
             elif 4*scale_factor < touch.location.y:
                 game.ai_hard()
             elif 3*scale_factor < touch.location.y:
-                self.pos_score = pos_eval_advanced(game.board)
+                self.pos_score = game.ai_rateing
                 self.disp_score = True
             elif 2*scale_factor < touch.location.y:
                 game.rollback()
