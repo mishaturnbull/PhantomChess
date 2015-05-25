@@ -26,9 +26,9 @@ import os
 
 from Phantom.core.game_class import ChessGame
 from Phantom.core.pieces import Rook, Bishop, Knight, Queen
-from Phantom.core.coord.point import Coord
+#from Phantom.core.coord.point import Coord
 from Phantom.core.chessobj import PhantomObj
-from Phantom.constants import phantom_dir, scale_factor, screen_width, screen_height
+from Phantom.constants import phantom_dir  #, scale_factor, screen_width, screen_height
 
 class ChessPromoteScreen (scene.Scene, PhantomObj):
 
