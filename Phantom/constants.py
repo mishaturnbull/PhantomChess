@@ -145,14 +145,46 @@ opening_fen = ('{r}{n}{b}{q}{k}{b}{n}{r}{S}'
                                               c=default_castle,
                                               e=default_ep)
 
+'''
+Cheat sheet of mappings of fen_locs (e.g. d4)
+to x, y coordinates (e.g. (3,4)).
+
+    a    b    c    d    e    f    g    h
+   ======================================
+8  0,0  1,0  2,0  3,0  4,0  5,0  6,0  7,0  8
+7  0,1  1,1  2,1  3,1  4,1  5,1  6,1  7,1  7
+6  0,2  1,2  2,2  3,2  4,2  5,2  6,2  7,2  6
+5  0,3  1,3  2,3  3,3  4,3  5,3  6,3  7,3  5
+4  0,4  1,4  2,4  3,4  4,4  5,4  6,4  7,4  4
+3  0,5  1,5  2,5  3,5  4,5  5,5  6,5  7,5  3
+2  0,6  1,6  2,6  3,6  4,6  5,6  6,6  7,6  2
+1  0,7  1,7  2,7  3,7  4,7  5,7  6,7  7,7  1
+   ======================================
+    a    b    c    d    e    f    g    h
+
+Note that a8 is (0,0) while h1 is (7,7) which
+is unintuitive and caused difficult to spot
+location bugs in earlier versions of Phantom.
+
+Now Phantom objects Tile and Piece have
+attributes .row, .col, .x and .y to
+facilitate the interchangable use of both
+col,row-based fen_locs and x, y coordinates.
+'''
+
 def cheat_sheet():
+    def header():
+        return '    ' + '    '.join(x_chars)
+    def sep():
+        return '   ' + '=' * 38
     def row(y):
         values = (x+y for x in x_chars)
-        print([v for v in values])
+        values = '  '.join('{},{}'.format(*xy_from_fen_loc(v)) for v in values)
+        return '{}  {}  {}'.format(y, values, y)
+    return '\n'.join([header(), sep(), '\n'.join(row(y) for y in y_chars), sep(), header()])
 
-        values = ' '.join('{},{}'.format(xy_from_fen_loc(v)) for v in values)
-#        values = ' '.join('{},{}'.format(xy_from_fen_loc(x+y)) for x in x_chars)
-        return '{} {} {}'.format(y, values, y)
-    return ('\n'.join(row(y) for y in y_chars))
-
-#print(cheat_sheet())
+if __name__ == '__main__':
+    print('=' * 19)
+    print(cheat_sheet())
+    #print(color_by_number(0))
+    #print(color_by_number(1))
