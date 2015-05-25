@@ -267,9 +267,9 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         scene.text('Options', x=x, y=scale_factor*7 - x)
 
 if __name__ == '__main__':
-    from Phantom.core.game_class import load_game  # ChessGame
+    if __name__ == '__main__':
+    from Phantom.core.game_class import load_game
     from Phantom.gui_pythonista.game_view import GameView
-    game = load_game('Long Endgame 1')  # ChessGame()
-    game.board.cfg.disp_sqrs = True
-    s = ChessMainScreen(GameView(game))
-    scene.run(s, orientation=scene.LANDSCAPE)
+    #game = load_game('Long Endgame 1')
+    #game.board.cfg.disp_sqrs = True
+    GameView()  # game)
