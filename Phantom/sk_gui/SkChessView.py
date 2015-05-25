@@ -21,7 +21,7 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import dialogs, photos, sk, sys, ui
-#import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
+import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
 from Phantom.sk_gui.SkChessBoardScene import SkChessBoardScene
 from Phantom.core.game_class import ChessGame
 
@@ -29,7 +29,6 @@ def quit_action(sender):
     msg = '{} is not yet implemented!!'.format(sender.title)
     dialogs.hud_alert(msg)
     print(msg)
-    #sys.exit(msg)
 
 def center_square():
     w, h = ui.get_screen_size()
@@ -57,12 +56,11 @@ class SkChessView(ui.View):
         board_scene = SkChessBoardScene(game)
         scene_view = sk.View(board_scene)
         scene_view.frame = center_square()
-        # print(ui.get_screen_size(), scene_view.frame)
         scene_view.shows_fps = True
         scene_view.shows_node_count = True
         scene_view.shows_physics = True
         self.add_subview(scene_view)
-        # scene_view.present()
+        self.add_subview(self.right_side_view())
         return board_scene
 
     @classmethod
@@ -81,6 +79,16 @@ class SkChessView(ui.View):
 
     def action_get_score(self, sender):
         dialogs.hud_alert('Score: {}'.format(self.game.ai_rateing))
+
+    def right_side_view(self):
+        w, h = ui.get_screen_size()
+        w = abs(w - h) / 2
+        frame = self.frame
+        frame = (frame.x + frame.w - w, frame.y, w, frame.h)
+        text_view = ui.TextView(frame=frame)
+        text_view.alignment = ui.ALIGN_JUSTIFIED  # ui.CENTER
+        text_view.text = '1234567890 ' * 200
+        return text_view
 
 
 def gui_sk(game=None):
