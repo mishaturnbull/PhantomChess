@@ -267,7 +267,6 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         scene.text('Options', x=x, y=scale_factor*7 - x)
 
 if __name__ == '__main__':
-    if __name__ == '__main__':
     from Phantom.core.game_class import load_game
     from Phantom.gui_pythonista.game_view import GameView
     #game = load_game('Long Endgame 1')
