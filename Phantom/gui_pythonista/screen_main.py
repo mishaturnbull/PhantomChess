@@ -48,11 +48,11 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         #print(self.bounds, self.size)
         #print(type(self.bounds))
         #sys.exit(type(self.bounds))
-        self.square_size = min(*self.size) / 8  # normally 96.0 on an iPad
+        self.square_size = min(*self.size) / 8
         if self.size.w > self.size.h:
-            self.offset = scene.Point((self.size.h - self.size.w) / 2, 0)
-        else:  # normally Point(x=128.0, y=0) on an iPad in landscape mode
-            self.offset = scene.Point(0, (self.size.w - self.size.h) / 2)
+            self.offset = scene.Point((self.size.w - self.size.h) / 2, 0)
+        else:
+            self.offset = scene.Point(0, (self.size.h - self.size.w) / 2)
         
         #self.offset = 
         #print(self.square_size)
@@ -106,7 +106,7 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
         #cpos = Coord.from_screen(tpos)
         cpos = self.from_screen(tpos)
         fen_loc = C.fen_loc_from_xy(*cpos)
-        print(tpos, cpos, fen_loc, self.offset)
+        print('tpos, cpos, fen_loc...', tpos, cpos, fen_loc, self.offset)
         #if touch.location in self.bounds:
         if touch.location.x >= self.offset.x and touch.location.y >= self.offset.y:
             if not self.is_selected:
@@ -228,8 +228,8 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
             #    scene.tint(1, 1, 1, 1)
         if self.render_mode['valid']:
             for tile in board.tiles:
-                if self.valid_cache:
-                    print(self.valid_cache)
+                #if self.valid_cache:
+                #    print([x for x in self.valid_cache])
                 #if tile.coord in self.valid_cache:  # FIXME
                 if tile.fen_loc in self.valid_cache:
                     pos = self.as_screen(tile)  # tile.coord.as_screen
