@@ -54,7 +54,7 @@ class Namespace (PhantomObj):
 class Cfg (PhantomObj):
     field_names = '''game board coord_mode disp_coords disp_pieces
         disp_sqrs disp_turn disp_timers do_checkmate force_moves
-        highlight move_limit recur_limit use_unicode'''.split()
+        has_gui highlight move_limit recur_limit use_unicode'''.split()
 
     def __init__(self, **kwargs):
         self.highlight = kwargs.get('highlight', True)
@@ -71,6 +71,7 @@ class Cfg (PhantomObj):
         self.disp_timers = kwargs.get('disp_timers', False)
         self.board = None
         self.game = None
+        self.has_gui = False
 
     def __getitem__(self, i):
         return getattr(self, i, None)
