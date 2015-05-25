@@ -31,9 +31,9 @@ def quit_action(sender):
     print(msg)
 
 def center_square():
-    w, h = ui.get_screen_size()
+    w, h = ui.get_screen_size()        # (1024, 768)
     if w > h:  # landscape
-        return ((w - h) / 2, 0, h, h)
+        return ((w - h) / 2, 0, h, h)  # (128, 0, 768, 768)
     else:  # portrait
         return (0, (h - w) / 2, w, w)
 
