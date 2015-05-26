@@ -10,8 +10,8 @@ from Phantom.core.game_class import ChessGame
 
 w, h = ui.get_screen_size()
 # globals values are reset in SkChessBoardScene.did_change_size()
-square_size = min(w, h) / 8
-half_ss = square_size / 2
+square_size = min(w-64, h-64) / 8
+#half_ss = square_size / 2
 tile_Size = sk.Size(square_size, square_size)
 piece_Size = sk.Size(square_size - 2, square_size - 2)
 
@@ -24,6 +24,7 @@ class sk_BoardSquare(sk.SpriteNode):
         self.name = tile.fen_loc  # as_chess
         # invert y because board goes top to bottom but
         #                     sk goes bottom to top
+        half_ss = square_size / 2
         self.position = (tile.x * square_size + half_ss,
                    (7 - tile.y) * square_size + half_ss)
         self.size = tile_Size
@@ -62,14 +63,16 @@ class sk_ChessPiece(sk.SpriteNode):
 
 
 class SkChessBoardScene(sk.Scene):
-    def __init__(self, game):
+    def __init__(self, game, frame):
         sk.Scene.__init__(self)
         self.game = game
+        self.alpha = 0.1  # highly transparent
+        #self.frame = frame
         self.save_position = None
         self.board_tiles_dict = self.create_board_tiles_dict()
         for tile in self.tiles:
             self.add_child(tile)
-        chess_pieces_list = self.create_pieces_list()
+        self.pieces = self.create_pieces_list()
 
     @property
     def name(self):
@@ -105,12 +108,20 @@ class SkChessBoardScene(sk.Scene):
 
     def did_change_size(self, old_size):
         print('did_change_size: {} --> {}'.format(old_size, self.size))
-        w, h = ui.get_screen_size()
-        global square_size, half_ss, tile_Size, piece_Size
+        #w, h = ui.get_screen_size()
+        global square_size  #, half_ss, tile_Size, piece_Size
+        w, h = self.size
         square_size = min(w, h) / 8
-        half_ss = square_size / 2
+        #half_ss = square_size / 2
         tile_Size = sk.Size(square_size, square_size)
         piece_Size = sk.Size(square_size - 2, square_size - 2)
+        for node in self.get_children_with_name('*'):
+            if isinstance(node, sk_BoardSquare):
+                node.size = tile_Size
+            elif isinstance(node, sk_ChessPiece):
+                node.size = piece_Size
+            else:
+                print(node)
 
     def update(self):
         pass
@@ -148,6 +159,9 @@ class SkChessBoardScene(sk.Scene):
                                 import dialogs
                                 dialogs.hud_alert('Game over man!')
                             piece.remove_from_parent()
+                    #import dialogs
+                    #dialogs.hud_alert(str(type(self.view.superview)))
+                    self.view.superview.update_view(node.piece)
                     node.position = square.position
                     sound.play_effect('8ve:8ve-tap-professional')
                 else:
