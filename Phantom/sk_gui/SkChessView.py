@@ -21,8 +21,7 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import dialogs, photos, sk, sys, ui
-#import Phantom.sk_gui.SkChessBoardScene
-#reload(Phantom.sk_gui.SkChessBoardScene)  #Pythonista workaround
+#import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
 from Phantom.sk_gui.SkChessBoardScene import SkChessBoardScene
 from Phantom.core.game_class import ChessGame
 
@@ -31,21 +30,48 @@ def quit_action(sender):
     dialogs.hud_alert(msg)
     print(msg)
 
-def center_square():
+'''
+def center_square(status_height):
     w, h = ui.get_screen_size()        # (1024, 768)
+    screen_width = w
+    w -= status_height  # make room for two
+    h -= status_height  # lines of status text
     if w > h:  # landscape
-        return ((w - h) / 2, 0, h, h)  # (128, 0, 768, 768)
+        return sk.Rect((w - h) / 2, 0, h, h)  # (128, 0, 768, 768)
     else:  # portrait
-        return (0, (h - w) / 2, w, w)
+        return sk.Rect(0, (h - w) / 2, w, w)
+'''
+
+def screen_frames(status_height=24):
+    w, h = ui.get_screen_size()  # (1024, 768) on iPad in landscape mode
+    assert w > h, 'This app only works in landscape mode!!'
+    square_side = min(w, h) - status_height  # make room for a few lines of status text
+    panel_width = (w - square_side) / 2
+    center_frame = sk.Rect(panel_width, 0, square_side, square_side)
+    left_frame   = sk.Rect(0, 0, panel_width, square_side)
+    right_frame  = sk.Rect(panel_width + square_side, 0, panel_width, square_side)
+    status_frame = sk.Rect(0, square_side, w, status_height)
+    return center_frame, left_frame, right_frame, status_frame
+    # center_frame: Rect(128,   0,  704, 704)
+    #   left_frame: Rect(  0,   0,  128, 704)
+    #  right_frame: Rect(832,   0,  128, 704)
+    # status_frame: Rect(  0, 704, 1024,  64)
+
+#print(screen_frames())
 
 class SkChessView(ui.View):
     def __init__(self, game=None):
+        self.game = game or ChessGame()
         self.width, self.height = ui.get_screen_size()
         if photos.is_authorized():
             self.add_subview(self.make_image_view())
-        self.game = game or ChessGame()
-        board_scene = self.make_board_scene(self.game)
-        self.make_buttons()
+        center_frame, left_frame, right_frame, status_frame = screen_frames()
+        self.add_subview(self.make_board_scene(self.game, center_frame))
+        self.make_buttons(left_frame)
+        self.info_view = self.make_right_side_view(right_frame)
+        self.add_subview(self.info_view)
+        self.status_view = self.make_status_view(status_frame)
+        self.add_subview(self.status_view)
         self.present(orientations=['landscape'], hide_title_bar=True)
 
     def make_image_view(self, image_name=''):
@@ -53,16 +79,17 @@ class SkChessView(ui.View):
         image_view.image = ui.Image.from_data(photos.get_image(raw_data=True)) # ui.Image('emj:Smiling_1')
         return image_view
 
-    def make_board_scene(self, game):
-        board_scene = SkChessBoardScene(game)
+    def make_board_scene(self, game, frame):
+        board_scene = SkChessBoardScene(game, frame)
         scene_view = sk.View(board_scene)
-        scene_view.frame = center_square()
+        scene_view.frame = frame  # center_square()
         scene_view.shows_fps = True
         scene_view.shows_node_count = True
         scene_view.shows_physics = True
-        self.add_subview(scene_view)
-        self.add_subview(self.right_side_view())
-        return board_scene
+        #self.add_subview(scene_view)
+        #self.add_subview(self.right_side_view())
+        #return board_scene
+        return scene_view
 
     @classmethod
     def make_button(cls, title, i):
@@ -72,7 +99,7 @@ class SkChessView(ui.View):
         button.y = 105 * (i + 1)
         return button
 
-    def make_buttons(self, menu_titles=None):
+    def make_buttons(self, frame, menu_titles=None):
         menu_titles = menu_titles or 'Options AI_Easy AI_Hard Get_score Undo Deselect'.split()
         for i, title in enumerate(menu_titles):
             self.add_subview(self.make_button(title.replace('_', ' '), i))
@@ -81,16 +108,28 @@ class SkChessView(ui.View):
     def action_get_score(self, sender):
         dialogs.hud_alert('Score: {}'.format(self.game.ai_rateing))
 
-    def right_side_view(self):
-        w, h = ui.get_screen_size()
-        w = abs(w - h) / 2
-        frame = self.frame
-        frame = (frame.x + frame.w - w, frame.y, w, frame.h)
+    def make_right_side_view(self, frame):
         text_view = ui.TextView(frame=frame)
-        text_view.alignment = ui.ALIGN_JUSTIFIED  # ui.CENTER
-        text_view.text = '1234567890 ' * 200
+        text_view.alpha = 0.5
+        text_view.alignment = ui.ALIGN_CENTER
+        text_view.text = '1234567890 ' * 50
         return text_view
 
+    def make_status_view(self, frame):
+        text_view = ui.TextView(frame=frame)
+        text_view.alpha = 0.5
+        text_view.alignment = ui.ALIGN_CENTER
+        text_view.text = "Status: let the game begin...  It is white's turn to move"
+        return text_view
+    
+    def update_view(self, piece=None):
+        if piece:
+            self.info_view.text = '\n' + piece.as_str
+        #board = self.game.board
+        #piece = board.get_piece_list()[0]
+        #self.info_view.text = str(piece)
+        self.status_view.text = self.game.board.as_fen_str()
+        print('Dude')
 
 def gui_sk(game=None):
     game = game or ChessGame()
@@ -101,5 +140,6 @@ def gui_sk(game=None):
     # scene_view.present()
 
 if __name__ == '__main__':
+    from Phantom.core.game_class import ChessGame
     print('=' * 30)
     gui_sk()
