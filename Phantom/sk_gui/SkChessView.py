@@ -21,7 +21,8 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import dialogs, photos, sk, sys, ui
-import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
+#import Phantom.sk_gui.SkChessBoardScene
+#reload(Phantom.sk_gui.SkChessBoardScene)  #Pythonista workaround
 from Phantom.sk_gui.SkChessBoardScene import SkChessBoardScene
 from Phantom.core.game_class import ChessGame
 
