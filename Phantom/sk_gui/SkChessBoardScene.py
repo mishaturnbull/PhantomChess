@@ -10,7 +10,7 @@ from Phantom.core.game_class import ChessGame
 
 w, h = ui.get_screen_size()
 # globals values are reset in SkChessBoardScene.did_change_size()
-square_size = min(w-64, h-64) / 8
+square_size = min(w-24, h-24) / 8
 #half_ss = square_size / 2
 tile_Size = sk.Size(square_size, square_size)
 piece_Size = sk.Size(square_size - 2, square_size - 2)
