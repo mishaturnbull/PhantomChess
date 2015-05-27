@@ -19,7 +19,7 @@ piece_Size = sk.Size(square_size - 2, square_size - 2)
 class sk_BoardSquare(sk.SpriteNode):
     def __init__(self, tile):
         sk.SpriteNode.__init__(self) # , sk.Texture(tile.color))
-        self.alpha = 0.3
+        self.alpha = 0.2
         self.color = tile.tile_color
         self.name = tile.fen_loc  # as_chess
         # invert y because board goes top to bottom but
@@ -66,7 +66,7 @@ class SkChessBoardScene(sk.Scene):
     def __init__(self, game, frame):
         sk.Scene.__init__(self)
         self.game = game
-        self.alpha = 0.1  # highly transparent
+        self.alpha = 0.2  # highly transparent
         #self.frame = frame
         self.save_position = None
         self.board_tiles_dict = self.create_board_tiles_dict()
