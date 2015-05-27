@@ -30,18 +30,6 @@ def quit_action(sender):
     dialogs.hud_alert(msg)
     print(msg)
 
-'''
-def center_square(status_height):
-    w, h = ui.get_screen_size()        # (1024, 768)
-    screen_width = w
-    w -= status_height  # make room for two
-    h -= status_height  # lines of status text
-    if w > h:  # landscape
-        return sk.Rect((w - h) / 2, 0, h, h)  # (128, 0, 768, 768)
-    else:  # portrait
-        return sk.Rect(0, (h - w) / 2, w, w)
-'''
-
 def screen_frames(status_height=24):
     w, h = ui.get_screen_size()  # (1024, 768) on iPad in landscape mode
     assert w > h, 'This app only works in landscape mode!!'
@@ -70,13 +58,14 @@ class SkChessView(ui.View):
         self.make_buttons(left_frame)
         self.info_view = self.make_right_side_view(right_frame)
         self.add_subview(self.info_view)
+        self.add_subview(self.make_left_side_view(left_frame))
         self.status_view = self.make_status_view(status_frame)
         self.add_subview(self.status_view)
         self.present(orientations=['landscape'], hide_title_bar=True)
 
-    def make_image_view(self, image_name=''):
+    def make_image_view(self, image_name=''):  # fullscreen background image
         image_view = ui.ImageView(frame=self.bounds)
-        image_view.image = ui.Image.from_data(photos.get_image(raw_data=True)) # ui.Image('emj:Smiling_1')
+        image_view.image = ui.Image.from_data(photos.get_image(raw_data=True))
         return image_view
 
     def make_board_scene(self, game, frame):
@@ -86,9 +75,6 @@ class SkChessView(ui.View):
         scene_view.shows_fps = True
         scene_view.shows_node_count = True
         scene_view.shows_physics = True
-        #self.add_subview(scene_view)
-        #self.add_subview(self.right_side_view())
-        #return board_scene
         return scene_view
 
     @classmethod
@@ -103,21 +89,38 @@ class SkChessView(ui.View):
         menu_titles = menu_titles or 'Options AI_Easy AI_Hard Get_score Undo Deselect'.split()
         for i, title in enumerate(menu_titles):
             self.add_subview(self.make_button(title.replace('_', ' '), i))
+        self['AI Easy'].action = self.action_ai_easy
+        self['AI Hard'].action = self.action_ai_hard
         self['Get score'].action = self.action_get_score
+        self['Undo'].action = self.action_undo
+
+    def action_ai_easy(self, sender):
+        self.game.ai_easy()
+
+    def action_ai_hard(self, sender):
+        self.game.ai_hard()
 
     def action_get_score(self, sender):
         dialogs.hud_alert('Score: {}'.format(self.game.ai_rateing))
 
+    def action_undo(self, sender):
+        self.game.rollback()
+
     def make_right_side_view(self, frame):
         text_view = ui.TextView(frame=frame)
-        text_view.alpha = 0.5
+        text_view.alpha = 0.3
         text_view.alignment = ui.ALIGN_CENTER
-        text_view.text = '1234567890 ' * 50
+        text_view.text = '\n' + '1234567890 ' * 50
         return text_view
+
+    def make_left_side_view(self, frame):
+        view = ui.TextView(frame=frame)
+        view.alpha = 0.3
+        return view
 
     def make_status_view(self, frame):
         text_view = ui.TextView(frame=frame)
-        text_view.alpha = 0.5
+        text_view.alpha = 0.3
         text_view.alignment = ui.ALIGN_CENTER
         text_view.text = "Status: let the game begin...  It is white's turn to move"
         return text_view
@@ -125,11 +128,7 @@ class SkChessView(ui.View):
     def update_view(self, piece=None):
         if piece:
             self.info_view.text = '\n' + piece.as_str
-        #board = self.game.board
-        #piece = board.get_piece_list()[0]
-        #self.info_view.text = str(piece)
         self.status_view.text = self.game.board.as_fen_str()
-        print('Dude')
 
 def gui_sk(game=None):
     game = game or ChessGame()
