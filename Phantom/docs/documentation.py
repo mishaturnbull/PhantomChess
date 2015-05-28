@@ -116,8 +116,8 @@ def location_in_phantom(): return """
  The chess board is set up in columns from 'a' to 'h' and rows from '8' to '1'.
  These are combined into a board location called a "fen_loc" e.g. a8, h1, etc.
  Every chess piece and board tile has a fen_loc variable and the following properties:
-     row -- possible values '8', '7', '6', '5', '3', '3', '2', '1'
-     col -- possible values 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+     row -- possible left to right values '8', '7', '6', '5', '3', '3', '2', '1'
+     col -- possible top to bottom values 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
      x -- possible values 0 thru 7
      y -- possible values 0 thru 7
  
