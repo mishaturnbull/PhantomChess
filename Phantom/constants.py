@@ -23,7 +23,7 @@ from Phantom.__version__ import __version__ as version
 from Phantom.can_print_unicode import can_print_unicode
 
 phantom_dir = os.path.dirname(os.path.realpath(__file__))
-image_path_fmt = os.path.join(phantom_dir, 'Images', 'Chess set images {}.jpg')
+image_path_fmt = os.path.join(phantom_dir, 'images', '{}.jpg')
 
 colors = ('black', 'white')
 x_chars = 'abcdefgh'  #  west --> east
