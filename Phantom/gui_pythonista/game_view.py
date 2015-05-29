@@ -62,7 +62,6 @@ class GameView(ui.View):
         fmt = C.image_path_fmt
         filenames = ['{} {}'.format(color, ptype) for ptype in piece_types
                                                   for color in C.colors]
-        print(filenames)
         return {filename : scene.load_image_file(fmt.format(filename))
             for filename in filenames}
 
