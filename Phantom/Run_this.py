@@ -118,7 +118,7 @@ if __name__ == '__main__':
         elif cmd == 'game':
             print(game)
         elif cmd == 'gui':
-            game.gui()
+            game.scene_gui()
         elif cmd == 'help':
             print(help_str)
         elif cmd == 'license':
