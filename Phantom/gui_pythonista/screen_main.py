@@ -187,7 +187,7 @@ class ChessMainScreen (scene.Scene): #, PhantomObj):
                 scene.tint(1, 1, 1, 0.5)
                 pos = self.as_screen(piece)  # piece.coord.as_screen
                 #print(self.img_names)
-                img = self.img_names['Chess set images {}.jpg'.format(piece.name)]
+                img = self.img_names[piece.name]
                 scene.image(img, pos.x, pos.y, scale_factor, scale_factor)
                 scene.tint(1, 1, 1, 1)
                 if piece.fen_loc == self.selected:
