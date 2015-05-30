@@ -21,7 +21,7 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import dialogs, photos, sk, sys, ui
-#import SkChessBoardScene ; reload(SkChessBoardScene)  #Pythonista workaround
+#import Phantom.sk_gui.SkChessBoardScene ; reload(Phantom.sk_gui.SkChessBoardScene)  #Pythonista workaround
 from Phantom.sk_gui.SkChessBoardScene import SkChessBoardScene
 from Phantom.core.game_class import ChessGame
 
@@ -64,11 +64,11 @@ class SkChessView(ui.View):
         if photos.is_authorized():  # add a photo as the background image
             self.add_subview(self.make_image_view())
         center_frame, left_frame, right_frame, status_frame = screen_frames()
-        self.add_subview(self.make_board_scene(center_frame))
+        self.add_subview(self.make_left_side_view(left_frame))
         self.make_buttons(left_frame)
+        self.add_subview(self.make_board_scene(center_frame))
         self.info_view = self.make_right_side_view(right_frame)
         self.add_subview(self.info_view)
-        self.add_subview(self.make_left_side_view(left_frame))
         self.status_view = self.make_status_view(status_frame)
         self.add_subview(self.status_view)
         self.present(orientations=['landscape'], hide_title_bar=True)
@@ -119,6 +119,7 @@ class SkChessView(ui.View):
         text_view = ui.TextView(frame=right_frame)
         text_view.alpha = cls.views_alpha
         text_view.alignment = ui.ALIGN_CENTER
+        text_view.editable = False
         text_view.text = '\n' + '1234567890 ' * 50
         return text_view
 
@@ -126,6 +127,7 @@ class SkChessView(ui.View):
     def make_left_side_view(cls, left_frame):
         view = ui.TextView(frame=left_frame)
         view.alpha = cls.views_alpha
+        view.editable = False
         return view
 
     @classmethod
@@ -133,6 +135,7 @@ class SkChessView(ui.View):
         text_view = ui.TextView(frame=status_frame)
         text_view.alpha = cls.views_alpha
         text_view.alignment = ui.ALIGN_CENTER
+        text_view.editable = False
         text_view.text = "Status: let the game begin...  It is white's turn to move"
         return text_view
     
