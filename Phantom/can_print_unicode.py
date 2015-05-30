@@ -18,7 +18,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 # along with PhantomChess.  If not, see <http://www.gnu.org/licenses/>. #
 #########################################################################
 
-"""Deterime your platform supports printing of unicode characters."""
+"""Deterime if your platform supports printing of unicode characters."""
 
 import sys
 
