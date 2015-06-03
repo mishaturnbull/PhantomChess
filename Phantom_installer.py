@@ -50,7 +50,6 @@ shutil.copytree(os.path.join(master_name, module_name), module_name)
 shutil.rmtree(master_name)
 os.remove(zip_filename)
 
-
 def unix_chmod_plus_x(file_path='Phantom/Run_this.py'):
     platform_sys = platform.system()
     if ((platform_sys == 'Darwin' and platform.machine().startswith('iP'))  # on iOS
@@ -65,7 +64,6 @@ def unix_chmod_plus_x(file_path='Phantom/Run_this.py'):
         print(fmt.format(module_name, file_path))
     except ImportError:
         pass
-
 
 unix_chmod_plus_x(module_name + '/Run_this.py')
 print('Done! {}'.format('=' * 25))
