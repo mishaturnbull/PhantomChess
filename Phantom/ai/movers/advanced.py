@@ -43,6 +43,9 @@ def make_smart_move(board):
             print("New best node: {}".format(child))
             bestnode = child
 
+    if not bestnode:
+        print('make_smart_move() can not find a bestnode')
+        return False
     move = bestnode.board.lastmove
     board.move(move[0], move[1])
     return True
