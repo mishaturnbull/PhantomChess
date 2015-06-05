@@ -21,6 +21,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 """Determine if your platform supports printing of unicode characters."""
 
 # See: http://en.wikipedia.org/wiki/Chess_symbols_in_Unicode
+# Windows users could try running 'chcp 65001' before running Phantom
 
 import sys
 
