@@ -159,15 +159,15 @@ class Board (PhantomObj):
 
     @property
     def players(self):
-        return self.players_dict.itervalues()
+        return self.players_dict.values()
 
     @property
     def tiles(self):
-        return self.tiles_dict.itervalues()
+        return self.tiles_dict.values()
 
     @property
     def pieces(self):
-        return self.pieces_dict.itervalues()
+        return self.pieces_dict.values()
 
     def __contains__(self, piece):
         return piece in self.pieces
