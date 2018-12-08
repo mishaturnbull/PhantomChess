@@ -105,7 +105,7 @@ class Board (PhantomObj):
     def __init__(self, chess_game, fen_str=None, **cfgkws):
         self.game = chess_game
         self.fen_str = fen_str or C.opening_fen
-        assert isinstance(self.fen_str, basestring), str(type(self.fen_str))
+        assert isinstance(self.fen_str, str), str(type(self.fen_str))
         self.players_dict = {color : Player(self, color) for color in C.colors}
         self.tiles_dict = {fen_loc: Tile(fen_loc) for fen_loc in C.fen_locs()}
         self.dead = set()
@@ -127,7 +127,7 @@ class Board (PhantomObj):
 
     def fen_parse(self, fen_str):
         # parse given FEN and create board layout
-        assert isinstance(fen_str, basestring), str(type(fen_str))
+        assert isinstance(fen_str, str), str(type(fen_str))
         fields = fen_str.split()
         if not len(fields) == 6:
             print('\n'.join(fields))
@@ -153,7 +153,7 @@ class Board (PhantomObj):
     def make_pieces_dict(self, pieces_fen):
         pieces_dict = _make_pieces_dict(pieces_fen)
         # replace each fen_char in the dict with a real Piece object
-        for fen_loc, fen_char in pieces_dict.iteritems():
+        for fen_loc, fen_char in pieces_dict.items():
             pieces_dict[fen_loc] = self.make_piece(fen_loc, fen_char)
         return pieces_dict
 
@@ -164,7 +164,7 @@ class Board (PhantomObj):
     @property
     def tiles(self):
         return self.tiles_dict.itervalues()
-    
+
     @property
     def pieces(self):
         return self.pieces_dict.itervalues()
@@ -189,7 +189,7 @@ class Board (PhantomObj):
 
     def tile_at(self, fen_loc):
         return self.tiles_dict[fen_loc]
-    
+
     def get_player_by_color(self, color):
         return self.players_dict[color]
 
@@ -248,7 +248,7 @@ class Board (PhantomObj):
                                  or (y == '8' and self.turn == 'black')) else ''
             lines.append(fmt.format(y, pieces, y, ti))
         lines.append(header)
-        return '\n'.join(lines).encode(C.default_encoding)          
+        return '\n'.join(lines).encode(C.default_encoding)
 
     def pprint(self):
         """Print a pretty version of the board."""

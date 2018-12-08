@@ -59,7 +59,7 @@ def xy_from_fen_loc(fen_loc):
     x, y = fen_loc
     return x_chars.index(x), y_chars.index(y)
 
-import ConfigParser as cfgparse
+import configparser as cfgparse
 cfg_file_name = 'PhantomConfig.cfg'
 cfg = cfgparse.SafeConfigParser()
 cfg.read(os.path.join(phantom_dir, cfg_file_name))

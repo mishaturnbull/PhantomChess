@@ -154,14 +154,14 @@ if __name__ == '__main__':
 
     running = True
     while running:
-        user_in = raw_input(':> ').strip()
+        user_in = input(':> ').strip()
         if not user_in:
             continue
         if user_in.split()[0].lower() in ('quit', 'exit'):
             running = False
         elif '(' in user_in and ')' in user_in:
             # assume a function was called
-            exec user_in  # 671: remove exec somehow?
+            exec(user_in)  # TODO:  # 671: remove exec somehow?
         elif not is_text_command(user_in):
             coord_re = coord_re or re.compile(r'[a-h][1-8]')  # just in time
             if is_cmd(coord_re, user_in):
