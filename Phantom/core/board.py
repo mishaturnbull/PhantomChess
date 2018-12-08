@@ -248,7 +248,8 @@ class Board (PhantomObj):
                                  or (y == '8' and self.turn == 'black')) else ''
             lines.append(fmt.format(y, pieces, y, ti))
         lines.append(header)
-        return '\n'.join(lines).encode(C.default_encoding)
+        # TODO: deal with this VVV line properly.  Needs to encode somehow...
+        return '\n'.join(lines)  #  .encode(C.default_encoding)
 
     def pprint(self):
         """Print a pretty version of the board."""
