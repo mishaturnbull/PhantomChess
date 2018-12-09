@@ -1,23 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
-#########################################################################
-# This file is part of PhantomChess.                                    #
-#                                                                       #
-# PhantomChess is free software: you can redistribute it and/or modify  #
-# it under the terms of the GNU General Public License as published by  #
-# the Free Software Foundation, either version 3 of the License, or     #
-# (at your option) any later version.                                   #
-#                                                                       #
-# PhantomChess is distributed in the hope that it will be useful,       #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
-# GNU General Public License for more details.                          #
-#                                                                       #
-# You should have received a copy of the GNU General Public License     #
-# along with PhantomChess.  If not, see <http://www.gnu.org/licenses/>. #
-#########################################################################
-
 """A separate constants.py file to save some space in the main one."""
 
 from Phantom.functions import round_down
@@ -40,8 +23,8 @@ max_material = (16*scores['pawn'] + 4*scores['knight'] + 4*scores['bishop']
 min_material = 2*king_material
 
 opening_range = [max_material,]
-midgame_range = xrange(round_down(max_material / 4), int(max_material))
-endgame_range = xrange(0, midgame_range[0])
+midgame_range = range(round_down(max_material / 4), int(max_material))
+endgame_range = range(0, midgame_range[0])
 opening_moves = 6
 
 colors = {'white': 1, 'black': -1}
